@@ -1,8 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getPublicProducts } from '@/lib/actions/storefront';
 
-export const runtime = 'edge';
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const products = await getPublicProducts() || [];
 
