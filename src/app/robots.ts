@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin/', '/account/'],
+      disallow: ['/api/', '/_next/'],
     },
     sitemap: 'https://rcreationframes.com/sitemap.xml',
   };

@@ -47,7 +47,6 @@ export default function Footer() {
               <li><Link href="/wholesale" className="text-sm text-neutral-400 hover:text-white transition-colors">B2B Wholesale</Link></li>
               <li><Link href="/configurator" className="text-sm text-neutral-400 hover:text-white transition-colors">Frame Builder</Link></li>
               <li><Link href="/specs" className="text-sm text-neutral-400 hover:text-white transition-colors">Tech Specs</Link></li>
-              <li><Link href="/admin/login" className="text-sm text-neutral-400 hover:text-[#2aabb0] transition-colors">Admin Portal</Link></li>
             </ul>
           </div>
 

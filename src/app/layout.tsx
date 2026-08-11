@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     template: '%s | R Creation — Gudiyattam',
     default: 'R Creation — Premium Photo Frames, Trophies & Custom Gifts | Gudiyattam, Vellore',
   },
-  description: 'Manufacturer & wholesaler of synthetic photo frames, crystal trophies, wooden mementos, personalized gifts, and framing accessories in Gudiyattam, Vellore, Tamil Nadu. Wholesale MOQ 10 units. CEO: Mr. Sankaran Raveendiran.',
+  description: 'Manufacturer & wholesaler of synthetic photo frames, crystal trophies, wooden mementos, personalized gifts, and framing accessories in Gudiyattam, Vellore, Tamil Nadu. Wholesale MOQ 10 units.',
   keywords: ['R Creation', 'photo frames', 'Gudiyattam', 'Vellore', 'wholesale frames', 'crystal trophies', 'wooden mementos', 'custom gifts', 'Tamil Nadu'],
   authors: [{ name: 'R Creation' }],
   openGraph: {

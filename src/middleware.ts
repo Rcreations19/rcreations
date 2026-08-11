@@ -106,6 +106,10 @@ export async function middleware(request: NextRequest) {
   supabaseResponse.headers.set('X-Content-Type-Options', 'nosniff');
   supabaseResponse.headers.set('Referrer-Policy', 'origin-when-cross-origin');
 
+  if (isAdminRoute || isAccountRoute) {
+    supabaseResponse.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  }
+
   return supabaseResponse;
 }
 
