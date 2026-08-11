@@ -6,8 +6,10 @@ import { Settings, ShoppingBag, ArrowRight, ArrowLeft, Plus, Minus, Ruler, PenTo
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/components/storefront/CartContext';
 import type { GlassType, MountBoard } from '@/lib/supabase/types';
-import ThreeDFrameViewer from '@/components/storefront/ThreeDFrameViewer';
+import dynamic from 'next/dynamic';
 import PhotoCropper from '@/components/storefront/PhotoCropper';
+
+const ThreeDFrameViewer = dynamic(() => import('@/components/storefront/ThreeDFrameViewer'), { ssr: false });
 
 const FRAME_OPTIONS = [
   { id: 'f1', name: 'Classic Teak Wood', category: 'wood', unitPrice: 220, colorHex: '#5C4033', durability: 'Premium Real Wood' },
