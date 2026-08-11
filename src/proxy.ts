@@ -1,6 +1,8 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+export const runtime = 'edge';
+
 export async function proxy(request: NextRequest) {
   // 1. Initialize Supabase Response
   let supabaseResponse = NextResponse.next({
