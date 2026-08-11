@@ -1,0 +1,290 @@
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { Star, ShoppingBag, ArrowRight, ShieldCheck, Truck, Package, Check } from 'lucide-react';
+import { useCart } from '@/components/storefront/CartContext';
+import { useToast } from '@/components/shared/ToastContext';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const FaqItem = ({ faq, isOpen, onClick }: { faq: { question: string; answer: string }, isOpen: boolean, onClick: () => void }) => {
+  return (
+    <div className="border-b border-[#eaeaea]">
+      <button 
+        onClick={onClick}
+        className="w-full flex items-center justify-between py-5 text-left focus:outline-none group"
+      >
+        <h3 className="text-xs font-bold text-[#0a0e27] uppercase tracking-wider group-hover:text-[#2aabb0] transition-colors pr-8">{faq.question}</h3>
+        <span className="text-[#0a0e27] group-hover:text-[#2aabb0] transition-colors font-serif-heading text-xl">
+          {isOpen ? '—' : '+'}
+        </span>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <p className="pb-6 text-sm text-[#555555] leading-relaxed whitespace-pre-wrap">
+              {faq.answer}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function ProductDetailClient({ product, relatedProducts }: { product: any, relatedProducts: any[] }) {
+  const { addPreset } = useCart();
+  const { showToast } = useToast();
+  const [added, setAdded] = useState(false);
+
+  let actualSpecs: {label: string, value: string}[] = [];
+  let actualFaqs: {question: string, answer: string}[] = [];
+  
+  if (product.specifications) {
+    try {
+      const parsed = typeof product.specifications === 'string' ? JSON.parse(product.specifications) : product.specifications;
+      if (Array.isArray(parsed)) {
+        actualSpecs = parsed;
+      } else if (parsed && typeof parsed === 'object') {
+        actualSpecs = parsed.specs || [];
+        actualFaqs = parsed.faqs || [];
+      }
+    } catch {
+      // Ignore parsing errors
+    }
+  }
+
+
+
+  const handleAddToCart = () => {
+    addPreset({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: product.image_url,
+      subtitle: product.subtitle,
+      moq: product.moq,
+    });
+    setAdded(true);
+    showToast(`${product.title} added to cart`, 'success');
+    setTimeout(() => setAdded(false), 2000);
+  };
+
+  const allImages = product.gallery_images?.length > 0 
+    ? product.gallery_images 
+    : (product.image_url ? [product.image_url] : []);
+  const [currentImage, setCurrentImage] = useState(allImages[0]);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  return (
+    <div className="pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Breadcrumb */}
+      <nav className="mb-8 flex items-center gap-2 text-xs text-neutral-500">
+        <Link href="/" className="hover:text-[#10164A] transition-colors">Home</Link>
+        <span>/</span>
+        <Link href="/products" className="hover:text-[#10164A] transition-colors">Catalog</Link>
+        <span>/</span>
+        <span className="text-[#10164A] font-medium">{product.title}</span>
+      </nav>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+        {/* Image Gallery */}
+        <div className="flex flex-col gap-4">
+          <div className="relative aspect-[4/5] bg-[#FAFAFA] rounded-none overflow-hidden border border-[#eaeaea]">
+            {currentImage ? (
+              <Image
+                src={currentImage}
+                alt={product.title}
+                fill
+                className="object-cover transition-opacity duration-300"
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                fetchPriority="high"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-neutral-400">No Image</div>
+            )}
+            {product.is_bestseller && (
+              <span className="absolute top-4 left-4 bg-[#10164A] text-white text-[10px] font-bold font-mono uppercase px-3 py-1.5 rounded shadow-sm">
+                Bestseller
+              </span>
+            )}
+          </div>
+          {allImages.length > 1 && (
+            <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+              {allImages.map((img: string, idx: number) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentImage(img)}
+                  className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${currentImage === img ? 'border-[#10164A]' : 'border-transparent hover:border-neutral-300'}`}
+                >
+                  <Image src={img} alt={`${product.title} view ${idx + 1}`} fill className="object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Details */}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-1">
+              {[1, 2, 3, 4, 5].map(i => (
+                <Star key={i} className={`w-4 h-4 ${i <= Math.round(product.rating || 5) ? 'fill-[#F5B838] text-[#F5B838]' : 'text-neutral-200'}`} />
+              ))}
+            </div>
+            <span className="text-xs font-bold text-[#10164A]">{product.rating || '5.0'}</span>
+            <span className="text-xs text-neutral-500 font-mono">({product.review_count || 0} reviews)</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#10164A] tracking-tight mb-2">{product.title}</h1>
+          <p className="text-sm text-neutral-600 mb-6">{product.subtitle}</p>
+
+          {/* Pricing */}
+          <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-5 mb-6">
+            <div className="flex items-baseline gap-6">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 block mb-1">Retail Price</span>
+                <span className="text-2xl font-black text-[#10164A] font-mono">₹{product.price}</span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 block mb-1">Wholesale Price</span>
+                <span className="text-2xl font-black text-emerald-600 font-mono">₹{product.wholesale_price}</span>
+              </div>
+            </div>
+            <p className="text-[10px] text-neutral-500 font-mono mt-3">MOQ: {product.moq} units • GST (18%) applicable on all orders</p>
+          </div>
+
+          {/* Key Specs */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="flex items-center gap-2 text-xs text-neutral-700">
+              <Package className="w-4 h-4 text-[#2aabb0] shrink-0" />
+              <span>{product.material}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-neutral-700">
+              <span className="w-4 h-4 flex items-center justify-center text-[#2aabb0] shrink-0 font-mono text-[10px]">cm</span>
+              <span>{product.dimensions}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-neutral-700">
+              <Truck className="w-4 h-4 text-[#2aabb0] shrink-0" />
+              <span>Lead time: {product.lead_time}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-neutral-700">
+              <ShieldCheck className="w-4 h-4 text-[#2aabb0] shrink-0" />
+              <span>Factory QC guaranteed</span>
+            </div>
+          </div>
+
+          {/* Description */}
+          <p className="text-sm text-neutral-600 leading-relaxed mb-8">{product.description}</p>
+
+          {/* Add to Cart */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-8">
+            <button
+              onClick={handleAddToCart}
+              disabled={added}
+              className={`flex-1 py-3.5 rounded-none text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 ${
+                added 
+                  ? 'bg-emerald-500 text-white' 
+                  : 'bg-[#2aabb0] text-[#0a0e27] hover:bg-[#38C8CC]'
+              }`}
+            >
+              {added ? (
+                <><Check className="w-4 h-4" /> Added to Cart</>
+              ) : (
+                <><ShoppingBag className="w-4 h-4" /> Add to Cart</>
+              )}
+            </button>
+            <Link
+              href="/contact"
+              className="py-3.5 px-6 border border-[#0a0e27] text-[#0a0e27] rounded-none text-xs font-bold uppercase tracking-wider hover:bg-[#0a0e27] hover:text-white transition-all flex items-center justify-center gap-2"
+            >
+              Bulk Inquiry <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* Trust badges */}
+          <div className="flex flex-wrap gap-4 pt-6 border-t border-neutral-200">
+            <div className="flex items-center gap-2 text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
+              <Check className="w-3.5 h-3.5 text-emerald-500" /> GST Invoice
+            </div>
+            <div className="flex items-center gap-2 text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
+              <Check className="w-3.5 h-3.5 text-emerald-500" /> Factory Direct
+            </div>
+            <div className="flex items-center gap-2 text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
+              <Check className="w-3.5 h-3.5 text-emerald-500" /> Pan-India Shipping
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Specifications Table */}
+      {actualSpecs && actualSpecs.length > 0 && (
+        <div className="mt-20">
+          <h2 className="text-3xl font-serif-heading font-extrabold text-[#0a0e27] mb-8">Technical Specifications</h2>
+          <div className="bg-white rounded-none border-y border-[#eaeaea]">
+            <div className="divide-y divide-[#eaeaea]">
+              {actualSpecs.map((spec: { label: string; value: string }, i: number) => (
+                <div key={i} className="flex items-start gap-4 py-4">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#595959] w-48 shrink-0">{spec.label}</span>
+                  <span className="text-sm text-[#0a0e27]">{spec.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FAQ Section */}
+      {actualFaqs && actualFaqs.length > 0 && (
+        <div className="mt-20 max-w-4xl">
+          <h2 className="text-3xl font-serif-heading font-extrabold text-[#0a0e27] mb-8">Frequently Asked Questions</h2>
+          <div className="border-t border-[#eaeaea]">
+            {actualFaqs.map((faq, idx) => (
+              <FaqItem 
+                key={idx} 
+                faq={faq} 
+                isOpen={openFaq === idx} 
+                onClick={() => setOpenFaq(openFaq === idx ? null : idx)} 
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Related Products */}
+      {relatedProducts && relatedProducts.length > 0 && (
+        <div className="mt-24">
+          <h2 className="text-3xl font-serif-heading font-extrabold text-[#0a0e27] mb-8">You May Also Like</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {relatedProducts.map(related => (
+              <Link
+                key={related.id}
+                href={`/products/${related.slug}`}
+                className="group bg-white rounded-none border-b border-[#eaeaea] overflow-hidden hover:border-[#0a0e27] transition-all pb-4"
+              >
+                <div className="aspect-[4/5] bg-[#FAFAFA] overflow-hidden">
+                  <Image src={related.image_url} alt={related.title} width={400} height={500} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" unoptimized />
+                </div>
+                <div className="pt-4">
+                  <h3 className="text-lg font-serif-heading font-extrabold text-[#0a0e27] line-clamp-1 mb-1">{related.title}</h3>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-sm font-bold text-[#0a0e27]">₹{related.price}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
