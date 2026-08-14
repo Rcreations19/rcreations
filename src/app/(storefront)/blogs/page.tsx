@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getPublicBlogs } from '@/lib/actions/blogs';
 import { ArrowRight, Calendar } from 'lucide-react';
 
@@ -31,14 +32,16 @@ export default async function BlogsPage() {
                 <Link href={`/blogs/${blog.slug}`} key={blog.id} className={`group block bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-[#eaeaea] overflow-hidden animate-fade-in`} style={{ animationDelay: `${idx * 100}ms` }}>
                   {blog.cover_image_url ? (
                     <div className="aspect-[16/9] w-full overflow-hidden">
-                      <img 
+                      <Image 
                         src={blog.cover_image_url} 
                         alt={blog.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                   ) : (
-                    <div className="aspect-[16/9] w-full bg-gradient-to-br from-[#10164A] to-[#2aabb0] flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+                    <div className="aspect-[16/9] w-full bg-gradient-to-br from-secondary to-[#2aabb0] flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
                       <span className="text-white text-3xl font-serif-heading opacity-50 block px-4 text-center">{blog.title}</span>
                     </div>
                   )}

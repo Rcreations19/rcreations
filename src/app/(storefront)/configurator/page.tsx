@@ -1,10 +1,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
-import { Settings, ShoppingBag, ArrowRight, ArrowLeft, Plus, Minus, Ruler, PenTool, Layout, CheckCircle2, UploadCloud, Trash2, MessageCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useCart } from '@/components/storefront/CartContext';
+import { ArrowRight, ArrowLeft, Plus, Minus, Ruler, PenTool, Layout, CheckCircle2, UploadCloud, Trash2, MessageCircle } from 'lucide-react';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import type { GlassType, MountBoard } from '@/lib/supabase/types';
 import dynamic from 'next/dynamic';
 import PhotoCropper from '@/components/storefront/PhotoCropper';
@@ -22,6 +20,9 @@ const FRAME_OPTIONS = [
   { id: 'f8', name: 'Traditional Bronze/Copper', category: 'molding', unitPrice: 290, colorHex: '#CD7F32', durability: 'Temple Style' },
   { id: 'f9', name: 'Natural Pine / Light Wood', category: 'wood', unitPrice: 190, colorHex: '#D2B48C', durability: 'Eco Light Grain' },
   { id: 'f10', name: 'Glossy White Acrylic', category: 'acrylic', unitPrice: 400, colorHex: '#ffffff', durability: 'High Reflection' },
+  { id: 'f11', name: 'Royal Gold & Black Velvet', category: 'molding', unitPrice: 380, colorHex: '#D4AF37', durability: 'Ornate Gallery Style' },
+  { id: 'f14', name: 'Mahogany with Brass Bevel', category: 'wood', unitPrice: 340, colorHex: '#4A0E0E', durability: 'Premium Polished' },
+  { id: 'f17', name: 'Victorian Silver & Black', category: 'molding', unitPrice: 330, colorHex: '#C0C0C0', durability: 'Antique Finish' },
 ];
 
 const STEPS = [
@@ -30,8 +31,13 @@ const STEPS = [
   { id: 3, title: 'Customization & Review' }
 ];
 
+async function dataUrlToFile(dataUrl: string, fileName: string): Promise<File> {
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  return new File([blob], fileName, { type: 'image/jpeg' });
+}
+
 export default function ConfiguratorPage() {
-  const { addCustom } = useCart();
   const [currentStep, setCurrentStep] = useState(1);
 
   const [materialId, setMaterialId] = useState(FRAME_OPTIONS[0].id);
@@ -56,29 +62,33 @@ export default function ConfiguratorPage() {
 
   const selectedMaterial = useMemo(() => FRAME_OPTIONS.find(m => m.id === materialId) || FRAME_OPTIONS[0], [materialId]);
 
-  const calculatePrice = () => {
-    const area = (widthCm * heightCm) / 100;
-    let basePrice = selectedMaterial.unitPrice * area * 0.1;
-    if (glassType === 'anti-glare-acrylic') basePrice += (80 * area * 0.1);
-    if (glassType === 'led-backlit-panel') basePrice += 450;
-    if (mountBoard !== 'none') basePrice += (40 * area * 0.1);
-    if (customText.length > 0) basePrice += 150;
-    return Math.round(basePrice * quantity);
-  };
-
-  const totalPrice = calculatePrice();
-  const wholesaleDiscount = quantity >= 10 ? totalPrice * 0.35 : 0;
-  const finalPrice = totalPrice - wholesaleDiscount;
-
-  const handleWhatsAppOrder = () => {
+  const handleWhatsAppOrder = async () => {
     const adminNumber = '919876543210'; // Admin WhatsApp Number
-    const message = `Hello, I would like to place an order for a custom frame!%0A%0A*Frame Style:* ${selectedMaterial.name}%0A*Thickness:* ${frameThickness} inch%0A*Dimensions:* ${widthCm}x${heightCm} cm%0A*Glass:* ${glassType}%0A*Mount:* ${mountBoard}%0A*Quantity:* ${quantity}%0A*Total Est Cost:* ₹${finalPrice}%0A%0A*Status:* I will send my cropped photo in the next message.`;
+    const message = `Hello, I would like to place an order for a custom frame!\n\n*Frame Style:* ${selectedMaterial.name}\n*Thickness:* ${frameThickness} inch\n*Dimensions:* ${widthCm}x${heightCm} cm\n*Glass:* ${glassType}\n*Mount:* ${mountBoard}\n*Quantity:* ${quantity}`;
+
+    if (uploadedPhoto && navigator.canShare) {
+      try {
+        const file = await dataUrlToFile(uploadedPhoto, 'custom-order.jpg');
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'Custom Frame Order',
+            text: message,
+          });
+          return;
+        }
+      } catch (error) {
+        console.error('Error sharing file:', error);
+      }
+    }
+
+    const encodedMessage = encodeURIComponent(`${message}\n\n*Status:* I will send my cropped photo in the next message.`);
     alert("Please attach your photo in the WhatsApp chat after it opens!");
-    window.open(`https://wa.me/${adminNumber}?text=${message}`, '_blank');
+    window.open(`https://wa.me/${adminNumber}?text=${encodedMessage}`, '_blank');
   };
 
   // Variants for step transitions
-  const stepVariants: any = {
+  const stepVariants: Variants = {
     hidden: { opacity: 0, x: 50 },
     visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" } },
     exit: { opacity: 0, x: -50, transition: { duration: 0.3 } }
@@ -135,10 +145,10 @@ export default function ConfiguratorPage() {
                       <Layout className="w-6 h-6 text-[#2aabb0]" /> Choose Base Material
                     </h2>
                     
-                    <div className="space-y-4 mb-10">
+                    <div className="flex overflow-x-auto snap-x gap-4 pb-6 mb-8 -mx-8 px-8 sm:mx-0 sm:px-0 sm:flex-col sm:overflow-visible sm:snap-none sm:space-y-4 sm:gap-0 hide-scrollbar">
                       {FRAME_OPTIONS.map(opt => (
                         <button key={opt.id} onClick={() => setMaterialId(opt.id)}
-                          className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left group ${
+                          className={`shrink-0 w-[260px] sm:w-full sm:shrink-1 flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left group snap-start ${
                             materialId === opt.id ? 'border-[#0a0e27] bg-[#f8f9fa] shadow-md' : 'border-[#eaeaea] hover:border-[#2aabb0]/50 hover:bg-[#fcfcfc]'
                           }`}>
                           <div className="w-12 h-12 rounded-lg shadow-inner shrink-0 relative overflow-hidden" style={{ backgroundColor: opt.colorHex }}>
@@ -148,10 +158,6 @@ export default function ConfiguratorPage() {
                           <div className="flex-1">
                             <h3 className={`text-sm font-bold transition-colors ${materialId === opt.id ? 'text-[#0a0e27]' : 'text-[#555555] group-hover:text-[#0a0e27]'}`}>{opt.name}</h3>
                             <p className="text-[10px] text-[#595959] font-mono uppercase tracking-wider">{opt.durability}</p>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-sm font-bold text-[#0a0e27] font-mono">₹{opt.unitPrice}</span>
-                            <span className="block text-[10px] text-[#595959]">/base unit</span>
                           </div>
                         </button>
                       ))}
@@ -197,23 +203,22 @@ export default function ConfiguratorPage() {
                 {currentStep === 2 && (
                   <motion.div key="step2" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="p-8 sm:p-10">
                     <h2 className="text-2xl font-extrabold text-[#0a0e27] mb-8">Select Glass Type</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+                    <div className="flex overflow-x-auto snap-x gap-4 mb-10 pb-6 -mx-8 px-8 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:pb-0 hide-scrollbar">
                       {[
-                        { id: 'clear-glass', name: 'Clear Glass', desc: 'Standard 2mm float glass', price: 'Included' },
-                        { id: 'anti-glare-acrylic', name: 'Anti-Glare Acrylic', desc: 'Shatterproof museum grade', price: '+₹80/unit' },
-                        { id: 'led-backlit-panel', name: 'LED Backlit Panel', desc: '12V edge-lit glowing base', price: '+₹450 fixed' },
+                        { id: 'clear-glass', name: 'Clear Glass', desc: 'Standard 2mm float glass' },
+                        { id: 'anti-glare-acrylic', name: 'Anti-Glare Acrylic', desc: 'Shatterproof museum grade' },
+                        { id: 'led-backlit-panel', name: 'LED Backlit Panel', desc: '12V edge-lit glowing base' },
                       ].map(g => (
                         <button key={g.id} onClick={() => setGlassType(g.id as GlassType)}
-                          className={`p-5 rounded-xl border-2 text-left transition-all ${glassType === g.id ? 'border-[#0a0e27] bg-[#f8f9fa] shadow-md' : 'border-[#eaeaea] hover:border-[#2aabb0]/50 hover:bg-[#fcfcfc]'}`}>
+                          className={`shrink-0 w-[240px] sm:w-auto p-5 rounded-xl border-2 text-left transition-all snap-start ${glassType === g.id ? 'border-[#0a0e27] bg-[#f8f9fa] shadow-md' : 'border-[#eaeaea] hover:border-[#2aabb0]/50 hover:bg-[#fcfcfc]'}`}>
                           <h4 className={`text-sm font-bold mb-1 ${glassType === g.id ? 'text-[#0a0e27]' : 'text-[#555555]'}`}>{g.name}</h4>
-                          <p className="text-[10px] text-[#595959] mb-4">{g.desc}</p>
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${glassType === g.id ? 'text-[#2aabb0]' : 'text-emerald-600'}`}>{g.price}</span>
+                          <p className="text-[10px] text-[#595959]">{g.desc}</p>
                         </button>
                       ))}
                     </div>
 
                     <h2 className="text-2xl font-extrabold text-[#0a0e27] mb-6">Mount Board</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex overflow-x-auto snap-x gap-4 pb-6 -mx-8 px-8 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:pb-0 hide-scrollbar">
                       {[
                         { id: 'none', name: 'No Mount (Full Bleed)' },
                         { id: 'white-1-inch', name: '1-inch White Mount' },
@@ -221,7 +226,7 @@ export default function ConfiguratorPage() {
                         { id: 'custom-double', name: 'Premium Double Mount' },
                       ].map(m => (
                         <button key={m.id} onClick={() => setMountBoard(m.id as MountBoard)}
-                          className={`p-4 rounded-xl border-2 text-left transition-all flex items-center justify-between ${mountBoard === m.id ? 'border-[#0a0e27] bg-[#f8f9fa]' : 'border-[#eaeaea] hover:border-[#2aabb0]/50'}`}>
+                          className={`shrink-0 w-[240px] sm:w-auto p-4 rounded-xl border-2 text-left transition-all flex items-center justify-between snap-start ${mountBoard === m.id ? 'border-[#0a0e27] bg-[#f8f9fa]' : 'border-[#eaeaea] hover:border-[#2aabb0]/50'}`}>
                           <span className={`text-sm font-bold ${mountBoard === m.id ? 'text-[#0a0e27]' : 'text-[#555555]'}`}>{m.name}</span>
                           {mountBoard === m.id && <CheckCircle2 className="w-4 h-4 text-[#2aabb0]" />}
                         </button>
@@ -237,7 +242,7 @@ export default function ConfiguratorPage() {
                       <PenTool className="w-6 h-6 text-[#2aabb0]" /> Add Laser Engraving
                     </h2>
                     <div className="mb-10">
-                      <p className="text-xs text-[#595959] mb-4">Add customized text, names, or quotes to be engraved on a brass plate or directly on the wood/acrylic. (+₹150 flat fee)</p>
+                      <p className="text-xs text-[#595959] mb-4">Add customized text, names, or quotes to be engraved on a brass plate or directly on the wood/acrylic.</p>
                       <textarea 
                         value={customText} onChange={(e) => setCustomText(e.target.value)}
                         placeholder="e.g., Awarded to John Doe for Outstanding Performance 2026..."
@@ -245,11 +250,10 @@ export default function ConfiguratorPage() {
                       />
                     </div>
 
-                    <h2 className="text-2xl font-extrabold text-[#0a0e27] mb-6">Quantity & B2B Volume</h2>
+                    <h2 className="text-2xl font-extrabold text-[#0a0e27] mb-6">Quantity</h2>
                     <div className="bg-[#f8f9fa] border border-[#eaeaea] p-6 rounded-xl flex items-center justify-between">
                       <div>
                         <h4 className="text-sm font-bold text-[#0a0e27] mb-1">Number of Units</h4>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">35% Wholesale Discount on 10+ units</p>
                       </div>
                       <div className="flex items-center gap-4 bg-white border border-[#eaeaea] rounded-lg p-1 shadow-sm">
                         <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-11 h-11 flex items-center justify-center text-[#595959] hover:text-[#0a0e27] hover:bg-[#f8f9fa] rounded-md transition-colors focus-visible:ring-2 focus-visible:ring-[#2aabb0] outline-none">
@@ -266,7 +270,7 @@ export default function ConfiguratorPage() {
               </AnimatePresence>
 
               {/* Navigation Footer */}
-              <div className="p-6 border-t border-[#eaeaea] bg-[#f8f9fa] flex items-center justify-between">
+              <div className="p-4 sm:p-6 border-t border-[#eaeaea] bg-[#f8f9fa] flex items-center justify-between sticky bottom-[64px] md:bottom-0 md:relative z-40 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] md:shadow-none">
                 {currentStep > 1 ? (
                   <button onClick={() => setCurrentStep(currentStep - 1)} className="px-6 py-2.5 rounded-lg text-xs font-bold text-[#555555] hover:text-[#0a0e27] hover:bg-[#eaeaea] transition-all flex items-center gap-2">
                     <ArrowLeft className="w-4 h-4" /> Back
@@ -293,7 +297,7 @@ export default function ConfiguratorPage() {
               className="sticky top-28 bg-white rounded-3xl p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-[#eaeaea] relative overflow-hidden"
             >
               {/* TRUE 3D Preview Graphic */}
-              <div className="w-full h-[400px] sm:h-[500px] lg:h-[650px] mb-4">
+              <div className="w-full h-[300px] sm:h-[400px] lg:h-[650px] mb-4">
                 <ThreeDFrameViewer 
                   materialId={selectedMaterial.id} 
                   widthCm={widthCm} 

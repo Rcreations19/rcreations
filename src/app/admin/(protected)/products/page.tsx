@@ -30,7 +30,11 @@ export default function ProductsListPage() {
 
   const handleDelete = async (ids: string[]) => {
     if (confirm(`Are you sure you want to delete ${ids.length} products?`)) {
-      await deleteProducts(ids);
+      const res = await deleteProducts(ids);
+      if (res?.error) {
+        alert(res.error);
+        return;
+      }
       await fetchProducts();
     }
   };

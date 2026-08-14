@@ -26,7 +26,7 @@ const steps = [
 const faqs = [
   { q: 'What is the Minimum Order Quantity (MOQ)?',     a: 'Our standard wholesale MOQ is 10 units for most product categories. Large custom institutional orders may vary — please check individual specs.' },
   { q: 'Do you provide GST tax invoices?',              a: 'Yes. Every wholesale order ships with a standard B2B GST tax invoice. Provide your GSTIN during order confirmation to claim full input tax credit.' },
-  { q: 'How is shipping handled for wholesale orders?', a: 'Orders dispatch via scheduled freight to regional hubs across Tamil Nadu and South India. For specific locations, direct transport can be arranged. Costs are volume-based.' },
+  { q: 'How is shipping handled for wholesale orders?', a: 'Delivery is limited to Vellore, Gudiyattam, and surrounding areas within a 40km radius. We use our own direct transport for these local deliveries. Costs are volume-based.' },
   { q: 'What is the typical production lead time?',     a: 'Standard catalog items dispatch within 1–3 business days. Custom engraved or built-to-order items: 3–5 days, depending on batch size.' },
 ];
 

@@ -6,13 +6,13 @@ import { rateLimit } from '../rate-limit';
 import { z } from 'zod';
 
 const checkoutSchema = z.object({
-  name: z.string().min(1),
-  email: z.string().email(),
-  phone: z.string().min(10),
-  address: z.string().min(1),
-  city: z.string().min(1),
-  state: z.string().min(1),
-  pincode: z.string().min(1),
+  name: z.string().min(1).max(100, "Name is too long"),
+  email: z.string().email().max(255, "Email is too long"),
+  phone: z.string().min(10).max(20, "Phone is too long"),
+  address: z.string().min(1).max(500, "Address is too long"),
+  city: z.string().min(1).max(100, "City is too long"),
+  state: z.string().min(1).max(100, "State is too long"),
+  pincode: z.string().min(1).max(20, "Pincode is too long"),
 });
 
 const cartSchema = z.array(z.object({

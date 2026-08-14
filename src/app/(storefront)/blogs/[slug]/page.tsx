@@ -1,5 +1,6 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import { getPublicBlogBySlug, getPublicBlogs } from '@/lib/actions/blogs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -71,11 +72,13 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
           </header>
 
           {blog.cover_image_url && (
-            <div className="mb-12 rounded-xl overflow-hidden shadow-sm animate-fade-in">
-              <img 
+            <div className="mb-12 rounded-xl overflow-hidden shadow-sm animate-fade-in relative aspect-[16/9]">
+              <Image 
                 src={blog.cover_image_url} 
                 alt={blog.title} 
-                className="w-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 768px"
+                className="object-cover"
               />
             </div>
           )}

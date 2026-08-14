@@ -41,7 +41,7 @@ function LoginForm() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 group">
             <ShoppingBag className="w-8 h-8 text-[#2aabb0] group-hover:scale-110 transition-transform" />
-            <span className="text-2xl font-extrabold text-[#10164A] tracking-tight">R Creation</span>
+            <span className="text-2xl font-extrabold text-secondary tracking-tight">R Creation</span>
           </Link>
           <p className="text-sm text-neutral-500 mt-2">Welcome back! Sign in to your account.</p>
         </div>
@@ -49,7 +49,7 @@ function LoginForm() {
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-xl border border-neutral-100 overflow-hidden">
           <div className="p-8">
-            <h1 className="text-xl font-bold text-[#10164A] mb-6">Sign In</h1>
+            <h1 className="text-xl font-bold text-secondary mb-6">Sign In</h1>
 
             <form onSubmit={handleLogin} className="space-y-5">
               {error && (
@@ -94,6 +94,7 @@ function LoginForm() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -104,7 +105,7 @@ function LoginForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 bg-[#10164A] text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-[#1c246e] transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-[#10164A]/20 active:scale-[0.98]"
+                className="w-full py-3.5 bg-secondary text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-secondary-hover transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-secondary/20 active:scale-[0.98]"
               >
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

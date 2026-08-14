@@ -9,12 +9,12 @@ import { createClient as createStatelessClient } from '@supabase/supabase-js';
 
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().email('Invalid email format').max(255),
+  password: z.string().min(1, 'Password is required').max(255),
 });
 
 const otpSchema = z.object({
-  email: z.string().email(),
+  email: z.string().email().max(255),
   code: z.string().length(6, 'OTP must be exactly 6 digits'),
 });
 

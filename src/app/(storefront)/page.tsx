@@ -11,7 +11,7 @@ const faqSchema = {
       "name": "Where is R Creation located?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "R Creation is a factory-direct manufacturer located in Gudiyattam, Vellore, Tamil Nadu. We supply synthetic photo frames, crystal trophies, and wooden mementos across India."
+        "text": "R Creation is a factory-direct manufacturer located in Gudiyattam, Vellore, Tamil Nadu. We supply synthetic photo frames, crystal trophies, and wooden mementos locally within Vellore, Gudiyattam, and a 40km radius."
       }
     },
     {

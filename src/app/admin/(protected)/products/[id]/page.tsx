@@ -39,6 +39,11 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
     is_bestseller: false,
     is_wholesale_featured: false,
     is_active: true,
+    rating: '5.0',
+    review_count: '0',
+    stock_urgency_remaining: '',
+    urgency_timer_title: '',
+    urgency_timer_subtitle: '',
   });
 
   useEffect(() => {
@@ -69,6 +74,11 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
               is_bestseller: Boolean(prod.is_bestseller),
               is_wholesale_featured: Boolean(prod.is_wholesale_featured),
               is_active: Boolean(prod.is_active),
+              rating: String(prod.rating ?? '5.0'),
+              review_count: String(prod.review_count ?? '0'),
+              stock_urgency_remaining: prod.stock_urgency_remaining != null ? String(prod.stock_urgency_remaining) : '',
+              urgency_timer_title: String(prod.urgency_timer_title || ''),
+              urgency_timer_subtitle: String(prod.urgency_timer_subtitle || ''),
             });
             setSlugManuallyEdited(true); // Don't auto-update slug on edit
 
@@ -126,7 +136,11 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
       // Combine and append specifications and faqs
       formData.append('specifications', JSON.stringify({ specs, faqs }));
 
-      await saveProduct(formData);
+      const res = await saveProduct(formData);
+      if (res?.error) {
+        throw new Error(res.error);
+      }
+      
       router.push('/admin/products');
     } catch (err: unknown) {
       setError((err as Error).message);
@@ -329,6 +343,48 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
                 ))}
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Fieldset: Marketing & Reviews */}
+        <div className="bg-white border border-neutral-200 rounded-lg shadow-sm overflow-hidden">
+          <div className="bg-[#10164A] px-4 py-2 border-b border-neutral-200">
+            <h2 className="text-sm font-bold text-white uppercase tracking-wider">Marketing & Reviews</h2>
+          </div>
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Rating (0-5)</label>
+                <input type="number" step="0.1" min="0" max="5" name="rating" value={form.rating} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Review Count</label>
+                <input type="number" min="0" name="review_count" value={form.review_count} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+              </div>
+            </div>
+            
+            <div className="pt-4 border-t border-neutral-200">
+              <h3 className="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-4">Urgency Elements</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Stock Urgency Remaining (Leave blank to hide)</label>
+                  <input type="number" min="1" name="stock_urgency_remaining" value={form.stock_urgency_remaining} onChange={handleTextChange} placeholder="e.g., 17" className="w-full md:w-1/2 px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+                  <p className="text-[10px] text-neutral-500 mt-1">Displays "High Demand! Only X units remaining at this factory price."</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Timer Title (Leave blank to hide)</label>
+                    <input name="urgency_timer_title" value={form.urgency_timer_title} onChange={handleTextChange} placeholder="e.g., Order within 2 hrs 15 mins" className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Timer Subtitle</label>
+                    <input name="urgency_timer_subtitle" value={form.urgency_timer_subtitle} onChange={handleTextChange} placeholder="e.g., for priority same-day dispatch." className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

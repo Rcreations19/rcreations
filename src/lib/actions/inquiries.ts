@@ -26,12 +26,12 @@ import { rateLimit } from '../rate-limit';
 import { z } from 'zod';
 
 const inquirySchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email format'),
-  phone: z.string().optional(),
-  company: z.string().optional(),
-  message: z.string().min(1, 'Message is required'),
-  type: z.string().optional(),
+  name: z.string().min(1, 'Name is required').max(100, 'Name is too long'),
+  email: z.string().email('Invalid email format').max(255, 'Email is too long'),
+  phone: z.string().max(20, 'Phone is too long').optional(),
+  company: z.string().max(100, 'Company name is too long').optional(),
+  message: z.string().min(1, 'Message is required').max(5000, 'Message is too long'),
+  type: z.string().max(50, 'Type is too long').optional(),
 });
 
 export async function submitInquiry(formData: FormData): Promise<ApiResponse> {

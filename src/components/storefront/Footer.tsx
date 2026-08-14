@@ -18,7 +18,7 @@ export default function Footer() {
           <div className="lg:col-span-4 space-y-6">
             <RCreationLogo variant="full-horizontal" theme="dark" iconSize={40} />
             <p className="text-sm text-neutral-400 leading-relaxed max-w-sm">
-              South India's premier manufacturer of synthetic photo frames, optic crystal trophies, and customized wooden mementos. Factory-direct pricing since 2015.
+              Vellore & Gudiyattam's premier manufacturer of synthetic photo frames, optic crystal trophies, and customized wooden mementos. Factory-direct pricing since 2015.
             </p>
             <div className="flex gap-4 pt-2">
               <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-300 hover:bg-[#2aabb0] hover:text-[#050714] transition-all">

@@ -1,35 +1,54 @@
 'use client';
 
-import React from 'react';
-import { X, Minus, Plus, Trash2, ArrowRight, ShoppingBag, AlertTriangle } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { X, Minus, Plus, Trash2, ArrowRight, ShoppingBag, AlertTriangle, ShieldCheck, Lock, Gift } from 'lucide-react';
 import { useCart } from './CartContext';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, updateQuantity, removeItem, clearCart, moqWarnings } = useCart();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (isOpen) {
+      dialog.showModal();
+      closeButtonRef.current?.focus();
+    } else {
+      dialog.close();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const handleClose = () => closeCart();
+    dialog.addEventListener('close', handleClose);
+    return () => dialog.removeEventListener('close', handleClose);
+  }, [closeCart]);
 
   return (
-    <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]" onClick={closeCart} />
-
+    <dialog
+      ref={dialogRef}
+      aria-label="Shopping cart"
+      className="backdrop:bg-black/40 backdrop:backdrop-blur-sm p-0 m-0 w-full max-w-md h-full bg-transparent shadow-none"
+    >
       {/* Drawer */}
-      <div className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white shadow-2xl z-[70] flex flex-col animate-slide-in-right">
-
+      <div className="h-full bg-white shadow-2xl flex flex-col animate-slide-in-right">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-neutral-200">
           <div className="flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-[#2aabb0]" />
-            <h2 className="text-lg font-extrabold text-[#10164A]">Order Cart</h2>
+            <h2 className="text-lg font-extrabold text-secondary">Order Cart</h2>
             <span className="text-xs font-mono text-neutral-500">({totalItems} items)</span>
           </div>
-          <button onClick={closeCart} aria-label="Close cart" className="p-2 hover:bg-neutral-100 rounded-lg transition-colors">
+          <button ref={closeButtonRef} onClick={closeCart} aria-label="Close cart" className="p-2 hover:bg-neutral-100 rounded-lg transition-colors">
             <X className="w-5 h-5 text-neutral-600" />
           </button>
         </div>
@@ -41,11 +60,11 @@ export function CartDrawer() {
               <div className="w-24 h-24 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-2 border border-neutral-100 shadow-sm">
                 <ShoppingBag className="w-10 h-10 text-neutral-300" />
               </div>
-              <h3 className="text-lg font-extrabold text-[#10164A]">Your cart is empty</h3>
+              <h3 className="text-lg font-extrabold text-secondary">Your cart is empty</h3>
               <p className="text-xs text-neutral-500 leading-relaxed max-w-[200px] mx-auto">
                 Looks like you haven&apos;t added anything to your cart yet.
               </p>
-              <button onClick={closeCart} className="mt-4 px-6 py-3 bg-[#10164A] text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-[#1c246e] transition-colors inline-block">
+              <button onClick={closeCart} className="mt-4 px-6 py-3 bg-secondary text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-secondary-hover transition-colors inline-block">
                 Start Shopping
               </button>
             </div>
@@ -62,7 +81,7 @@ export function CartDrawer() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-xs font-bold text-[#10164A] line-clamp-1">{item.title}</h4>
+                  <h4 className="text-xs font-bold text-secondary line-clamp-1">{item.title}</h4>
                   {item.details && (
                     <p className="text-[10px] text-neutral-500 font-mono line-clamp-1 mt-0.5">{item.details}</p>
                   )}
@@ -90,7 +109,7 @@ export function CartDrawer() {
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold font-mono text-[#10164A]">₹{item.price * item.quantity}</span>
+                      <span className="text-sm font-bold font-mono text-secondary">₹{item.price * item.quantity}</span>
                       <button
                         onClick={() => removeItem(item.id)}
                         aria-label={`Remove ${item.title}`}
@@ -105,6 +124,25 @@ export function CartDrawer() {
             ))
           )}
         </div>
+
+        {/* Upsell / Cross-sell (CRO) */}
+        {items.length > 0 && (
+          <div className="mx-5 mb-2 bg-[#f8f9fa] border border-[#eaeaea] p-3 rounded-xl flex items-center justify-between gap-3 shadow-sm">
+            <div className="w-12 h-12 bg-white rounded-lg border border-[#eaeaea] flex items-center justify-center shrink-0">
+              <Gift className="w-6 h-6 text-[#2aabb0]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-xs font-bold text-[#0a0e27]">Premium Gift Box</h4>
+              <p className="text-[10px] text-neutral-500 line-clamp-1">Velvet lined, ribbon tie</p>
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-xs font-black font-mono text-[#0a0e27]">₹250</span>
+              <button className="text-[10px] font-bold uppercase tracking-wider bg-white border border-[#eaeaea] px-2 py-1 rounded hover:bg-[#eaeaea] transition-colors">
+                Add
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         {items.length > 0 && (
@@ -138,7 +176,7 @@ export function CartDrawer() {
 
             <div className="flex justify-between items-center pt-2">
               <span className="text-xs font-bold text-neutral-600 uppercase tracking-wider">Subtotal ({totalItems} items):</span>
-              <span className="text-xl font-extrabold text-[#10164A] font-mono">₹{subtotal.toLocaleString()}</span>
+              <span className="text-xl font-extrabold text-secondary font-mono">₹{subtotal.toLocaleString()}</span>
             </div>
             <p className="text-[10px] text-neutral-500 font-mono">
               GST (18%) applicable. Shipping calculated at inquiry.
@@ -146,11 +184,25 @@ export function CartDrawer() {
             <Link
               href="/checkout"
               onClick={closeCart}
-              className="w-full py-3.5 bg-[#10164A] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-[#1c246e] transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-secondary text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-secondary-hover transition-colors flex items-center justify-center gap-2"
             >
-              <span>Proceed to Checkout</span>
+              <Lock className="w-4 h-4" />
+              <span>Secure Checkout</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
+
+            {/* Trust Badges */}
+            <div className="flex items-center justify-center gap-4 py-2 border-t border-neutral-100">
+              <div className="flex items-center gap-1.5 text-neutral-500">
+                <ShieldCheck className="w-4 h-4 text-[#2aabb0]" />
+                <span className="text-[9px] uppercase tracking-wider font-bold">Secure Payment</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-neutral-500">
+                <Gift className="w-4 h-4 text-[#2aabb0]" />
+                <span className="text-[9px] uppercase tracking-wider font-bold">Safe Packaging</span>
+              </div>
+            </div>
+
             <button
               onClick={clearCart}
               className="w-full py-2 text-xs font-mono text-neutral-500 hover:text-red-500 transition-colors"
@@ -160,6 +212,6 @@ export function CartDrawer() {
           </div>
         )}
       </div>
-    </>
+    </dialog>
   );
 }

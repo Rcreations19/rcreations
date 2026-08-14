@@ -11,22 +11,29 @@ interface AuthResult {
   step?: string;
 }
 
+const registerSchema = z.object({
+  email: z.string().email('Invalid email format').max(255, 'Email is too long'),
+  password: z.string().min(6, 'Password must be at least 6 characters').max(255, 'Password is too long'),
+  fullName: z.string().min(1, 'Name is required').max(100, 'Name is too long'),
+  phone: z.string().max(20, 'Phone is too long').optional(),
+});
+
 export async function registerCustomer(formData: FormData): Promise<AuthResult> {
   const rl = await rateLimit(5, 60000); 
   if (!rl.success) return { error: rl.error };
 
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
-  const fullName = formData.get('fullName') as string;
-  const phone = formData.get('phone') as string;
+  const parsed = registerSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+    fullName: formData.get('fullName'),
+    phone: formData.get('phone') || undefined,
+  });
 
-  if (!email || !password || !fullName) {
-    return { error: 'Name, email, and password are required.' };
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
   }
 
-  if (password.length < 6) {
-    return { error: 'Password must be at least 6 characters.' };
-  }
+  const { email, password, fullName, phone } = parsed.data;
 
   const supabase = await createClient();
 

@@ -36,155 +36,212 @@ export default function ContactPage() {
 
 
   return (
-    <div className="pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto mb-12 text-center space-y-2">
-        <span className="text-xs font-mono font-bold uppercase text-[#2aabb0] bg-[#10164A] px-2.5 py-1 rounded inline-block">
-          Get In Touch
-        </span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#10164A] tracking-tight">
-          Contact R Creation
-        </h1>
-        <p className="text-sm text-neutral-600">
-          Send us your wholesale inquiry, custom order requirements, or any questions about our products and manufacturing.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Contact Form */}
-        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-2xl border border-neutral-200 shadow-2xs">
-          {submitted ? (
-            <div className="text-center py-12 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
-                <Check className="w-8 h-8" />
-              </div>
-              <h2 className="text-xl font-extrabold text-[#10164A]">Inquiry Submitted Successfully</h2>
-              <p className="text-xs text-neutral-600 max-w-sm mx-auto">
-                Our team will review your inquiry and respond within 24 hours. For urgent wholesale orders, call us directly.
-              </p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <h2 className="text-lg font-extrabold text-[#10164A] flex items-center gap-2 pb-4 border-b border-neutral-200">
-                <MessageSquare className="w-5 h-5 text-[#2aabb0]" />
-                <span>Send Us an Inquiry</span>
-              </h2>
-
-              {/* Inquiry Type */}
-              <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-[#10164A] block mb-2">Inquiry Type</label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {[
-                    { id: 'wholesale', label: 'Wholesale / B2B' },
-                    { id: 'retail', label: 'Retail Order' },
-                    { id: 'custom', label: 'Custom Order' },
-                    { id: 'general', label: 'General' },
-                  ].map((t) => (
-                    <button key={t.id} type="button" onClick={() => setForm({ ...form, type: t.id })}
-                      className={`px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-                        form.type === t.id ? 'bg-[#10164A] text-white' : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                      }`}>
-                      {t.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#10164A] block mb-1">Full Name *</label>
-                  <input type="text" required placeholder="e.g. Ramesh Kumar" value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl text-xs focus:ring-2 focus:ring-[#10164A] focus:outline-none" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#10164A] block mb-1">Mobile Number *</label>
-                  <input type="tel" required placeholder="+91 98765 43210" value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl text-xs focus:ring-2 focus:ring-[#10164A] focus:outline-none" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#10164A] block mb-1">Email Address *</label>
-                  <input type="email" required placeholder="business@email.com" value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl text-xs focus:ring-2 focus:ring-[#10164A] focus:outline-none" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#10164A] block mb-1">Company / Studio Name</label>
-                  <input type="text" placeholder="Optional" value={form.company}
-                    onChange={(e) => setForm({ ...form, company: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl text-xs focus:ring-2 focus:ring-[#10164A] focus:outline-none" />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-[#10164A] block mb-1">Message / Requirements *</label>
-                <textarea rows={4} required placeholder="Describe your order requirements, quantities, customization needs..."
-                  value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-neutral-50 border border-neutral-300 rounded-xl text-xs focus:ring-2 focus:ring-[#10164A] focus:outline-none resize-none" />
-              </div>
-
-              <button type="submit" disabled={loading}
-                className="w-full py-3.5 bg-[#10164A] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-[#1c246e] transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
-                {loading ? <Loader2 className="w-4 h-4 animate-spin text-[#2aabb0]" /> : <Send className="w-4 h-4 text-[#2aabb0]" />}
-                <span>{loading ? 'Submitting...' : 'Submit Inquiry'}</span>
-              </button>
-            </form>
-          )}
+    <div className="min-h-screen bg-neutral-50/50 pt-28 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Header Section */}
+        <div className="max-w-3xl mx-auto mb-16 text-center space-y-4">
+          <div className="inline-flex items-center justify-center space-x-2 bg-[#2aabb0]/10 px-4 py-1.5 rounded-full border border-[#2aabb0]/20">
+            <span className="w-2 h-2 rounded-full bg-[#2aabb0] animate-pulse"></span>
+            <span className="text-sm font-semibold text-[#2aabb0] tracking-wide uppercase">Get In Touch</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-secondary tracking-tight">
+            Let&apos;s build something <span className="text-[#2aabb0]">beautiful.</span>
+          </h1>
+          <p className="text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+            Whether you need bulk wholesale frames, custom trophies for an event, or have a general inquiry, our team is ready to assist you with factory-direct pricing.
+          </p>
         </div>
 
-        {/* Contact Info Sidebar */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="bg-[#10164A] p-6 rounded-2xl text-white space-y-4">
-            <h3 className="text-lg font-extrabold text-[#2aabb0]">Factory Contact Details</h3>
-            <div className="space-y-3 text-xs">
-              <div className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-[#2aabb0] shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-bold block">Factory Address</span>
-                  <span className="text-neutral-300">R Creation, Gudiyattam, Vellore District, Tamil Nadu — 632602</span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          {/* Contact Form */}
+          <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-neutral-100 shadow-xl shadow-neutral-200/40 relative overflow-hidden">
+            {/* Decorative blob */}
+            <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-[#2aabb0]/5 rounded-full blur-3xl pointer-events-none"></div>
+            
+            {submitted ? (
+              <div className="text-center py-20 space-y-6 relative z-10">
+                <div className="w-20 h-20 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
+                  <Check className="w-10 h-10" />
                 </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Phone className="w-4 h-4 text-[#2aabb0] shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-bold block">Phone / WhatsApp</span>
-                  <span className="text-neutral-300 font-mono">+91 98765 43210</span>
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold text-secondary">Inquiry Received!</h2>
+                  <p className="text-neutral-500 max-w-md mx-auto leading-relaxed">
+                    Thank you for reaching out. Our team is reviewing your requirements and will get back to you shortly.
+                  </p>
                 </div>
+                <button onClick={() => setSubmitted(false)} className="text-sm font-medium text-[#2aabb0] hover:text-secondary transition-colors underline-offset-4 hover:underline mt-4">
+                  Send another inquiry
+                </button>
               </div>
-              <div className="flex items-start gap-3">
-                <Mail className="w-4 h-4 text-[#2aabb0] shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-bold block">Email</span>
-                  <span className="text-neutral-300 font-mono">contact@rcreation.in</span>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
+                <div className="flex items-center gap-3 pb-6 border-b border-neutral-100">
+                  <div className="p-2.5 bg-secondary/5 rounded-xl">
+                    <MessageSquare className="w-5 h-5 text-secondary" />
+                  </div>
+                  <h2 className="text-xl font-bold text-secondary">Send Us an Inquiry</h2>
                 </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Building2 className="w-4 h-4 text-[#2aabb0] shrink-0 mt-0.5" />
+
+                {/* Inquiry Type */}
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-neutral-900">What can we help you with?</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[
+                      { id: 'wholesale', label: 'Wholesale / B2B' },
+                      { id: 'retail', label: 'Retail Order' },
+                      { id: 'custom', label: 'Custom Order' },
+                      { id: 'general', label: 'General Info' },
+                    ].map((t) => (
+                      <button key={t.id} type="button" onClick={() => setForm({ ...form, type: t.id })}
+                        className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                          form.type === t.id 
+                            ? 'bg-secondary border-secondary text-white shadow-md shadow-secondary/20 scale-[1.02]' 
+                            : 'bg-white border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50'
+                        }`}>
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-neutral-900">Full Name <span className="text-red-500">*</span></label>
+                    <input type="text" required placeholder="e.g. Ramesh Kumar" value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-neutral-900">Mobile Number <span className="text-red-500">*</span></label>
+                    <input type="tel" required placeholder="+91 98765 43210" value={form.phone}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-neutral-900">Email Address <span className="text-red-500">*</span></label>
+                    <input type="email" required placeholder="business@email.com" value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-neutral-900">Company / Studio <span className="text-neutral-400 font-normal">(Optional)</span></label>
+                    <input type="text" placeholder="Your business name" value={form.company}
+                      onChange={(e) => setForm({ ...form, company: e.target.value })}
+                      className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-neutral-900">Message / Requirements <span className="text-red-500">*</span></label>
+                  <textarea rows={5} required placeholder="Describe your order requirements, quantities, customization needs..."
+                    value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
+                    className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none resize-none" />
+                </div>
+
+                <button type="submit" disabled={loading}
+                  className="w-full py-4 bg-gradient-to-r from-[#10164A] to-[#1a237e] text-white rounded-xl text-sm font-bold uppercase tracking-wider hover:shadow-lg hover:shadow-secondary/20 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed group">
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin text-white/80" /> : <Send className="w-5 h-5 text-[#2aabb0] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+                  <span>{loading ? 'Sending Inquiry...' : 'Submit Inquiry'}</span>
+                </button>
+              </form>
+            )}
+          </div>
+
+          {/* Contact Info Sidebar */}
+          <div className="lg:col-span-5 space-y-8">
+            {/* Main Contact Card */}
+            <div className="relative bg-secondary p-8 sm:p-10 rounded-3xl text-white overflow-hidden shadow-2xl shadow-secondary/20">
+              {/* Decorative background elements */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#2aabb0] rounded-full mix-blend-multiply filter blur-3xl opacity-20 transform translate-x-1/2 -translate-y-1/2"></div>
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 transform -translate-x-1/2 translate-y-1/2"></div>
+              
+              <div className="relative z-10 space-y-10">
                 <div>
-                  <span className="font-bold block">Business Hours</span>
-                  <span className="text-neutral-300">Monday - Saturday: 9:00 AM - 8:00 PM</span>
+                  <h3 className="text-2xl font-bold mb-2">Factory Contact</h3>
+                  <p className="text-neutral-300 text-sm leading-relaxed">
+                    Direct access to our manufacturing unit. Reach out for bulk pricing and custom designs.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-[#2aabb0]/20 group-hover:border-[#2aabb0]/30 transition-colors">
+                      <MapPin className="w-5 h-5 text-[#2aabb0]" />
+                    </div>
+                    <div>
+                      <span className="text-xs uppercase tracking-wider text-neutral-400 font-semibold block mb-1">Factory Address</span>
+                      <span className="text-white text-sm leading-relaxed block">R Creation, Gudiyattam,<br/>Vellore District, Tamil Nadu — 632602</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-[#2aabb0]/20 group-hover:border-[#2aabb0]/30 transition-colors">
+                      <Phone className="w-5 h-5 text-[#2aabb0]" />
+                    </div>
+                    <div>
+                      <span className="text-xs uppercase tracking-wider text-neutral-400 font-semibold block mb-1">Phone / WhatsApp</span>
+                      <span className="text-white text-lg font-medium block">+91 98765 43210</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-[#2aabb0]/20 group-hover:border-[#2aabb0]/30 transition-colors">
+                      <Mail className="w-5 h-5 text-[#2aabb0]" />
+                    </div>
+                    <div>
+                      <span className="text-xs uppercase tracking-wider text-neutral-400 font-semibold block mb-1">Email Address</span>
+                      <span className="text-white text-sm block">contact@rcreation.in</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-[#2aabb0]/20 group-hover:border-[#2aabb0]/30 transition-colors">
+                      <Building2 className="w-5 h-5 text-[#2aabb0]" />
+                    </div>
+                    <div>
+                      <span className="text-xs uppercase tracking-wider text-neutral-400 font-semibold block mb-1">Business Hours</span>
+                      <span className="text-white text-sm block">Mon - Sat: 9:00 AM - 8:00 PM</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-neutral-200 space-y-3">
-            <h3 className="text-sm font-bold text-[#10164A] uppercase tracking-wider">Quick Response Promise</h3>
-            <div className="space-y-2 text-xs text-neutral-600">
-              <div className="flex items-center gap-2">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Wholesale inquiries responded within <strong>4 hours</strong></span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Custom order quotations within <strong>24 hours</strong></span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>GST proforma invoice on request</span>
+            {/* Quick Response Promise */}
+            <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-xl shadow-neutral-200/20">
+              <h3 className="text-sm font-bold text-secondary uppercase tracking-wider mb-6 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#2aabb0]"></div>
+                Quick Response Promise
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 w-5 h-5 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  </div>
+                  <p className="text-sm text-neutral-600 leading-relaxed">
+                    Wholesale inquiries responded within <strong className="text-neutral-900">4 hours</strong>
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 w-5 h-5 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  </div>
+                  <p className="text-sm text-neutral-600 leading-relaxed">
+                    Custom order quotations within <strong className="text-neutral-900">24 hours</strong>
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 w-5 h-5 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  </div>
+                  <p className="text-sm text-neutral-600 leading-relaxed">
+                    GST proforma invoice on request
+                  </p>
+                </div>
               </div>
             </div>
           </div>

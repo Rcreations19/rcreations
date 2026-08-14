@@ -8,8 +8,11 @@ type RateLimitStore = {
 };
 
 // Global store for in-memory rate limiting.
-// Note: This will reset on server restarts and won't work perfectly across multiple edge instances.
-// It is a basic defense mechanism until Redis is introduced.
+// SECURITY WARNING: In-memory rate limiting is ephemeral on Cloudflare Edge.
+// Edge workers scale horizontally and spin up/down frequently, meaning this 
+// object state is isolated per-datacenter (and per-isolate). 
+// For strict DoS protection, you MUST replace this with a distributed store 
+// (e.g. Cloudflare KV, Durable Objects, or Redis/Upstash) in production.
 const store: RateLimitStore = {};
 
 export async function rateLimit(limit: number = 5, windowMs: number = 60000) {

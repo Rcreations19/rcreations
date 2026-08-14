@@ -27,7 +27,7 @@ export default async function AdminDashboard() {
   ]);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-fade-in">
       
       {/* Header */}
       <div>

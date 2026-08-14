@@ -39,14 +39,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   
-  try {
-    const product = await getPublicProductBySlug(slug);
-    
-    if (!product) {
-      return notFound();
-    }
+  const product = await getPublicProductBySlug(slug).catch(() => null);
+  
+  if (!product) {
+    return notFound();
+  }
 
-    const relatedProducts = await getPublicRelatedProducts(product.category_id, product.id);
+  const relatedProducts = await getPublicRelatedProducts(product.category_id, product.id).catch(() => []);
 
     // Schema generation
     const productSchema = {
@@ -106,7 +105,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
           actualFaqs = parsed.faqs || [];
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
     }
@@ -122,8 +121,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           answer: `Yes, our frames use high-quality clear acrylic or glass depending on the ${product.material} specification.`
         },
         {
-          question: "Do you offer pan-India shipping for bulk orders?",
-          answer: "Yes, we offer secure pan-India shipping directly from our factory in Gudiyattam, Vellore."
+          question: "Do you offer delivery for bulk orders?",
+          answer: "Yes, we offer local delivery for bulk orders strictly within Vellore, Gudiyattam, and a 40km radius from our factory."
         }
       ];
     }
@@ -149,7 +148,5 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema).replace(/</g, '\\u003c') }} />
       </>
     );
-  } catch (error) {
-    return notFound();
-  }
+
 }

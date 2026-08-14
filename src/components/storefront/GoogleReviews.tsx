@@ -28,8 +28,12 @@ async function getLiveReviews() {
 
     const data = await res.json();
     return data;
-  } catch (error) {
-    console.error('Error fetching Google Reviews:', error);
+  } catch (error: any) {
+    if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+      console.warn('Google Reviews API timed out. Using fallback reviews.');
+    } else {
+      console.error('Error fetching Google Reviews:', error);
+    }
     return [];
   }
 }
@@ -110,43 +114,44 @@ export async function GoogleReviews() {
 
         {/* Infinite CSS Marquee */}
         <div className="flex overflow-hidden relative w-full group">
-          {/* We create a seamless loop by tripling the review list (since Google only returns 5) */}
-          <div className="flex gap-6 animate-google-marquee group-hover:[animation-play-state:paused] w-max px-3">
-            {[...displayReviews, ...displayReviews, ...displayReviews].map((review: any, i: number) => (
-              <div
-                key={i}
-                className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow border border-neutral-100 flex flex-col justify-between relative w-[320px] sm:w-[380px] shrink-0"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center text-amber-400">
-                      {[...Array(review.rating)].map((_, idx) => (
-                        <Star key={idx} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                      ))}
-                    </div>
-                    <span className="text-[11px] text-neutral-400 font-mono">{review.date}</span>
-                  </div>
-
-                  <p className="text-sm text-neutral-700 leading-relaxed mb-6 line-clamp-4">
-                    &ldquo;{review.comment}&rdquo;
-                  </p>
-                </div>
-
-                <div className="pt-4 border-t border-neutral-100 flex items-center justify-between">
+          {[1, 2].map((marqueeGroup) => (
+            <div key={marqueeGroup} className="flex gap-6 animate-google-marquee shrink-0 px-3" aria-hidden={marqueeGroup === 2}>
+              {Array(10).fill(displayReviews).flat().map((review: any, i: number) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow border border-neutral-100 flex flex-col justify-between relative w-[320px] sm:w-[380px] shrink-0"
+                >
                   <div>
-                    <h4 className="text-sm font-bold text-[#0a0e27] truncate max-w-[160px]">{review.author}</h4>
-                    <p className="text-xs text-neutral-500 truncate max-w-[160px]">{review.role}</p>
-                  </div>
-                  {review.verified && (
-                    <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full shrink-0">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      <span>Verified</span>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center text-amber-400">
+                        {[...Array(review.rating)].map((_, idx) => (
+                          <Star key={idx} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                      <span className="text-[11px] text-neutral-400 font-mono">{review.date}</span>
                     </div>
-                  )}
+
+                    <p className="text-sm text-neutral-700 leading-relaxed mb-6 line-clamp-4">
+                      &ldquo;{review.comment}&rdquo;
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-neutral-100 flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-bold text-[#0a0e27] truncate max-w-[160px]">{review.author}</h4>
+                      <p className="text-xs text-neutral-500 truncate max-w-[160px]">{review.role}</p>
+                    </div>
+                    {review.verified && (
+                      <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full shrink-0">
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>Verified</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ))}
         </div>
         
 

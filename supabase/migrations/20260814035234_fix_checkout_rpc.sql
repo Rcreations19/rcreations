@@ -1,17 +1,3 @@
--- 1. Add inventory tracking to products
-ALTER TABLE products ADD COLUMN IF NOT EXISTS inventory_count INTEGER DEFAULT 1000;
-
--- 2. Create idempotency keys table to prevent double orders
-CREATE TABLE IF NOT EXISTS idempotency_keys (
-  idempotency_key UUID PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-  order_id UUID REFERENCES orders(id) ON DELETE CASCADE
-);
-
--- Index to clean up old keys if necessary
-CREATE INDEX IF NOT EXISTS idx_idempotency_created_at ON idempotency_keys(created_at);
-
--- 3. Create the secure atomic checkout RPC
 CREATE OR REPLACE FUNCTION process_checkout(
   p_idempotency_key UUID,
   p_order_data JSONB,

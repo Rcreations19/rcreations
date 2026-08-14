@@ -4,6 +4,7 @@ import Navbar from '@/components/storefront/Navbar';
 import Footer from '@/components/storefront/Footer';
 import { CartDrawer } from '@/components/storefront/CartDrawer';
 import FallingAnimation from '@/components/shared/FallingAnimation';
+import MobileBottomNav from '@/components/storefront/MobileBottomNav';
 
 export default function StorefrontLayout({
   children,
@@ -19,11 +20,13 @@ export default function StorefrontLayout({
           
           <FallingAnimation className="opacity-15 !z-0" />
           {/* Main Page Layout */}
-          <div className="relative z-10 flex flex-col min-h-screen">
+          <div className="relative z-10 flex flex-col min-h-screen pb-16 md:pb-0">
             <Navbar />
             <main className="flex-1">{children}</main>
             <Footer />
           </div>
+
+          <MobileBottomNav />
 
           {/* Cart Drawer */}
           <CartDrawer />

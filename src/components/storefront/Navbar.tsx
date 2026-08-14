@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Search, ShoppingBag, Menu, X, ArrowRight, User, LogOut, ChevronDown } from 'lucide-react';
@@ -24,6 +24,7 @@ export default function Navbar() {
   const [isHidden, setIsHidden] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   const pathname = usePathname();
   const { totalCount, openCart } = useCart();
@@ -65,6 +66,37 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
+  // Focus trap for mobile menu
+  const getFocusableElements = useCallback(() => {
+    if (!mobileMenuRef.current) return [];
+    return Array.from(mobileMenuRef.current.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    ));
+  }, []);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const focusable = getFocusableElements();
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    mobileMenuRef.current?.querySelector<HTMLElement>('a')?.focus();
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen, getFocusableElements]);
+
   const userInitial = user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || '?';
 
   return (
@@ -83,19 +115,21 @@ export default function Navbar() {
       >
         {/* Announcement Bar */}
         <div className="w-full bg-[#2aabb0] text-[#0a0e27] overflow-hidden py-3 cursor-pointer flex items-center">
-          <div className="animate-marquee whitespace-nowrap text-xs font-bold uppercase tracking-widest flex items-center">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <React.Fragment key={i}>
-                <span className="mx-6">Latest Offers</span> <span className="opacity-60">•</span>
-                <span className="mx-6">Latest Designs</span> <span className="opacity-60">•</span>
-                <span className="mx-6">Doorstep Delivery</span> <span className="opacity-60">•</span>
-                <span className="mx-6">Cash on Delivery (COD)</span> <span className="opacity-60">•</span>
-              </React.Fragment>
-            ))}
-          </div>
+          {[1, 2].map((marqueeGroup) => (
+            <div key={marqueeGroup} className="animate-marquee whitespace-nowrap text-xs font-bold uppercase tracking-widest flex items-center shrink-0" aria-hidden={marqueeGroup === 2}>
+              {Array.from({ length: 12 }).map((_, i) => (
+                <React.Fragment key={i}>
+                  <span className="mx-6">Latest Offers</span> <span className="opacity-60">•</span>
+                  <span className="mx-6">Latest Designs</span> <span className="opacity-60">•</span>
+                  <span className="mx-6">Local Delivery (40km Radius)</span> <span className="opacity-60">•</span>
+                  <span className="mx-6">Cash on Delivery (COD)</span> <span className="opacity-60">•</span>
+                </React.Fragment>
+              ))}
+            </div>
+          ))}
         </div>
 
-        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-500 ${isScrolled ? 'py-4' : 'py-10'}`}>
+        <div className={`max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-500 ${isScrolled ? 'py-4' : 'py-10'}`}>
 
           {/* Brand Logo - Uses absolute positioning for true center on desktop */}
           <div className="flex-1 lg:flex-none flex items-center">
@@ -105,7 +139,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Navigation - Centered */}
-          <nav className="hidden lg:flex flex-1 items-center justify-center gap-10">
+          <nav className="hidden md:flex flex-1 items-center justify-center gap-6 lg:gap-10">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
               return (
@@ -131,7 +165,7 @@ export default function Navbar() {
 
             {/* Auth Button */}
             {!authLoading && (
-              <div className="relative" ref={userMenuRef}>
+              <div className="relative hidden md:block" ref={userMenuRef}>
                 {user ? (
                   <>
                     <button
@@ -188,7 +222,7 @@ export default function Navbar() {
 
             <button
               onClick={openCart}
-              className="relative p-3 -m-1 text-white hover:text-[#2aabb0] transition-colors group"
+              className="relative p-3 -m-1 text-white hover:text-[#2aabb0] transition-colors group hidden md:block"
               aria-label="Shopping cart"
             >
               <ShoppingBag className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -209,7 +243,7 @@ export default function Navbar() {
             {/* B2B CTA - Von Restorff Effect */}
             <Link
               href="/contact"
-              className="hidden lg:flex items-center gap-2 px-5 py-2.5 bg-[#2aabb0] text-[#0a0e27] text-xs font-bold uppercase tracking-wider rounded overflow-hidden relative group"
+              className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-[#2aabb0] text-[#0a0e27] text-xs font-bold uppercase tracking-wider rounded overflow-hidden relative group"
             >
               <div className="absolute inset-0 w-0 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-20"></div>
               <span className="relative">Inquire</span>
@@ -218,7 +252,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Toggle */}
             <button
-              className="lg:hidden p-3 -m-3 text-white"
+              className="md:hidden p-3 -m-3 text-white"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
               aria-expanded={mobileMenuOpen}
@@ -233,6 +267,10 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
+            ref={mobileMenuRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}

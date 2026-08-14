@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
-import { Star, ShoppingBag, ArrowRight, ShieldCheck, Truck, Package, Check } from 'lucide-react';
+import { Star, ShoppingBag, ArrowRight, ShieldCheck, Truck, Package, Check, Clock, Flame, Camera } from 'lucide-react';
 import { useCart } from '@/components/storefront/CartContext';
 import { useToast } from '@/components/shared/ToastContext';
 import Image from 'next/image';
+import PhotoCropper from '@/components/storefront/PhotoCropper';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FaqItem = ({ faq, isOpen, onClick }: { faq: { question: string; answer: string }, isOpen: boolean, onClick: () => void }) => {
@@ -44,6 +45,60 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
   const { addPreset } = useCart();
   const { showToast } = useToast();
   const [added, setAdded] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.addEventListener('load', () => setCropImageSrc(reader.result?.toString() || null));
+      reader.readAsDataURL(file);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleCropComplete = async (base64Image: string) => {
+    setCropImageSrc(null);
+    setIsSharing(true);
+    try {
+      if (navigator.share) {
+        const response = await fetch(base64Image);
+        const blob = await response.blob();
+        const file = new File([blob], 'custom-frame-photo.jpg', { type: 'image/jpeg' });
+        
+        const message = `Hi, I'd like a custom frame quote.\nProduct: ${product.title}\nDimensions: ${product.dimensions}\nPlease see the attached photo.`;
+        
+        // Ensure navigator can share files
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: 'Custom Frame Order',
+            text: message,
+            files: [file]
+          });
+          showToast('Shared to WhatsApp successfully!', 'success');
+        } else {
+          throw new Error('File sharing not supported natively');
+        }
+      } else {
+        throw new Error('Web Share API not supported');
+      }
+    } catch (e) {
+      console.warn("Fallback to manual download: ", e);
+      // Fallback for desktop/unsupported browsers
+      const link = document.createElement('a');
+      link.href = base64Image;
+      link.download = 'custom-frame-photo.jpg';
+      link.click();
+      
+      const text = encodeURIComponent(`Hi, I'd like a custom frame quote.\nProduct: ${product.title}\nDimensions: ${product.dimensions}\n(I have saved the photo to my device and will attach it here)`);
+      window.open(`https://wa.me/919999999999?text=${text}`, '_blank');
+      showToast('Photo saved! Please attach it in WhatsApp.', 'success');
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
   let actualSpecs: {label: string, value: string}[] = [];
   let actualFaqs: {question: string, answer: string}[] = [];
@@ -163,6 +218,32 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             <p className="text-[10px] text-neutral-500 font-mono mt-3">MOQ: {product.moq} units • GST (18%) applicable on all orders</p>
           </div>
 
+          {/* Urgency & Scarcity (CRO) */}
+          {(product.stock_urgency_remaining || product.urgency_timer_title) && (
+            <div className="flex flex-col gap-3 mb-6">
+              {product.stock_urgency_remaining > 0 && (
+                <div className="flex items-center gap-3 bg-red-50 text-red-700 px-4 py-3 rounded-lg border border-red-100">
+                  <Flame className="w-5 h-5 shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-xs font-bold">High Demand!</p>
+                    <p className="text-[10px]">Only {product.stock_urgency_remaining} units remaining at this factory price.</p>
+                  </div>
+                </div>
+              )}
+              {product.urgency_timer_title && (
+                <div className="flex items-center gap-3 bg-amber-50 text-amber-800 px-4 py-3 rounded-lg border border-amber-100">
+                  <Clock className="w-5 h-5 shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-xs font-bold">{product.urgency_timer_title}</p>
+                    {product.urgency_timer_subtitle && (
+                      <p className="text-[10px]">{product.urgency_timer_subtitle}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Key Specs */}
           <div className="grid grid-cols-2 gap-3 mb-6">
             <div className="flex items-center gap-2 text-xs text-neutral-700">
@@ -187,7 +268,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
           <p className="text-sm text-neutral-600 leading-relaxed mb-8">{product.description}</p>
 
           {/* Add to Cart */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-8">
+          <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <button
               onClick={handleAddToCart}
               disabled={added}
@@ -211,6 +292,15 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             </Link>
           </div>
 
+          <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isSharing}
+            className="w-full py-3.5 mb-8 border-2 border-emerald-500 text-emerald-600 rounded-none text-xs font-bold uppercase tracking-wider hover:bg-emerald-50 transition-all flex items-center justify-center gap-2"
+          >
+            {isSharing ? 'Processing...' : <><Camera className="w-4 h-4" /> Order with Custom Photo on WhatsApp</>}
+          </button>
+
           {/* Trust badges */}
           <div className="flex flex-wrap gap-4 pt-6 border-t border-neutral-200">
             <div className="flex items-center gap-2 text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
@@ -220,7 +310,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
               <Check className="w-3.5 h-3.5 text-emerald-500" /> Factory Direct
             </div>
             <div className="flex items-center gap-2 text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
-              <Check className="w-3.5 h-3.5 text-emerald-500" /> Pan-India Shipping
+              <Check className="w-3.5 h-3.5 text-emerald-500" /> Local Delivery (40km Radius)
             </div>
           </div>
         </div>
@@ -284,6 +374,36 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             ))}
           </div>
         </div>
+      )}
+
+      {/* Sticky Mobile Add-To-Cart Bar (CRO) */}
+      <div className="fixed bottom-16 left-0 right-0 z-40 bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.1)] p-4 md:hidden border-t border-[#eaeaea]">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col">
+            <span className="text-[10px] text-neutral-500 font-bold uppercase">Retail</span>
+            <span className="text-lg font-black text-[#10164A] font-mono">₹{product.price}</span>
+          </div>
+          <button
+            onClick={handleAddToCart}
+            disabled={added}
+            className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 ${
+              added 
+                ? 'bg-emerald-500 text-white' 
+                : 'bg-[#2aabb0] text-[#0a0e27]'
+            }`}
+          >
+            {added ? <Check className="w-4 h-4" /> : <ShoppingBag className="w-4 h-4" />}
+            <span>{added ? 'Added' : 'Quick Add'}</span>
+          </button>
+        </div>
+      </div>
+
+      {cropImageSrc && (
+        <PhotoCropper 
+          imageSrc={cropImageSrc}
+          onCropComplete={handleCropComplete}
+          onCancel={() => setCropImageSrc(null)}
+        />
       )}
     </div>
   );

@@ -138,13 +138,13 @@ export default function CheckoutPage() {
     return (
       <div className="pt-32 pb-20 max-w-3xl mx-auto px-4 text-center">
         <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-6" />
-        <h1 className="text-3xl font-extrabold text-[#10164A] mb-4">Order Placed Successfully!</h1>
+        <h1 className="text-3xl font-extrabold text-secondary mb-4">Order Placed Successfully!</h1>
         <p className="text-neutral-600 mb-2">Thank you for shopping with R Creation.</p>
         <p className="text-neutral-600 font-mono mb-8">Your Order ID is: <strong>{orderId}</strong></p>
         {user && (
           <p className="text-sm text-neutral-500 mb-4">You can track this order in <Link href="/account" className="text-[#2aabb0] font-bold hover:underline">My Account</Link>.</p>
         )}
-        <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-[#10164A] text-white font-bold rounded-xl hover:bg-[#1c246e] transition-colors">
+        <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-secondary text-white font-bold rounded-xl hover:bg-secondary-hover transition-colors">
           <ArrowLeft className="w-4 h-4" /> Return to Store
         </Link>
       </div>
@@ -155,8 +155,8 @@ export default function CheckoutPage() {
     return (
       <div className="pt-32 pb-20 max-w-3xl mx-auto px-4 text-center">
         <ShoppingBag className="w-16 h-16 text-neutral-300 mx-auto mb-6" />
-        <h1 className="text-3xl font-extrabold text-[#10164A] mb-4">Your Cart is Empty</h1>
-        <Link href="/products" className="inline-flex items-center gap-2 px-6 py-3 bg-[#10164A] text-white font-bold rounded-xl hover:bg-[#1c246e] transition-colors">
+        <h1 className="text-3xl font-extrabold text-secondary mb-4">Your Cart is Empty</h1>
+        <Link href="/products" className="inline-flex items-center gap-2 px-6 py-3 bg-secondary text-white font-bold rounded-xl hover:bg-secondary-hover transition-colors">
           <ArrowLeft className="w-4 h-4" /> Browse Catalog
         </Link>
       </div>
@@ -166,8 +166,27 @@ export default function CheckoutPage() {
   return (
     <div className="pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-[#10164A]">Secure Checkout</h1>
+        <h1 className="text-3xl font-extrabold text-secondary">Secure Checkout</h1>
         <p className="text-sm text-neutral-600">Please provide your shipping and contact details below.</p>
+      </div>
+
+      {/* Step Indicator */}
+      <div className="mb-8 flex items-center justify-center gap-2 max-w-md mx-auto">
+        {[
+          { num: 1, label: 'Contact' },
+          { num: 2, label: 'Shipping' },
+          { num: 3, label: 'Payment' },
+        ].map((step, i) => (
+          <React.Fragment key={step.num}>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold">
+                {step.num}
+              </div>
+              <span className="text-xs font-bold text-secondary hidden sm:block">{step.label}</span>
+            </div>
+            {i < 2 && <div className="w-8 sm:w-12 h-0.5 bg-neutral-200 mx-1" />}
+          </React.Fragment>
+        ))}
       </div>
 
       {/* Auth Status Banner */}
@@ -209,82 +228,99 @@ export default function CheckoutPage() {
           <form id="checkout-form" onSubmit={handleSubmit} className="space-y-8 bg-white p-6 sm:p-8 rounded-2xl border border-neutral-200 shadow-sm">
             
             {/* Contact Info */}
-            <section>
-              <h2 className="text-lg font-bold text-[#10164A] mb-4 border-b border-neutral-100 pb-2">1. Contact Information</h2>
+            <fieldset className="border-0 p-0 m-0">
+              <legend className="text-lg font-bold text-secondary mb-4 border-b border-neutral-100 pb-2 w-full">1. Contact Information</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="relative">
-                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Full Name *</label>
+                  <label htmlFor="checkout-name" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Full Name *</label>
                   <div className="relative">
                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input type="text" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} onBlur={e => handleBlur('name', e.target.value)}
+                    <input id="checkout-name" type="text" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} onBlur={e => handleBlur('name', e.target.value)}
+                      aria-describedby={fieldErrors.name ? 'checkout-name-error' : undefined}
+                      aria-invalid={!!fieldErrors.name || undefined}
                       className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.name ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   </div>
-                  {fieldErrors.name && <p className="text-red-500 text-xs mt-1">{fieldErrors.name}</p>}
+                  {fieldErrors.name && <p id="checkout-name-error" className="text-red-500 text-xs mt-1">{fieldErrors.name}</p>}
                 </div>
                 <div className="relative">
-                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Mobile Number *</label>
+                  <label htmlFor="checkout-phone" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Mobile Number *</label>
                   <div className="relative">
                     <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input type="tel" required value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} onBlur={e => handleBlur('phone', e.target.value)}
+                    <input id="checkout-phone" type="tel" required value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} onBlur={e => handleBlur('phone', e.target.value)}
+                      aria-describedby={fieldErrors.phone ? 'checkout-phone-error' : undefined}
+                      aria-invalid={!!fieldErrors.phone || undefined}
                       className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.phone ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   </div>
-                  {fieldErrors.phone && <p className="text-red-500 text-xs mt-1">{fieldErrors.phone}</p>}
+                  {fieldErrors.phone && <p id="checkout-phone-error" className="text-red-500 text-xs mt-1">{fieldErrors.phone}</p>}
                 </div>
                 <div className="sm:col-span-2 relative">
-                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Email Address *</label>
+                  <label htmlFor="checkout-email" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Email Address *</label>
                   <div className="relative">
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input type="email" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} onBlur={e => handleBlur('email', e.target.value)}
+                    <input id="checkout-email" type="email" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} onBlur={e => handleBlur('email', e.target.value)}
+                      aria-describedby={fieldErrors.email ? 'checkout-email-error' : undefined}
+                      aria-invalid={!!fieldErrors.email || undefined}
                       className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   </div>
-                  {fieldErrors.email && <p className="text-red-500 text-xs mt-1">{fieldErrors.email}</p>}
+                  {fieldErrors.email && <p id="checkout-email-error" className="text-red-500 text-xs mt-1">{fieldErrors.email}</p>}
                 </div>
               </div>
-            </section>
+            </fieldset>
 
             {/* Shipping Info */}
-            <section>
-              <h2 className="text-lg font-bold text-[#10164A] mb-4 border-b border-neutral-100 pb-2">2. Shipping Address</h2>
+            <fieldset className="border-0 p-0 m-0">
+              <legend className="text-lg font-bold text-secondary mb-4 border-b border-neutral-100 pb-2 w-full">2. Shipping Address</legend>
+              <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-sm mb-6">
+                <span className="font-bold">Delivery Notice:</span> We currently only deliver to Vellore, Gudiyattam, and surrounding areas within a 40km radius.
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2 relative">
-                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Address *</label>
+                  <label htmlFor="checkout-address" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Address *</label>
                   <div className="relative">
                     <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-400" />
-                    <input type="text" required value={form.address} onChange={e => setForm({...form, address: e.target.value})} onBlur={e => handleBlur('address', e.target.value)}
+                    <input id="checkout-address" type="text" required value={form.address} onChange={e => setForm({...form, address: e.target.value})} onBlur={e => handleBlur('address', e.target.value)}
+                      aria-describedby={fieldErrors.address ? 'checkout-address-error' : undefined}
+                      aria-invalid={!!fieldErrors.address || undefined}
                       className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.address ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   </div>
-                  {fieldErrors.address && <p className="text-red-500 text-xs mt-1">{fieldErrors.address}</p>}
+                  {fieldErrors.address && <p id="checkout-address-error" className="text-red-500 text-xs mt-1">{fieldErrors.address}</p>}
                 </div>
                 <div className="relative">
-                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">City *</label>
+                  <label htmlFor="checkout-city" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">City *</label>
                   <div className="relative">
                     <Building className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input type="text" required value={form.city} onChange={e => setForm({...form, city: e.target.value})} onBlur={e => handleBlur('city', e.target.value)}
+                    <input id="checkout-city" type="text" required value={form.city} onChange={e => setForm({...form, city: e.target.value})} onBlur={e => handleBlur('city', e.target.value)}
+                      aria-describedby={fieldErrors.city ? 'checkout-city-error' : undefined}
+                      aria-invalid={!!fieldErrors.city || undefined}
                       className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.city ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   </div>
-                  {fieldErrors.city && <p className="text-red-500 text-xs mt-1">{fieldErrors.city}</p>}
+                  {fieldErrors.city && <p id="checkout-city-error" className="text-red-500 text-xs mt-1">{fieldErrors.city}</p>}
                 </div>
                 <div className="relative">
-                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">State *</label>
+                  <label htmlFor="checkout-state" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">State *</label>
                   <div className="relative">
                     <Map className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input type="text" required value={form.state} onChange={e => setForm({...form, state: e.target.value})} onBlur={e => handleBlur('state', e.target.value)}
+                    <input id="checkout-state" type="text" required value={form.state} onChange={e => setForm({...form, state: e.target.value})} onBlur={e => handleBlur('state', e.target.value)}
+                      aria-describedby={fieldErrors.state ? 'checkout-state-error' : undefined}
+                      aria-invalid={!!fieldErrors.state || undefined}
                       className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.state ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   </div>
-                  {fieldErrors.state && <p className="text-red-500 text-xs mt-1">{fieldErrors.state}</p>}
+                  {fieldErrors.state && <p id="checkout-state-error" className="text-red-500 text-xs mt-1">{fieldErrors.state}</p>}
                 </div>
                 <div className="relative">
-                  <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">PIN Code *</label>
-                  <input type="text" required value={form.pincode} onChange={e => setForm({...form, pincode: e.target.value})} onBlur={e => handleBlur('pincode', e.target.value)}
+                  <label htmlFor="checkout-pincode" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">PIN Code *</label>
+                  <input id="checkout-pincode" type="text" required value={form.pincode} onChange={e => setForm({...form, pincode: e.target.value})} onBlur={e => handleBlur('pincode', e.target.value)}
+                    aria-describedby={fieldErrors.pincode ? 'checkout-pincode-error' : undefined}
+                    aria-invalid={!!fieldErrors.pincode || undefined}
                     className={`w-full px-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.pincode ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
-                  {fieldErrors.pincode && <p className="text-red-500 text-xs mt-1">{fieldErrors.pincode}</p>}
+                  {fieldErrors.pincode && <p id="checkout-pincode-error" className="text-red-500 text-xs mt-1">{fieldErrors.pincode}</p>}
                 </div>
               </div>
-            </section>
+            </fieldset>
 
             {/* Payment Info placeholder */}
-            <section>
-              <h2 className="text-lg font-bold text-[#10164A] mb-4 border-b border-neutral-100 pb-2">3. Payment</h2>
+            <fieldset className="border-0 p-0 m-0">
+              <legend className="text-lg font-bold text-secondary mb-4 border-b border-neutral-100 pb-2 w-full">3. Payment</legend>
               <label className="cursor-pointer group flex items-start gap-4 p-4 border-2 border-[#2aabb0] bg-[#2aabb0]/5 rounded-xl transition-all shadow-[0_0_15px_rgba(42,171,176,0.1)]">
                 <div className="mt-0.5">
                   <div className="w-5 h-5 rounded-full border-2 border-[#2aabb0] flex items-center justify-center">
@@ -294,14 +330,14 @@ export default function CheckoutPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <ShieldCheck className="w-4 h-4 text-[#2aabb0]" />
-                    <h3 className="text-sm font-bold text-[#10164A]">Cash on Delivery (COD)</h3>
+                    <h3 className="text-sm font-bold text-secondary">Cash on Delivery (COD)</h3>
                   </div>
                   <p className="text-xs text-neutral-600 leading-relaxed">
                     Pay with cash or UPI when your order arrives. Standard integration for payment gateways can be activated from the admin panel later.
                   </p>
                 </div>
               </label>
-            </section>
+            </fieldset>
 
             {error && (
               <div className="p-4 bg-red-50 text-red-600 text-sm font-medium rounded-xl border border-red-200">
@@ -314,7 +350,7 @@ export default function CheckoutPage() {
         {/* Order Summary */}
         <div className="lg:col-span-5">
           <div className="bg-[#f8f9fa] p-6 rounded-2xl border border-neutral-200 sticky top-24">
-            <h2 className="text-lg font-bold text-[#10164A] mb-6">Order Summary</h2>
+            <h2 className="text-lg font-bold text-secondary mb-6">Order Summary</h2>
             
             <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2">
               {items.map(item => (
@@ -323,10 +359,10 @@ export default function CheckoutPage() {
                     <Image src={item.image || '/images/placeholder.jpg'} alt={item.title} fill className="object-cover" sizes="64px" unoptimized />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-bold text-[#10164A] line-clamp-2">{item.title}</h4>
+                    <h4 className="text-xs font-bold text-secondary line-clamp-2">{item.title}</h4>
                     <p className="text-[10px] text-neutral-500 mt-1">Qty: {item.quantity}</p>
                   </div>
-                  <div className="text-sm font-bold font-mono text-[#10164A]">
+                  <div className="text-sm font-bold font-mono text-secondary">
                     ₹{item.price * item.quantity}
                   </div>
                 </div>
@@ -336,18 +372,18 @@ export default function CheckoutPage() {
             <div className="border-t border-neutral-200 pt-4 space-y-3 mb-6">
               <div className="flex justify-between text-sm">
                 <span className="text-neutral-600">Subtotal ({totalCount} items)</span>
-                <span className="font-bold font-mono text-[#10164A]">₹{subtotal}</span>
+                <span className="font-bold font-mono text-secondary">₹{subtotal}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-neutral-600">GST (18%)</span>
-                <span className="font-bold font-mono text-[#10164A]">₹{taxAmount}</span>
+                <span className="font-bold font-mono text-secondary">₹{taxAmount}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-neutral-600">Shipping</span>
-                <span className="font-bold font-mono text-[#10164A]">{shippingCost === 0 ? 'FREE' : `₹${shippingCost}`}</span>
+                <span className="font-bold font-mono text-secondary">{shippingCost === 0 ? 'FREE' : `₹${shippingCost}`}</span>
               </div>
               <div className="flex justify-between text-lg pt-3 border-t border-neutral-200">
-                <span className="font-extrabold text-[#10164A]">Total</span>
+                <span className="font-extrabold text-secondary">Total</span>
                 <span className="font-black font-mono text-[#2aabb0]">₹{total}</span>
               </div>
             </div>
@@ -356,7 +392,7 @@ export default function CheckoutPage() {
               type="submit"
               form="checkout-form"
               disabled={isSubmitting}
-              className="w-full py-4 bg-[#10164A] text-white rounded-xl text-sm font-bold uppercase tracking-wider hover:bg-[#1c246e] transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full py-4 bg-secondary text-white rounded-xl text-sm font-bold uppercase tracking-wider hover:bg-secondary-hover transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Processing...' : 'Place Order (COD)'}
               {!isSubmitting && <ArrowRight className="w-4 h-4" />}

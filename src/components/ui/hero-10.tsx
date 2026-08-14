@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import { motion, type Variants } from 'framer-motion'
 
 import { cn } from '@/lib/utils'
@@ -144,11 +145,14 @@ function ImageFan({
               slot.layout,
             )}
           >
-            <img
+            <Image
               src={src}
               alt={imageAlts?.[i] ?? ''}
-              decoding="async"
-              className="size-full object-cover"
+              width={600}
+              height={800}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={i === 0}
+              className="object-cover w-full h-full"
             />
           </motion.div>
         )
@@ -176,27 +180,32 @@ export function Hero10({
   const titleElement = title && (
     <h1
       className={cn(
-        'text-[#0a0e27] font-[family-name:--font-script] font-normal tracking-wide text-balance leading-relaxed',
-        'text-5xl sm:text-6xl md:text-7xl'
+        'text-[#0a0e27] font-serif-heading font-normal tracking-tight text-balance leading-tight',
+        'text-5xl sm:text-6xl md:text-7xl lg:text-[4.5rem]'
       )}
     >
       <span>{title}</span>
       {(titleLine2Prefix || titleHighlight) && (
         <>
           <br />
-          <span>
-            {titleLine2Prefix && <span>{titleLine2Prefix} </span>}
-            {titleHighlight && (
-              <span className="text-[#2aabb0] mx-2 text-[1.2em] inline-block pt-4" style={{ fontFamily: "'White Star', cursive" }}>{titleHighlight}</span>
-            )}
-          </span>
+            <span>
+              {titleLine2Prefix && <span>{titleLine2Prefix} </span>}
+              {titleHighlight && (
+                <span 
+                  className="text-[#2aabb0] mx-2 text-[1.3em] inline-block pt-2 drop-shadow-[0_1px_8px_rgba(42,171,176,0.2)]"
+                  style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}
+                >
+                  {titleHighlight}
+                </span>
+              )}
+            </span>
         </>
       )}
     </h1>
   )
 
   const descriptionElement = description && (
-    <p className="text-[#0a0e27]/80 font-[family-name:--font-script] font-normal text-2xl sm:text-3xl leading-relaxed mt-2 max-w-2xl text-balance">
+    <p className="text-[#0a0e27]/70 font-body font-normal text-base sm:text-lg md:text-xl leading-relaxed mt-4 max-w-xl text-balance">
       <span>{description}</span>
     </p>
   )
