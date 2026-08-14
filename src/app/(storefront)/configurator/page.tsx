@@ -315,9 +315,9 @@ export default function ConfiguratorPage() {
                     <Trash2 className="w-3 h-3" /> Remove Photo
                   </button>
                 ) : (
-                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-[#f8f9fa] hover:bg-[#eaeaea] border border-[#eaeaea] rounded-full text-xs font-bold text-[#0a0e27] transition-all">
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-[#f8f9fa] hover:bg-[#eaeaea] border border-[#eaeaea] rounded-full text-xs font-bold text-[#0a0e27] transition-all relative overflow-hidden">
+                    <input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handlePhotoUpload} />
                     <UploadCloud className="w-4 h-4 text-[#2aabb0]" /> Upload preview photo
-                    <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
                   </label>
                 )}
               </div>
