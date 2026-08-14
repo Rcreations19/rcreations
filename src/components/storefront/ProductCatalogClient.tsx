@@ -250,9 +250,9 @@ export default function ProductCatalogClient({
                           </span>
                         )}
                         {product.is_bestseller && (
-                          <span className="bg-[#0a0e27] text-white text-[10px] font-bold font-mono uppercase px-2.5 py-1 rounded shadow-sm">Bestseller</span>
+                          <span className="hidden md:inline-block bg-[#0a0e27] text-white text-[10px] font-bold font-mono uppercase px-2.5 py-1 rounded shadow-sm">Bestseller</span>
                         )}
-                        <span className="bg-[#2aabb0] text-[#0a0e27] text-[10px] font-black font-mono uppercase px-2.5 py-1 rounded shadow-sm">
+                        <span className="hidden md:inline-block bg-[#2aabb0] text-[#0a0e27] text-[10px] font-black font-mono uppercase px-2.5 py-1 rounded shadow-sm">
                           MOQ {product.moq}
                         </span>
                       </div>

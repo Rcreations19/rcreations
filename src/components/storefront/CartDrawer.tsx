@@ -49,7 +49,7 @@ export function CartDrawer() {
       {/* Drawer */}
       <div className="h-full bg-white shadow-2xl flex flex-col animate-slide-up md:animate-slide-in-right">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-neutral-200">
+        <div className="flex items-center justify-between p-4 md:p-5 border-b border-neutral-200">
           <div className="flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-[#2aabb0]" />
             <h2 className="text-lg font-extrabold text-secondary">Order Cart</h2>
@@ -61,7 +61,7 @@ export function CartDrawer() {
         </div>
 
         {/* Items */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 md:p-5 space-y-4">
           {items.length === 0 ? (
             <div className="text-center py-16 px-6 space-y-4">
               <div className="w-24 h-24 bg-neutral-50 rounded-full flex items-center justify-center mx-auto mb-2 border border-neutral-100 shadow-sm">
@@ -102,7 +102,7 @@ export function CartDrawer() {
                       <button
                         onClick={() => updateQuantity(item.id, -1)}
                         aria-label="Decrease quantity"
-                        className="w-12 h-12 md:w-11 md:h-11 flex items-center justify-center hover:bg-neutral-100 rounded-l-lg active:bg-neutral-200 transition-colors"
+                        className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center hover:bg-neutral-100 rounded-l-lg active:bg-neutral-200 transition-colors"
                       >
                         <Minus className="w-4 h-4 md:w-3 md:h-3" />
                       </button>
@@ -110,7 +110,7 @@ export function CartDrawer() {
                       <button
                         onClick={() => updateQuantity(item.id, 1)}
                         aria-label="Increase quantity"
-                        className="w-12 h-12 md:w-11 md:h-11 flex items-center justify-center hover:bg-neutral-100 rounded-r-lg active:bg-neutral-200 transition-colors"
+                        className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center hover:bg-neutral-100 rounded-r-lg active:bg-neutral-200 transition-colors"
                       >
                         <Plus className="w-4 h-4 md:w-3 md:h-3" />
                       </button>
@@ -153,7 +153,7 @@ export function CartDrawer() {
 
         {/* Footer */}
         {items.length > 0 && (
-          <div className="p-5 border-t border-neutral-200 space-y-4">
+          <div className="p-4 md:p-5 border-t border-neutral-200 space-y-4">
             {/* MOQ Warnings */}
             {moqWarnings.length > 0 && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-1">

@@ -235,10 +235,10 @@ export default function CheckoutPage() {
                   <label htmlFor="checkout-name" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Full Name *</label>
                   <div className="relative">
                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-name" type="text" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} onBlur={e => handleBlur('name', e.target.value)}
+                    <input id="checkout-name" type="text" autoComplete="name" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} onBlur={e => handleBlur('name', e.target.value)}
                       aria-describedby={fieldErrors.name ? 'checkout-name-error' : undefined}
                       aria-invalid={!!fieldErrors.name || undefined}
-                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.name ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
+                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.name ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   </div>
                   {fieldErrors.name && <p id="checkout-name-error" className="text-red-500 text-xs mt-1">{fieldErrors.name}</p>}
                 </div>
@@ -246,10 +246,10 @@ export default function CheckoutPage() {
                   <label htmlFor="checkout-phone" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Mobile Number *</label>
                   <div className="relative">
                     <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-phone" type="tel" required value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} onBlur={e => handleBlur('phone', e.target.value)}
+                    <input id="checkout-phone" type="tel" autoComplete="tel" required value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} onBlur={e => handleBlur('phone', e.target.value)}
                       aria-describedby={fieldErrors.phone ? 'checkout-phone-error' : undefined}
                       aria-invalid={!!fieldErrors.phone || undefined}
-                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.phone ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
+                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.phone ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   </div>
                   {fieldErrors.phone && <p id="checkout-phone-error" className="text-red-500 text-xs mt-1">{fieldErrors.phone}</p>}
                 </div>
@@ -257,10 +257,10 @@ export default function CheckoutPage() {
                   <label htmlFor="checkout-email" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Email Address *</label>
                   <div className="relative">
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-email" type="email" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} onBlur={e => handleBlur('email', e.target.value)}
+                    <input id="checkout-email" type="email" autoComplete="email" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} onBlur={e => handleBlur('email', e.target.value)}
                       aria-describedby={fieldErrors.email ? 'checkout-email-error' : undefined}
                       aria-invalid={!!fieldErrors.email || undefined}
-                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
+                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   </div>
                   {fieldErrors.email && <p id="checkout-email-error" className="text-red-500 text-xs mt-1">{fieldErrors.email}</p>}
                 </div>
@@ -278,10 +278,10 @@ export default function CheckoutPage() {
                   <label htmlFor="checkout-address" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Address *</label>
                   <div className="relative">
                     <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-address" type="text" required value={form.address} onChange={e => setForm({...form, address: e.target.value})} onBlur={e => handleBlur('address', e.target.value)}
+                    <input id="checkout-address" type="text" autoComplete="street-address" required value={form.address} onChange={e => setForm({...form, address: e.target.value})} onBlur={e => handleBlur('address', e.target.value)}
                       aria-describedby={fieldErrors.address ? 'checkout-address-error' : undefined}
                       aria-invalid={!!fieldErrors.address || undefined}
-                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.address ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
+                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.address ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   </div>
                   {fieldErrors.address && <p id="checkout-address-error" className="text-red-500 text-xs mt-1">{fieldErrors.address}</p>}
                 </div>
@@ -289,10 +289,10 @@ export default function CheckoutPage() {
                   <label htmlFor="checkout-city" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">City *</label>
                   <div className="relative">
                     <Building className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-city" type="text" required value={form.city} onChange={e => setForm({...form, city: e.target.value})} onBlur={e => handleBlur('city', e.target.value)}
+                    <input id="checkout-city" type="text" autoComplete="address-level2" required value={form.city} onChange={e => setForm({...form, city: e.target.value})} onBlur={e => handleBlur('city', e.target.value)}
                       aria-describedby={fieldErrors.city ? 'checkout-city-error' : undefined}
                       aria-invalid={!!fieldErrors.city || undefined}
-                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.city ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
+                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.city ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   </div>
                   {fieldErrors.city && <p id="checkout-city-error" className="text-red-500 text-xs mt-1">{fieldErrors.city}</p>}
                 </div>
@@ -300,19 +300,19 @@ export default function CheckoutPage() {
                   <label htmlFor="checkout-state" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">State *</label>
                   <div className="relative">
                     <Map className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-state" type="text" required value={form.state} onChange={e => setForm({...form, state: e.target.value})} onBlur={e => handleBlur('state', e.target.value)}
+                    <input id="checkout-state" type="text" autoComplete="address-level1" required value={form.state} onChange={e => setForm({...form, state: e.target.value})} onBlur={e => handleBlur('state', e.target.value)}
                       aria-describedby={fieldErrors.state ? 'checkout-state-error' : undefined}
                       aria-invalid={!!fieldErrors.state || undefined}
-                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.state ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
+                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.state ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   </div>
                   {fieldErrors.state && <p id="checkout-state-error" className="text-red-500 text-xs mt-1">{fieldErrors.state}</p>}
                 </div>
                 <div className="relative">
                   <label htmlFor="checkout-pincode" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">PIN Code *</label>
-                  <input id="checkout-pincode" type="text" required value={form.pincode} onChange={e => setForm({...form, pincode: e.target.value})} onBlur={e => handleBlur('pincode', e.target.value)}
+                  <input id="checkout-pincode" type="text" inputMode="numeric" autoComplete="postal-code" required value={form.pincode} onChange={e => setForm({...form, pincode: e.target.value})} onBlur={e => handleBlur('pincode', e.target.value)}
                     aria-describedby={fieldErrors.pincode ? 'checkout-pincode-error' : undefined}
                     aria-invalid={!!fieldErrors.pincode || undefined}
-                    className={`w-full px-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.pincode ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
+                    className={`w-full px-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.pincode ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
                   {fieldErrors.pincode && <p id="checkout-pincode-error" className="text-red-500 text-xs mt-1">{fieldErrors.pincode}</p>}
                 </div>
               </div>
