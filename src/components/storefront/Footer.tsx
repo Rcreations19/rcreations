@@ -60,11 +60,11 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-3 text-sm text-neutral-400">
                 <Phone className="w-4 h-4 text-[#2aabb0] shrink-0" />
-                <span className="font-mono">+91 98765 43210</span>
+                <span className="font-mono">+91 87549 40610</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-neutral-400">
                 <Mail className="w-4 h-4 text-[#2aabb0] shrink-0" />
-                <span className="font-mono">contact@rcreation.in</span>
+                <span className="font-mono">rcreationsstudio@gmail.com</span>
               </div>
             </div>
             

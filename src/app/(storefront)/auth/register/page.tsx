@@ -195,7 +195,7 @@ function RegisterForm() {
                         value={form.phone}
                         onChange={(e) => update('phone', e.target.value)}
                         className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
-                        placeholder="+91 98765 43210"
+                        placeholder="+91 87549 40610"
                         autoComplete="tel"
                       />
                     </div>

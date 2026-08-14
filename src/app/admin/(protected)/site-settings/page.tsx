@@ -114,7 +114,7 @@ export default function SiteSettingsPage() {
                       name="contact_email" 
                       defaultValue={settings.contact_email}
                       className="w-full pl-9 pr-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-shadow"
-                      placeholder="sales@rcreation.in"
+                      placeholder="rcreationsstudio@gmail.com"
                     />
                   </div>
                 </div>
@@ -124,11 +124,11 @@ export default function SiteSettingsPage() {
                   <div className="relative">
                     <Phone className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input 
-                      type="text" 
+                      type="tel" 
                       name="contact_phone" 
                       defaultValue={settings.contact_phone}
                       className="w-full pl-9 pr-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-shadow"
-                      placeholder="+91 98765 43210"
+                      placeholder="+91 87549 40610"
                     />
                   </div>
                 </div>

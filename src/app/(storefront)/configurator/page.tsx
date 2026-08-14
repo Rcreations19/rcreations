@@ -63,7 +63,7 @@ export default function ConfiguratorPage() {
   const selectedMaterial = useMemo(() => FRAME_OPTIONS.find(m => m.id === materialId) || FRAME_OPTIONS[0], [materialId]);
 
   const handleWhatsAppOrder = async () => {
-    const adminNumber = '919876543210'; // Admin WhatsApp Number
+    const adminNumber = '918754940610'; // Admin WhatsApp Number
     const message = `Hello, I would like to place an order for a custom frame!\n\n*Frame Style:* ${selectedMaterial.name}\n*Thickness:* ${frameThickness} inch\n*Dimensions:* ${widthCm}x${heightCm} cm\n*Glass:* ${glassType}\n*Mount:* ${mountBoard}\n*Quantity:* ${quantity}`;
 
     if (uploadedPhoto && navigator.canShare) {

@@ -93,7 +93,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
       link.click();
       
       const text = encodeURIComponent(`Hi, I'd like a custom frame quote.\nProduct: ${product.title}\nDimensions: ${product.dimensions}\n(I have saved the photo to my device and will attach it here)`);
-      window.open(`https://wa.me/919999999999?text=${text}`, '_blank');
+      window.open(`https://wa.me/918754940610?text=${text}`, '_blank');
       showToast('Photo saved! Please attach it in WhatsApp.', 'success');
     } finally {
       setIsSharing(false);

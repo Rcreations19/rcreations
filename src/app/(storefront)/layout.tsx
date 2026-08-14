@@ -5,6 +5,7 @@ import Footer from '@/components/storefront/Footer';
 import { CartDrawer } from '@/components/storefront/CartDrawer';
 import FallingAnimation from '@/components/shared/FallingAnimation';
 import MobileBottomNav from '@/components/storefront/MobileBottomNav';
+import FloatingWhatsApp from '@/components/storefront/FloatingWhatsApp';
 
 export default function StorefrontLayout({
   children,
@@ -30,6 +31,9 @@ export default function StorefrontLayout({
 
           {/* Cart Drawer */}
           <CartDrawer />
+
+          {/* Floating WhatsApp */}
+          <FloatingWhatsApp />
         </div>
       </CartProvider>
     </AuthProvider>
