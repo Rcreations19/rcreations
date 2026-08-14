@@ -69,7 +69,7 @@ function LoginForm() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
+                    className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
                     placeholder="rcreationsstudio@gmail.com"
                     autoComplete="email"
                   />
@@ -87,7 +87,7 @@ function LoginForm() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-11 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
+                    className="w-full pl-10 pr-11 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
                     placeholder="••••••••"
                     autoComplete="current-password"
                   />

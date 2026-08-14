@@ -110,13 +110,13 @@ export default function ContactPage() {
                     <label className="text-sm font-semibold text-neutral-900">Full Name <span className="text-red-500">*</span></label>
                     <input type="text" required placeholder="e.g. Ramesh Kumar" value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
+                      className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-base md:text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
                   </div>
                   <div className="space-y-2">
                     <label className="block text-sm font-bold text-[#0a0e27] mb-2 uppercase tracking-wide">Phone Number</label>
                     <input type="tel" required placeholder="+91 87549 40610" value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                      className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
+                      className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-base md:text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
                   </div>
                 </div>
 
@@ -125,13 +125,13 @@ export default function ContactPage() {
                     <label className="block text-sm font-bold text-[#0a0e27] mb-2 uppercase tracking-wide">Email Address</label>
                     <input type="email" required placeholder="rcreationsstudio@gmail.com" value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
+                      className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-base md:text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-neutral-900">Company / Studio <span className="text-neutral-400 font-normal">(Optional)</span></label>
                     <input type="text" placeholder="Your business name" value={form.company}
                       onChange={(e) => setForm({ ...form, company: e.target.value })}
-                      className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
+                      className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-base md:text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
                   </div>
                 </div>
 
@@ -139,7 +139,7 @@ export default function ContactPage() {
                   <label className="text-sm font-semibold text-neutral-900">Message / Requirements <span className="text-red-500">*</span></label>
                   <textarea rows={5} required placeholder="Describe your order requirements, quantities, customization needs..."
                     value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none resize-none" />
+                    className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-base md:text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none resize-none" />
                 </div>
 
                 <button type="submit" disabled={loading}

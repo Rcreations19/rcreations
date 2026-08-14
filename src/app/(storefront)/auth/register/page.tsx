@@ -157,7 +157,7 @@ function RegisterForm() {
                         required
                         value={form.fullName}
                         onChange={(e) => update('fullName', e.target.value)}
-                        className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
+                        className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
                         placeholder="Your full name"
                         autoComplete="name"
                       />
@@ -176,7 +176,7 @@ function RegisterForm() {
                         required
                         value={form.email}
                         onChange={(e) => update('email', e.target.value)}
-                        className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
+                        className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
                         placeholder="you@example.com"
                         autoComplete="email"
                       />
@@ -194,7 +194,7 @@ function RegisterForm() {
                         type="tel"
                         value={form.phone}
                         onChange={(e) => update('phone', e.target.value)}
-                        className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
+                        className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
                         placeholder="+91 87549 40610"
                         autoComplete="tel"
                       />
@@ -213,7 +213,7 @@ function RegisterForm() {
                         required
                         value={form.password}
                         onChange={(e) => update('password', e.target.value)}
-                        className="w-full pl-10 pr-11 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
+                        className="w-full pl-10 pr-11 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
                         placeholder="Min. 6 characters"
                         autoComplete="new-password"
                       />
@@ -255,7 +255,7 @@ function RegisterForm() {
                         required
                         value={form.confirmPassword}
                         onChange={(e) => update('confirmPassword', e.target.value)}
-                        className={`w-full pl-10 pr-10 py-3 bg-neutral-50 border rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all ${
+                        className={`w-full pl-10 pr-10 py-3 bg-neutral-50 border rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all ${
                           form.confirmPassword.length > 0 && form.password !== form.confirmPassword
                             ? 'border-red-300 focus:border-red-400'
                             : form.confirmPassword.length > 0 && form.password === form.confirmPassword

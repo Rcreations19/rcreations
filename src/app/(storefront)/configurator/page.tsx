@@ -181,7 +181,7 @@ export default function ConfiguratorPage() {
                     <h2 className="text-2xl font-extrabold text-[#0a0e27] mb-6 flex items-center gap-3 mt-10">
                       <Layout className="w-6 h-6 text-[#2aabb0]" /> Frame Thickness
                     </h2>
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {[
                         { val: 0.5, label: '0.5 inch' },
                         { val: 1.0, label: '1.0 inch' },
@@ -270,7 +270,7 @@ export default function ConfiguratorPage() {
               </AnimatePresence>
 
               {/* Navigation Footer */}
-              <div className="p-4 sm:p-6 border-t border-[#eaeaea] bg-[#f8f9fa] flex items-center justify-between sticky bottom-[64px] md:bottom-0 md:relative z-40 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] md:shadow-none">
+              <div className="p-4 sm:p-6 border-t border-[#eaeaea] bg-[#f8f9fa] flex items-center justify-between sticky bottom-[96px] md:bottom-0 md:relative z-40 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] md:shadow-none">
                 {currentStep > 1 ? (
                   <button onClick={() => setCurrentStep(currentStep - 1)} className="px-6 py-2.5 rounded-lg text-xs font-bold text-[#555555] hover:text-[#0a0e27] hover:bg-[#eaeaea] transition-all flex items-center gap-2">
                     <ArrowLeft className="w-4 h-4" /> Back
