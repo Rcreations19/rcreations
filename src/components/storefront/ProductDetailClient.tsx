@@ -292,11 +292,10 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             </Link>
           </div>
 
-          <input type="file" id="custom-photo-upload" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="sr-only absolute w-0 h-0" disabled={isSharing} />
           <label
-            htmlFor="custom-photo-upload"
-            className={`w-full py-3.5 mb-8 border-2 border-emerald-500 text-emerald-600 rounded-none text-xs font-bold uppercase tracking-wider hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 cursor-pointer ${isSharing ? 'opacity-50 pointer-events-none' : ''}`}
+            className={`w-full py-3.5 mb-8 border-2 border-emerald-500 text-emerald-600 rounded-none text-xs font-bold uppercase tracking-wider hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 cursor-pointer relative overflow-hidden ${isSharing ? 'opacity-50 pointer-events-none' : ''}`}
           >
+            <input type="file" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" disabled={isSharing} />
             {isSharing ? 'Processing...' : <><Camera className="w-4 h-4" /> Order with Custom Photo on WhatsApp</>}
           </label>
 
@@ -390,9 +389,9 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             {added ? <><Check className="w-4 h-4" /> Added</> : <><ShoppingBag className="w-4 h-4" /> Quick Add</>}
           </button>
           <label
-            htmlFor="custom-photo-upload"
-            className={`w-12 h-12 flex items-center justify-center bg-emerald-50 text-emerald-600 rounded-xl border-2 border-emerald-500 cursor-pointer shadow-sm shrink-0 ${isSharing ? 'opacity-50 pointer-events-none' : ''}`}
+            className={`w-12 h-12 flex items-center justify-center bg-emerald-50 text-emerald-600 rounded-xl border-2 border-emerald-500 cursor-pointer shadow-sm shrink-0 relative overflow-hidden ${isSharing ? 'opacity-50 pointer-events-none' : ''}`}
           >
+            <input type="file" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" disabled={isSharing} />
             <Camera className="w-5 h-5" />
           </label>
         </div>
