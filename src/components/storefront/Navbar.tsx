@@ -108,8 +108,8 @@ export default function Navbar() {
         }}
         animate={isHidden ? "hidden" : "visible"}
         transition={{ duration: 0.35, ease: "easeInOut" }}
-        className={`sticky top-0 left-0 right-0 z-50 transition-all duration-500 border-b bg-[#050714] text-white ${isScrolled
-            ? 'border-white/10'
+        className={`sticky top-0 left-0 right-0 z-50 transition-all duration-500 border-b bg-[#050714]/85 backdrop-blur-md md:bg-[#050714] md:backdrop-blur-none text-white ${isScrolled
+            ? 'border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)]'
             : 'border-transparent'
           }`}
       >
@@ -146,7 +146,7 @@ export default function Navbar() {
                 type="text" 
                 name="search" 
                 placeholder="Search products..." 
-                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm placeholder:text-neutral-400 focus:outline-none focus:border-[#2aabb0] focus:bg-white/15 transition-all"
+                className="w-full pl-10 pr-4 py-2.5 bg-white/5 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] rounded-xl text-white text-sm placeholder:text-neutral-400 focus:outline-none focus:border-[#2aabb0] focus:bg-white/10 transition-all"
               />
             </form>
           </div>
