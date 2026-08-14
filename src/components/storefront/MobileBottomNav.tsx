@@ -10,6 +10,12 @@ export default function MobileBottomNav() {
   const pathname = usePathname();
   const { totalCount, openCart } = useCart();
 
+  const handleVibrate = () => {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(50);
+    }
+  };
+
   const navItems = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Catalog', href: '/products', icon: LayoutGrid },
@@ -18,7 +24,7 @@ export default function MobileBottomNav() {
   ];
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white border-t border-neutral-200 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] pb-safe">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white/90 backdrop-blur-md border-t border-neutral-200/50 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] pb-[env(safe-area-inset-bottom)]">
       <div className="flex items-center justify-around h-16 px-1">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -28,29 +34,36 @@ export default function MobileBottomNav() {
             <Link 
               key={item.name} 
               href={item.href}
-              className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
+              onClick={handleVibrate}
+              className={`relative flex flex-col items-center justify-center w-full h-full space-y-1.5 transition-all duration-300 ${
                 isActive ? 'text-[#2aabb0]' : 'text-neutral-500 hover:text-neutral-900'
               }`}
             >
-              <Icon className="w-[22px] h-[22px]" />
-              <span className="text-[10px] font-medium leading-none">{item.name}</span>
+              {isActive && (
+                <div className="absolute top-2 w-12 h-12 bg-[#2aabb0]/10 rounded-full -z-10" />
+              )}
+              <Icon className={`w-5 h-5 ${isActive ? 'fill-[#2aabb0]/10 stroke-2' : 'stroke-[1.5]'}`} />
+              <span className={`text-[10px] leading-none tracking-wide ${isActive ? 'font-bold' : 'font-medium'}`}>{item.name}</span>
             </Link>
           );
         })}
         
         <button 
-          onClick={openCart}
-          className="flex flex-col items-center justify-center w-full h-full space-y-1 text-neutral-500 hover:text-neutral-900 relative transition-colors"
+          onClick={() => {
+            handleVibrate();
+            openCart();
+          }}
+          className="relative flex flex-col items-center justify-center w-full h-full space-y-1.5 text-neutral-500 hover:text-neutral-900 transition-all duration-300"
         >
           <div className="relative">
-            <ShoppingCart className="w-[22px] h-[22px]" />
+            <ShoppingCart className="w-5 h-5 stroke-[1.5]" />
             {totalCount > 0 && (
-              <span className="absolute -top-1.5 -right-2 bg-[#2aabb0] text-[#0a0e27] text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+              <span className="absolute -top-1.5 -right-2 bg-[#2aabb0] text-[#0a0e27] text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm border border-white">
                 {totalCount > 99 ? '99+' : totalCount}
               </span>
             )}
           </div>
-          <span className="text-[10px] font-medium leading-none">Cart</span>
+          <span className="text-[10px] font-medium leading-none tracking-wide">Cart</span>
         </button>
       </div>
     </div>

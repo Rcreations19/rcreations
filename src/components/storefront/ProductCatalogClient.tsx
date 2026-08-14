@@ -162,13 +162,7 @@ export default function ProductCatalogClient({
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
             className="bg-white p-2 rounded-xl border border-[#eaeaea] shadow-sm flex flex-wrap items-center justify-between gap-2"
           >
-            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar">
-              <button 
-                onClick={() => setShowMobileFilters(true)}
-                className="xl:hidden flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-[#0a0e27] text-white shrink-0"
-              >
-                <Filter className="w-4 h-4" /> Filters
-              </button>
+            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">
               {[
                 { id: 'recommended', label: 'Recommended' },
                 { id: 'price-low', label: 'Price: Low' },
@@ -177,7 +171,7 @@ export default function ProductCatalogClient({
                 { id: 'moq', label: 'Lowest MOQ' },
               ].map((s) => (
                 <button key={s.id} onClick={() => handleFilterChange(setSortBy, s.id)}
-                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all shrink-0 ${
+                  className={`px-4 py-3 rounded-lg text-xs font-bold transition-all shrink-0 min-h-[44px] ${
                     sortBy === s.id ? 'bg-[#f8f9fa] text-[#0a0e27] shadow-sm' : 'text-[#595959] hover:text-[#0a0e27] hover:bg-[#fcfcfc]'
                   }`}>
                   {s.label}
@@ -291,6 +285,15 @@ export default function ProductCatalogClient({
             </motion.div>
           )}
         </div>
+      </div>
+      {/* Mobile FAB for Filters */}
+      <div className="xl:hidden fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40">
+        <button
+          onClick={() => setShowMobileFilters(true)}
+          className="flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#0a0e27] text-white text-xs font-bold uppercase tracking-wider shadow-[0_4px_15px_rgba(10,14,39,0.3)] border border-white/10 active:scale-95 transition-transform"
+        >
+          <Filter className="w-4 h-4" /> Filters
+        </button>
       </div>
     </div>
   );

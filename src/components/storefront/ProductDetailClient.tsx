@@ -174,12 +174,12 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             )}
           </div>
           {allImages.length > 1 && (
-            <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+            <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar snap-x snap-mandatory">
               {allImages.map((img: string, idx: number) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentImage(img)}
-                  className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${currentImage === img ? 'border-[#10164A]' : 'border-transparent hover:border-neutral-300'}`}
+                  className={`relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 snap-start rounded-lg overflow-hidden border-2 transition-colors ${currentImage === img ? 'border-[#10164A]' : 'border-transparent hover:border-neutral-300'}`}
                 >
                   <Image src={img} alt={`${product.title} view ${idx + 1}`} fill className="object-cover" />
                 </button>
@@ -246,7 +246,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
 
           {/* Key Specs */}
           <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="flex items-center gap-2 text-xs text-neutral-700">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-neutral-700">
               <Package className="w-4 h-4 text-[#2aabb0] shrink-0" />
               <span>{product.material}</span>
             </div>
@@ -292,7 +292,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             </Link>
           </div>
 
-          <input type="file" id="custom-photo-upload" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" disabled={isSharing} />
+          <input type="file" id="custom-photo-upload" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="sr-only absolute w-0 h-0" disabled={isSharing} />
           <label
             htmlFor="custom-photo-upload"
             className={`w-full py-3.5 mb-8 border-2 border-emerald-500 text-emerald-600 rounded-none text-xs font-bold uppercase tracking-wider hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 cursor-pointer ${isSharing ? 'opacity-50 pointer-events-none' : ''}`}
@@ -323,7 +323,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             <div className="divide-y divide-[#eaeaea]">
               {actualSpecs.map((spec: { label: string; value: string }, i: number) => (
                 <div key={i} className="flex items-start gap-4 py-4">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#595959] w-48 shrink-0">{spec.label}</span>
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#595959] w-48 shrink-0">{spec.label}</span>
                   <span className="text-sm text-[#0a0e27]">{spec.value}</span>
                 </div>
               ))}
@@ -375,25 +375,26 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
         </div>
       )}
 
-      {/* Sticky Mobile Add-To-Cart Bar (CRO) */}
-      <div className="fixed bottom-16 left-0 right-0 z-40 bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.1)] p-4 md:hidden border-t border-[#eaeaea]">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex flex-col">
-            <span className="text-[10px] text-neutral-500 font-bold uppercase">Retail</span>
-            <span className="text-lg font-black text-[#10164A] font-mono">₹{product.price}</span>
-          </div>
+      {/* Sticky Mobile Add-To-Cart Bar */}
+      <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] left-0 right-0 z-40 bg-white/90 backdrop-blur-md shadow-[0_-5px_20px_rgba(0,0,0,0.05)] p-3 md:hidden border-t border-neutral-200/50">
+        <div className="flex items-center justify-between gap-3">
           <button
             onClick={handleAddToCart}
             disabled={added}
-            className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 ${
+            className={`flex-1 py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-sm ${
               added 
                 ? 'bg-emerald-500 text-white' 
-                : 'bg-[#2aabb0] text-[#0a0e27]'
+                : 'bg-[#2aabb0] text-[#0a0e27] active:bg-[#38C8CC]'
             }`}
           >
-            {added ? <Check className="w-4 h-4" /> : <ShoppingBag className="w-4 h-4" />}
-            <span>{added ? 'Added' : 'Quick Add'}</span>
+            {added ? <><Check className="w-4 h-4" /> Added</> : <><ShoppingBag className="w-4 h-4" /> Quick Add</>}
           </button>
+          <label
+            htmlFor="custom-photo-upload"
+            className={`w-12 h-12 flex items-center justify-center bg-emerald-50 text-emerald-600 rounded-xl border-2 border-emerald-500 cursor-pointer shadow-sm shrink-0 ${isSharing ? 'opacity-50 pointer-events-none' : ''}`}
+          >
+            <Camera className="w-5 h-5" />
+          </label>
         </div>
       </div>
 

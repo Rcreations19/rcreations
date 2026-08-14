@@ -37,10 +37,10 @@ export function CartDrawer() {
     <dialog
       ref={dialogRef}
       aria-label="Shopping cart"
-      className="backdrop:bg-black/40 backdrop:backdrop-blur-sm p-0 m-0 w-full max-w-md h-full bg-transparent shadow-none"
+      className="backdrop:bg-black/50 backdrop:backdrop-blur-sm p-0 m-0 mt-auto md:mt-0 ml-auto md:mr-0 w-full md:max-w-md h-[85vh] md:h-full bg-transparent shadow-none rounded-t-3xl md:rounded-none overflow-hidden"
     >
       {/* Drawer */}
-      <div className="h-full bg-white shadow-2xl flex flex-col animate-slide-in-right">
+      <div className="h-full bg-white shadow-2xl flex flex-col animate-slide-up md:animate-slide-in-right">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-neutral-200">
           <div className="flex items-center gap-2">
@@ -95,17 +95,17 @@ export function CartDrawer() {
                       <button
                         onClick={() => updateQuantity(item.id, -1)}
                         aria-label="Decrease quantity"
-                        className="w-11 h-11 flex items-center justify-center hover:bg-neutral-100 rounded-l-lg"
+                        className="w-12 h-12 md:w-11 md:h-11 flex items-center justify-center hover:bg-neutral-100 rounded-l-lg active:bg-neutral-200 transition-colors"
                       >
-                        <Minus className="w-3 h-3" />
+                        <Minus className="w-4 h-4 md:w-3 md:h-3" />
                       </button>
                       <span className="w-8 text-center text-xs font-bold font-mono">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, 1)}
                         aria-label="Increase quantity"
-                        className="w-11 h-11 flex items-center justify-center hover:bg-neutral-100 rounded-r-lg"
+                        className="w-12 h-12 md:w-11 md:h-11 flex items-center justify-center hover:bg-neutral-100 rounded-r-lg active:bg-neutral-200 transition-colors"
                       >
-                        <Plus className="w-3 h-3" />
+                        <Plus className="w-4 h-4 md:w-3 md:h-3" />
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
@@ -127,7 +127,7 @@ export function CartDrawer() {
 
         {/* Upsell / Cross-sell (CRO) */}
         {items.length > 0 && (
-          <div className="mx-5 mb-2 bg-[#f8f9fa] border border-[#eaeaea] p-3 rounded-xl flex items-center justify-between gap-3 shadow-sm">
+          <div className="mx-5 mb-2 bg-[#f8f9fa] border border-[#eaeaea] p-3 rounded-xl flex flex-row sm:flex-row items-center justify-between gap-3 shadow-sm">
             <div className="w-12 h-12 bg-white rounded-lg border border-[#eaeaea] flex items-center justify-center shrink-0">
               <Gift className="w-6 h-6 text-[#2aabb0]" />
             </div>
@@ -135,9 +135,9 @@ export function CartDrawer() {
               <h4 className="text-xs font-bold text-[#0a0e27]">Premium Gift Box</h4>
               <p className="text-[10px] text-neutral-500 line-clamp-1">Velvet lined, ribbon tie</p>
             </div>
-            <div className="flex flex-col items-end gap-1">
+            <div className="flex flex-col items-end gap-1 shrink-0">
               <span className="text-xs font-black font-mono text-[#0a0e27]">₹250</span>
-              <button className="text-[10px] font-bold uppercase tracking-wider bg-white border border-[#eaeaea] px-2 py-1 rounded hover:bg-[#eaeaea] transition-colors">
+              <button className="text-[10px] font-bold uppercase tracking-wider bg-white border border-[#eaeaea] px-3 py-1.5 rounded-lg hover:bg-[#eaeaea] active:bg-neutral-200 transition-colors min-h-[36px]">
                 Add
               </button>
             </div>

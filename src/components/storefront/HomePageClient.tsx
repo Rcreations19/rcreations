@@ -48,9 +48,9 @@ export default function HomePageClient({ children }: { children: React.ReactNode
       <section className="py-12 glass-panel border-y border-white/40">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-center text-sm font-medium text-[#0a0e27]/60 tracking-wide mb-8">Trusted by 500+ Studios & Retailers Across Tamil Nadu</p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 hover:opacity-100 transition-opacity duration-500">
+          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-16 opacity-60 hover:opacity-100 transition-opacity duration-500">
             {['Vellore Trophy House', 'Selvam Photo Studio', 'Rotary Club Gudiyattam', 'Lions Club Vellore', 'Tamil Nadu Police'].map((partner, i) => (
-              <span key={i} className="text-sm font-bold font-heading text-[#0a0e27] uppercase tracking-wider whitespace-nowrap">{partner}</span>
+              <span key={i} className="text-xs md:text-sm font-bold font-heading text-[#0a0e27] uppercase tracking-wider whitespace-nowrap">{partner}</span>
             ))}
           </div>
           <div className="flex flex-wrap justify-center items-center gap-6 mt-8 pt-8 border-t border-[#0a0e27]/10">
@@ -81,12 +81,12 @@ export default function HomePageClient({ children }: { children: React.ReactNode
             {/* Retail Block (Prioritized) */}
             <motion.div 
               initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-              className="glass-panel-dark p-10 lg:p-14 rounded-[2.5rem] border-2 border-[#2aabb0]/50 shadow-[0_0_30px_rgba(200,147,58,0.15)] relative overflow-hidden"
+              className="glass-panel-dark p-6 md:p-10 lg:p-14 rounded-[2rem] lg:rounded-[2.5rem] border-2 border-[#2aabb0]/50 shadow-[0_0_30px_rgba(200,147,58,0.15)] relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#2aabb0]/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-              <User className="w-12 h-12 text-[#2aabb0] mb-8 relative z-10" />
-              <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-6 relative z-10">Retail Customers</h2>
-              <p className="text-base text-neutral-300 mb-10 leading-relaxed font-medium relative z-10">
+              <User className="w-10 h-10 md:w-12 md:h-12 text-[#2aabb0] mb-6 md:mb-8 relative z-10" />
+              <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight mb-4 md:mb-6 relative z-10">Retail Customers</h2>
+              <p className="text-sm md:text-base text-neutral-300 mb-8 md:mb-10 leading-relaxed font-medium relative z-10">
                 Design the perfect custom gift or premium photo frame for your home using our interactive online configurator. Order single units with no minimums, crafted with the same industrial precision.
               </p>
               <ul className="space-y-5 mb-12 text-sm font-medium text-neutral-200 relative z-10">
@@ -102,11 +102,11 @@ export default function HomePageClient({ children }: { children: React.ReactNode
             {/* Wholesale Block (Secondary) */}
             <motion.div 
               initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}
-              className="glass-panel p-10 lg:p-14 rounded-[2.5rem] border border-white/40 bg-white/40"
+              className="glass-panel p-6 md:p-10 lg:p-14 rounded-[2rem] lg:rounded-[2.5rem] border border-white/40 bg-white/40"
             >
-              <Building2 className="w-12 h-12 text-[#0a0e27] mb-8" />
-              <h2 className="text-3xl md:text-4xl font-extrabold text-[#0a0e27] tracking-tight mb-6">Wholesale Partners</h2>
-              <p className="text-base text-[#0a0e27]/80 mb-10 leading-relaxed font-medium">
+              <Building2 className="w-10 h-10 md:w-12 md:h-12 text-[#0a0e27] mb-6 md:mb-8" />
+              <h2 className="text-2xl md:text-4xl font-extrabold text-[#0a0e27] tracking-tight mb-4 md:mb-6">Wholesale Partners</h2>
+              <p className="text-sm md:text-base text-[#0a0e27]/80 mb-8 md:mb-10 leading-relaxed font-medium">
                 Ideal for photo studios, corporate event organizers, and gift shops. Access our factory-direct pricing with a minimum order quantity (MOQ) of just 10 units. We provide full GST tax invoices and handle regional logistics.
               </p>
               <ul className="space-y-5 mb-12 text-sm font-medium text-[#0a0e27]/90">
