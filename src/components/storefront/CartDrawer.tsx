@@ -37,7 +37,8 @@ export function CartDrawer() {
     <dialog
       ref={dialogRef}
       aria-label="Shopping cart"
-      className="backdrop:bg-black/50 backdrop:backdrop-blur-sm p-0 m-0 mt-auto md:mt-0 ml-auto md:mr-0 w-full md:max-w-md h-[85vh] md:h-full bg-transparent shadow-none rounded-t-3xl md:rounded-none overflow-hidden"
+      className="backdrop:bg-black/60 p-0 m-0 mt-auto md:mt-0 ml-auto md:mr-0 w-full md:max-w-md h-[85vh] md:h-full bg-transparent shadow-none rounded-t-3xl md:rounded-none overflow-hidden"
+      onClick={handleBackdropClick}
     >
       {/* Drawer */}
       <div className="h-full bg-white shadow-2xl flex flex-col animate-slide-up md:animate-slide-in-right">

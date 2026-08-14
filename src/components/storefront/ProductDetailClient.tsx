@@ -375,7 +375,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
       )}
 
       {/* Sticky Mobile Add-To-Cart Bar */}
-      <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] left-0 right-0 z-40 bg-white/90 backdrop-blur-md shadow-[0_-5px_20px_rgba(0,0,0,0.05)] p-3 md:hidden border-t border-neutral-200/50">
+      <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] left-0 right-0 z-40 bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.08)] p-3 md:hidden border-t border-neutral-200">
         <div className="flex items-center justify-between gap-3">
           <button
             onClick={handleAddToCart}

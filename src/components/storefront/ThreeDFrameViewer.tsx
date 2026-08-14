@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useRef, useMemo, useState, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Environment, Lightformer, ContactShadows, useTexture, Center, MeshReflectorMaterial, Float } from '@react-three/drei';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Environment, Lightformer, useTexture, Center } from '@react-three/drei';
 import * as THREE from 'three';
 import { Maximize, Minimize } from 'lucide-react';
 import type { GlassType } from '@/lib/supabase/types';
@@ -206,7 +206,7 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
         {isFullscreen ? <Minimize className="w-5 h-5 text-gray-700" /> : <Maximize className="w-5 h-5 text-gray-700" />}
       </button>
 
-      <Canvas shadows camera={{ position: [0, 0, Math.max(widthCm, heightCm) / 6.5], fov: 40 }}>
+      <Canvas frameloop="demand" shadows camera={{ position: [0, 0, Math.max(widthCm, heightCm) / 6.5], fov: 40 }}>
         {/* Lighting */}
         <ambientLight intensity={2.0} />
         <spotLight position={[10, 20, 10]} angle={0.4} penumbra={1} intensity={3.5} castShadow />
@@ -225,20 +225,18 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
 
         {/* The Frame Assembly */}
         <Center>
-          <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
-            <group rotation={[0, 0, 0]}>
-              <FrameMesh 
-                materialId={materialId}
-                widthCm={widthCm} 
-                heightCm={heightCm} 
-                thickness={thicknessCm}
-                depth={2} // 2cm depth
-                materialParams={materialParams} 
-              />
-              <PhotoCanvas photoUrl={photoUrl || ''} widthCm={widthCm} heightCm={heightCm} />
-              <GlassPane widthCm={widthCm} heightCm={heightCm} glassType={glassType} />
-            </group>
-          </Float>
+          <group rotation={[0, 0, 0]}>
+            <FrameMesh 
+              materialId={materialId}
+              widthCm={widthCm} 
+              heightCm={heightCm} 
+              thickness={thicknessCm}
+              depth={2} // 2cm depth
+              materialParams={materialParams} 
+            />
+            <PhotoCanvas photoUrl={photoUrl || ''} widthCm={widthCm} heightCm={heightCm} />
+            <GlassPane widthCm={widthCm} heightCm={heightCm} glassType={glassType} />
+          </group>
         </Center>
 
         {/* Orbit Controls */}
@@ -247,8 +245,6 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
           enableZoom={true}
           minDistance={2}
           maxDistance={30}
-          autoRotate={!photoUrl} // Auto rotate if no photo to show off the 3D
-          autoRotateSpeed={1}
         />
       </Canvas>
     </div>

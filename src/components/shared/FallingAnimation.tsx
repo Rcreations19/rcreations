@@ -354,7 +354,18 @@ export default function FallingAnimation({ className = '' }: { className?: strin
   const lastSpawnRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
 
+  const [isMobile, setIsMobile] = useState(true);
+
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
