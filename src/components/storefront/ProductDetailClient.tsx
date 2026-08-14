@@ -274,8 +274,8 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
           {/* Description */}
           <p className="text-sm text-neutral-600 leading-relaxed mb-8">{product.description}</p>
 
-          {/* Add to Cart */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-4">
+          {/* Add to Cart (Hidden on mobile due to sticky bar) */}
+          <div className="hidden sm:flex flex-col sm:flex-row gap-3 mb-4">
             <button
               onClick={handleAddToCart}
               disabled={added}
@@ -343,9 +343,9 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
           <div className="bg-white rounded-none border-y border-[#eaeaea]">
             <div className="divide-y divide-[#eaeaea]">
               {actualSpecs.map((spec: { label: string; value: string }, i: number) => (
-                <div key={i} className="flex items-start gap-4 py-4">
-                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#595959] w-48 shrink-0">{spec.label}</span>
-                  <span className="text-sm text-[#0a0e27]">{spec.value}</span>
+                <div key={i} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 py-4">
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#595959] sm:w-48 shrink-0">{spec.label}</span>
+                  <span className="text-sm text-[#0a0e27] font-medium">{spec.value}</span>
                 </div>
               ))}
             </div>

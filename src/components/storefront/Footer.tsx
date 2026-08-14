@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Instagram, Facebook, ArrowRight } from 'lucide-react';
+import { Mail, Phone, MapPin, Instagram, Facebook, ArrowRight, ChevronDown } from 'lucide-react';
 import { RCreationLogo } from '../shared/Logo';
 
 export default function Footer() {
@@ -31,23 +31,56 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div className="lg:col-span-2">
-            <h3 className="text-[10px] font-bold text-[#2aabb0] uppercase tracking-widest mb-6 font-mono">Catalog</h3>
-            <ul className="space-y-4">
-              <li><Link href="/products" className="text-sm text-neutral-400 hover:text-white transition-colors">All Products</Link></li>
-              <li><Link href="/products?category=frames" className="text-sm text-neutral-400 hover:text-white transition-colors">Photo Frames</Link></li>
-              <li><Link href="/products?category=trophies" className="text-sm text-neutral-400 hover:text-white transition-colors">Crystal Trophies</Link></li>
-              <li><Link href="/products?category=gifts" className="text-sm text-neutral-400 hover:text-white transition-colors">Custom Gifts</Link></li>
-            </ul>
+          <div className="lg:col-span-2 border-t border-white/10 md:border-t-0 pt-4 md:pt-0">
+            {/* Mobile Accordion */}
+            <details className="group md:hidden">
+              <summary className="flex items-center justify-between cursor-pointer list-none text-[10px] font-bold text-[#2aabb0] uppercase tracking-widest font-mono py-2">
+                Catalog
+                <ChevronDown className="w-4 h-4 transition-transform group-open:-rotate-180" />
+              </summary>
+              <ul className="space-y-4 pt-4 pb-2">
+                <li><Link href="/products" className="text-sm text-neutral-400 hover:text-white transition-colors">All Products</Link></li>
+                <li><Link href="/products?category=frames" className="text-sm text-neutral-400 hover:text-white transition-colors">Photo Frames</Link></li>
+                <li><Link href="/products?category=trophies" className="text-sm text-neutral-400 hover:text-white transition-colors">Crystal Trophies</Link></li>
+                <li><Link href="/products?category=gifts" className="text-sm text-neutral-400 hover:text-white transition-colors">Custom Gifts</Link></li>
+              </ul>
+            </details>
+            
+            {/* Desktop Block */}
+            <div className="hidden md:block">
+              <h3 className="text-[10px] font-bold text-[#2aabb0] uppercase tracking-widest mb-6 font-mono">Catalog</h3>
+              <ul className="space-y-4">
+                <li><Link href="/products" className="text-sm text-neutral-400 hover:text-white transition-colors">All Products</Link></li>
+                <li><Link href="/products?category=frames" className="text-sm text-neutral-400 hover:text-white transition-colors">Photo Frames</Link></li>
+                <li><Link href="/products?category=trophies" className="text-sm text-neutral-400 hover:text-white transition-colors">Crystal Trophies</Link></li>
+                <li><Link href="/products?category=gifts" className="text-sm text-neutral-400 hover:text-white transition-colors">Custom Gifts</Link></li>
+              </ul>
+            </div>
           </div>
 
-          <div className="lg:col-span-2">
-            <h3 className="text-[10px] font-bold text-[#2aabb0] uppercase tracking-widest mb-6 font-mono">Company</h3>
-            <ul className="space-y-4">
-              <li><Link href="/wholesale" className="text-sm text-neutral-400 hover:text-white transition-colors">B2B Wholesale</Link></li>
-              <li><Link href="/configurator" className="text-sm text-neutral-400 hover:text-white transition-colors">Frame Builder</Link></li>
-              <li><Link href="/specs" className="text-sm text-neutral-400 hover:text-white transition-colors">Tech Specs</Link></li>
-            </ul>
+          <div className="lg:col-span-2 border-t border-white/10 md:border-t-0 pt-4 md:pt-0">
+            {/* Mobile Accordion */}
+            <details className="group md:hidden">
+              <summary className="flex items-center justify-between cursor-pointer list-none text-[10px] font-bold text-[#2aabb0] uppercase tracking-widest font-mono py-2">
+                Company
+                <ChevronDown className="w-4 h-4 transition-transform group-open:-rotate-180" />
+              </summary>
+              <ul className="space-y-4 pt-4 pb-2">
+                <li><Link href="/wholesale" className="text-sm text-neutral-400 hover:text-white transition-colors">B2B Wholesale</Link></li>
+                <li><Link href="/configurator" className="text-sm text-neutral-400 hover:text-white transition-colors">Frame Builder</Link></li>
+                <li><Link href="/specs" className="text-sm text-neutral-400 hover:text-white transition-colors">Tech Specs</Link></li>
+              </ul>
+            </details>
+            
+            {/* Desktop Block */}
+            <div className="hidden md:block">
+              <h3 className="text-[10px] font-bold text-[#2aabb0] uppercase tracking-widest mb-6 font-mono">Company</h3>
+              <ul className="space-y-4">
+                <li><Link href="/wholesale" className="text-sm text-neutral-400 hover:text-white transition-colors">B2B Wholesale</Link></li>
+                <li><Link href="/configurator" className="text-sm text-neutral-400 hover:text-white transition-colors">Frame Builder</Link></li>
+                <li><Link href="/specs" className="text-sm text-neutral-400 hover:text-white transition-colors">Tech Specs</Link></li>
+              </ul>
+            </div>
           </div>
 
           {/* Contact Col */}
