@@ -292,14 +292,13 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             </Link>
           </div>
 
-          <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isSharing}
-            className="w-full py-3.5 mb-8 border-2 border-emerald-500 text-emerald-600 rounded-none text-xs font-bold uppercase tracking-wider hover:bg-emerald-50 transition-all flex items-center justify-center gap-2"
+          <input type="file" id="custom-photo-upload" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" disabled={isSharing} />
+          <label
+            htmlFor="custom-photo-upload"
+            className={`w-full py-3.5 mb-8 border-2 border-emerald-500 text-emerald-600 rounded-none text-xs font-bold uppercase tracking-wider hover:bg-emerald-50 transition-all flex items-center justify-center gap-2 cursor-pointer ${isSharing ? 'opacity-50 pointer-events-none' : ''}`}
           >
             {isSharing ? 'Processing...' : <><Camera className="w-4 h-4" /> Order with Custom Photo on WhatsApp</>}
-          </button>
+          </label>
 
           {/* Trust badges */}
           <div className="flex flex-wrap gap-4 pt-6 border-t border-neutral-200">
