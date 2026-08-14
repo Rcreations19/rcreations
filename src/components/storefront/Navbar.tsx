@@ -129,7 +129,7 @@ export default function Navbar() {
           ))}
         </div>
 
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-500 py-10">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-500 py-4 md:py-10">
 
           {/* Brand Logo */}
           <div className="hidden md:flex flex-1 lg:flex-none items-center">
@@ -139,14 +139,14 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Search Bar (Only visible on mobile) */}
-          <div className="flex w-full md:hidden items-center">
+          <div className="flex w-full md:hidden items-center mt-1">
             <form action="/products" method="GET" className="w-full relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
               <input 
                 type="text" 
                 name="search" 
                 placeholder="Search products..." 
-                className="w-full pl-10 pr-4 py-2.5 bg-white/5 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] rounded-xl text-white text-sm placeholder:text-neutral-400 focus:outline-none focus:border-[#2aabb0] focus:bg-white/10 transition-all"
+                className="w-full pl-12 pr-5 py-3.5 bg-white/5 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] rounded-2xl text-white text-base placeholder:text-neutral-400 focus:outline-none focus:border-[#2aabb0] focus:bg-white/10 focus:ring-1 focus:ring-[#2aabb0] transition-all"
               />
             </form>
           </div>
