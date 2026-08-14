@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { Search, ShoppingBag, Star, Check, Heart, Filter, X } from 'lucide-react';
+import { Search, ShoppingBag, Star, Check, Heart, Filter, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/components/storefront/CartContext';
 
@@ -157,6 +157,20 @@ export default function ProductCatalogClient({
 
         {/* Product Grid Area */}
         <div className="xl:col-span-9 space-y-6">
+          
+          {/* Mobile Filter Toggle */}
+          <div className="xl:hidden mb-2">
+            <button 
+              onClick={() => setShowMobileFilters(true)}
+              className="w-full flex items-center justify-between p-4 bg-white border border-[#eaeaea] rounded-xl text-sm font-bold text-[#0a0e27] shadow-[0_2px_10px_rgba(0,0,0,0.02)] active:scale-[0.98] transition-all"
+            >
+              <div className="flex items-center gap-2">
+                <Filter className="w-5 h-5 text-[#2aabb0]" />
+                <span>Filters & Sorting</span>
+              </div>
+              <ChevronDown className="w-5 h-5 text-neutral-400" />
+            </button>
+          </div>
           
           {/* Top Sort Bar */}
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}

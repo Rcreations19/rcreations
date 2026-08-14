@@ -153,33 +153,40 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
         {/* Image Gallery */}
         <div className="flex flex-col gap-4">
-          <div className="relative aspect-[4/5] bg-[#FAFAFA] rounded-none overflow-hidden border border-[#eaeaea]">
-            {currentImage ? (
-              <Image
-                src={currentImage}
-                alt={product.title}
-                fill
-                className="object-cover transition-opacity duration-300"
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                fetchPriority="high"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-neutral-400">No Image</div>
-            )}
+          <div className="relative bg-[#FAFAFA] rounded-none overflow-hidden border border-[#eaeaea]">
+            {/* Mobile Swipeable Gallery */}
+            <div className="flex sm:hidden overflow-x-auto snap-x snap-mandatory hide-scrollbar aspect-[4/5]">
+              {allImages.map((img: string, idx: number) => (
+                <div key={idx} className="w-full flex-shrink-0 snap-center relative aspect-[4/5]">
+                  <Image src={img} alt={`${product.title} ${idx + 1}`} fill className="object-cover" sizes="100vw" priority={idx === 0} fetchPriority={idx === 0 ? "high" : "auto"} />
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Single Image */}
+            <div className="hidden sm:block relative aspect-[4/5]">
+              {currentImage ? (
+                <Image src={currentImage} alt={product.title} fill className="object-cover transition-opacity duration-300" priority sizes="50vw" fetchPriority="high" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-neutral-400">No Image</div>
+              )}
+            </div>
+
             {product.is_bestseller && (
               <span className="absolute top-4 left-4 bg-[#10164A] text-white text-[10px] font-bold font-mono uppercase px-3 py-1.5 rounded shadow-sm">
                 Bestseller
               </span>
             )}
           </div>
+          
+          {/* Thumbnails (Hidden on Mobile) */}
           {allImages.length > 1 && (
-            <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar snap-x snap-mandatory">
+            <div className="hidden sm:flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
               {allImages.map((img: string, idx: number) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentImage(img)}
-                  className={`relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 snap-start rounded-lg overflow-hidden border-2 transition-colors ${currentImage === img ? 'border-[#10164A]' : 'border-transparent hover:border-neutral-300'}`}
+                  className={`relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-colors ${currentImage === img ? 'border-[#10164A]' : 'border-transparent hover:border-neutral-300'}`}
                 >
                   <Image src={img} alt={`${product.title} view ${idx + 1}`} fill className="object-cover" />
                 </button>
@@ -290,6 +297,21 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             >
               Bulk Inquiry <ArrowRight className="w-4 h-4" />
             </Link>
+          </div>
+
+          {/* Sticky Mobile CTA Bar */}
+          <div className="sm:hidden fixed bottom-[90px] left-4 right-4 z-40">
+            <button
+              onClick={handleAddToCart}
+              disabled={added}
+              className={`w-full py-4 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all shadow-[0_8px_30px_rgba(0,0,0,0.15)] flex items-center justify-center gap-2 ${
+                added 
+                  ? 'bg-emerald-500 text-white' 
+                  : 'bg-[#0a0e27] text-white active:scale-[0.98]'
+              }`}
+            >
+              {added ? <><Check className="w-4 h-4" /> Added</> : <><ShoppingBag className="w-4 h-4" /> Add to Cart - ₹{product.price}</>}
+            </button>
           </div>
 
           <label

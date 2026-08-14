@@ -74,9 +74,9 @@ export default function HomePageClient({ children }: { children: React.ReactNode
       <InfiniteSlider />
 
       {/* ==================== B2B VS B2C ==================== */}
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-12 md:py-24 relative overflow-hidden">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
             
             {/* Retail Block (Prioritized) */}
             <motion.div 
