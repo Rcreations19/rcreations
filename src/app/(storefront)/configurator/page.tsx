@@ -246,7 +246,7 @@ export default function ConfiguratorPage() {
                       <textarea 
                         value={customText} onChange={(e) => setCustomText(e.target.value)}
                         placeholder="e.g., Awarded to John Doe for Outstanding Performance 2026..."
-                        className="w-full p-4 bg-[#fcfcfc] border border-[#eaeaea] rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:border-[#2aabb0] focus:outline-none transition-all shadow-inner resize-none h-32"
+                        className="w-full p-4 bg-[#fcfcfc] border border-[#eaeaea] rounded-xl text-base md:text-sm focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:border-[#2aabb0] focus:outline-none transition-all shadow-inner resize-none h-32"
                       />
                     </div>
 
@@ -294,7 +294,7 @@ export default function ConfiguratorPage() {
           <div className="lg:col-span-5 order-first lg:order-last mb-8 lg:mb-0 z-30">
             <motion.div 
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-              className="sticky top-[88px] lg:top-28 bg-white rounded-3xl p-4 lg:p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-[#eaeaea] relative overflow-hidden"
+              className="relative lg:sticky top-0 lg:top-28 bg-white rounded-3xl p-4 lg:p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-[#eaeaea] overflow-hidden"
             >
               {/* TRUE 3D Preview Graphic */}
               <div className="w-full h-[220px] sm:h-[350px] lg:h-[650px] mb-4">

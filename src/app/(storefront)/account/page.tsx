@@ -162,7 +162,7 @@ export default function AccountPage() {
               <div className="relative">
                 <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input type="text" value={form.fullName} onChange={e => setForm({ ...form, fullName: e.target.value })}
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all" />
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all" />
               </div>
             </div>
             <div>
@@ -170,7 +170,7 @@ export default function AccountPage() {
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input type="email" value={user.email} disabled
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-neutral-100 border border-neutral-200 rounded-xl text-sm text-neutral-500 cursor-not-allowed" />
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-neutral-100 border border-neutral-200 rounded-xl text-base md:text-sm text-neutral-500 cursor-not-allowed" />
               </div>
             </div>
             <div>
@@ -178,7 +178,7 @@ export default function AccountPage() {
               <div className="relative">
                 <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input type="tel" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })}
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all" />
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all" />
               </div>
             </div>
           </div>
@@ -196,7 +196,7 @@ export default function AccountPage() {
               <div className="relative">
                 <MapPin className="absolute left-3.5 top-3 w-4 h-4 text-neutral-400" />
                 <input type="text" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })}
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all" />
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all" />
               </div>
             </div>
             <div>
@@ -204,7 +204,7 @@ export default function AccountPage() {
               <div className="relative">
                 <Building className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input type="text" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })}
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all" />
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all" />
               </div>
             </div>
             <div>
@@ -212,13 +212,13 @@ export default function AccountPage() {
               <div className="relative">
                 <Map className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input type="text" value={form.state} onChange={e => setForm({ ...form, state: e.target.value })}
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all" />
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all" />
               </div>
             </div>
             <div>
               <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">PIN Code</label>
               <input type="text" value={form.pincode} onChange={e => setForm({ ...form, pincode: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all" />
+                className="w-full px-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all" />
             </div>
           </div>
 

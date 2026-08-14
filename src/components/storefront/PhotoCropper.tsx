@@ -95,10 +95,10 @@ export default function PhotoCropper({ imageSrc, onCropComplete, onCancel }: Pho
         </div>
 
         <div className="p-4 border-t border-white/10 bg-[#050714] flex justify-end gap-4">
-          <button onClick={onCancel} className="px-6 py-2.5 rounded-full text-xs font-bold text-neutral-400 hover:text-white hover:bg-white/5 transition-all">
+          <button onClick={onCancel} className="px-6 py-3.5 sm:py-2.5 rounded-full text-sm sm:text-xs font-bold text-neutral-400 hover:text-white hover:bg-white/5 transition-all">
             Cancel
           </button>
-          <button onClick={handleSave} className="px-8 py-2.5 bg-[#2aabb0] text-[#0a0e27] rounded-full text-xs font-bold uppercase tracking-wider hover:bg-[#38C8CC] transition-all flex items-center gap-2">
+          <button onClick={handleSave} className="px-8 py-3.5 sm:py-2.5 bg-[#2aabb0] text-[#0a0e27] rounded-full text-sm sm:text-xs font-bold uppercase tracking-wider hover:bg-[#38C8CC] transition-all flex items-center gap-2">
             <Check className="w-4 h-4" /> Apply Crop
           </button>
         </div>
