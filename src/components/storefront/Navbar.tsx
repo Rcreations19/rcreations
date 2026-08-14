@@ -129,12 +129,12 @@ export default function Navbar() {
           ))}
         </div>
 
-        <div className={`max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-500 ${isScrolled ? 'py-4' : 'py-10'}`}>
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-500 py-10">
 
           {/* Brand Logo */}
           <div className="hidden md:flex flex-1 lg:flex-none items-center">
-            <Link href="/" className={`group flex items-center gap-3 transition-all duration-300 hover:scale-105 ${isScrolled ? '' : '-my-6'}`}>
-              <RCreationLogo variant="full-horizontal" theme="dark" iconSize={isScrolled ? 50 : 80} />
+            <Link href="/" className="group flex items-center gap-3 transition-all duration-300 hover:scale-105 -my-6">
+              <RCreationLogo variant="full-horizontal" theme="dark" iconSize={80} />
             </Link>
           </div>
 
