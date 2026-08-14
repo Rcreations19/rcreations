@@ -131,11 +131,24 @@ export default function Navbar() {
 
         <div className={`max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-500 ${isScrolled ? 'py-4' : 'py-10'}`}>
 
-          {/* Brand Logo - Uses absolute positioning for true center on desktop */}
-          <div className="flex-1 lg:flex-none flex items-center">
+          {/* Brand Logo */}
+          <div className="hidden md:flex flex-1 lg:flex-none items-center">
             <Link href="/" className={`group flex items-center gap-3 transition-all duration-300 hover:scale-105 ${isScrolled ? '' : '-my-6'}`}>
               <RCreationLogo variant="full-horizontal" theme="dark" iconSize={isScrolled ? 50 : 80} />
             </Link>
+          </div>
+
+          {/* Mobile Search Bar (Only visible on mobile) */}
+          <div className="flex w-full md:hidden items-center">
+            <form action="/products" method="GET" className="w-full relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+              <input 
+                type="text" 
+                name="search" 
+                placeholder="Search products..." 
+                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm placeholder:text-neutral-400 focus:outline-none focus:border-[#2aabb0] focus:bg-white/15 transition-all"
+              />
+            </form>
           </div>
 
           {/* Desktop Navigation - Centered */}
@@ -158,7 +171,7 @@ export default function Navbar() {
           </nav>
 
           {/* Action Buttons */}
-          <div className="flex-1 lg:flex-none flex items-center justify-end gap-3">
+          <div className="hidden md:flex flex-1 lg:flex-none items-center justify-end gap-3">
             <Link href="/products" className="hidden sm:flex text-neutral-300 hover:text-[#2aabb0] transition-colors p-2" aria-label="Search products">
               <Search className="w-5 h-5" />
             </Link>
@@ -250,15 +263,6 @@ export default function Navbar() {
               <ArrowRight className="w-4 h-4 relative group-hover:translate-x-1 transition-transform" />
             </Link>
 
-            {/* Mobile Menu Toggle */}
-            <button
-              className="md:hidden p-3 -m-3 text-white"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
           </div>
         </div>
       </motion.header>

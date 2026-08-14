@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ProductCatalogClient from '@/components/storefront/ProductCatalogClient';
 import { getPublicProducts, getPublicCategories } from '@/lib/actions/storefront';
 
@@ -12,10 +12,12 @@ export default async function ProductsPage() {
 
   return (
     <div className="bg-[#FAFAFA] min-h-screen pt-28 pb-20">
-      <ProductCatalogClient 
-        initialProducts={products || []} 
-        categories={categories || []} 
-      />
+      <Suspense fallback={<div className="h-96 flex items-center justify-center">Loading catalog...</div>}>
+        <ProductCatalogClient 
+          initialProducts={products || []} 
+          categories={categories || []} 
+        />
+      </Suspense>
     </div>
   );
 }

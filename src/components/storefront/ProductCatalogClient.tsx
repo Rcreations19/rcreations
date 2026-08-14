@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Search, ShoppingBag, Star, Check, Heart, Filter, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,8 +28,9 @@ export default function ProductCatalogClient({
   initialProducts: any[], 
   categories: any[] 
 }) {
+  const searchParams = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState<'recommended' | 'price-low' | 'price-high' | 'rating' | 'moq'>('recommended');
   const [maxPrice, setMaxPrice] = useState(5000);
   const [onlyWholesale, setOnlyWholesale] = useState(false);
