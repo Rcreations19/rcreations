@@ -133,7 +133,7 @@ export default function ConfiguratorPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 max-w-6xl mx-auto">
           
           {/* Left Column: Wizard Steps */}
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-7 order-2 lg:order-1">
             <div className="bg-white rounded-3xl border border-[#eaeaea] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] overflow-hidden relative min-h-[500px]">
               
               <AnimatePresence mode="wait">
@@ -291,13 +291,13 @@ export default function ConfiguratorPage() {
           </div>
 
           {/* Right Column: Live Sticky Preview (Halo/Visual Feedback) */}
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-5 order-first lg:order-last mb-8 lg:mb-0 z-30">
             <motion.div 
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-              className="sticky top-28 bg-white rounded-3xl p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-[#eaeaea] relative overflow-hidden"
+              className="sticky top-[88px] lg:top-28 bg-white rounded-3xl p-4 lg:p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-[#eaeaea] relative overflow-hidden"
             >
               {/* TRUE 3D Preview Graphic */}
-              <div className="w-full h-[300px] sm:h-[400px] lg:h-[650px] mb-4">
+              <div className="w-full h-[220px] sm:h-[350px] lg:h-[650px] mb-4">
                 <ThreeDFrameViewer 
                   materialId={selectedMaterial.id} 
                   widthCm={widthCm} 
