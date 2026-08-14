@@ -14,6 +14,12 @@ export function CartDrawer() {
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    if (e.target === dialogRef.current) {
+      closeCart();
+    }
+  };
+
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
