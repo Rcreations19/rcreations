@@ -81,5 +81,15 @@ export async function submitOrder(
     return { error: error.message };
   }
 
+  // Trigger admin notification asynchronously (don't await it to block the response)
+  import('./notifications').then(({ createAdminNotification }) => {
+    createAdminNotification({
+      title: `New Order: ${orderNumber}`,
+      message: `${formData.name} placed a new order.`,
+      type: 'order',
+      link_url: '/admin/orders', // or specific order URL if available
+    }).catch(err => console.error("Failed to create admin notification:", err));
+  });
+
   return { success: true, orderId: orderNumber };
 }

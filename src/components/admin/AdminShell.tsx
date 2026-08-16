@@ -22,6 +22,7 @@ import {
   X
 } from 'lucide-react';
 import { RCreationLogo } from '@/components/shared/Logo';
+import { AdminNotifications } from './AdminNotifications';
 
 const MODELS = [
   { group: 'Overview' },
@@ -159,10 +160,7 @@ export function AdminShell({ children, profile }: AdminShellProps) {
             <Link href="/" target="_blank" className="hidden sm:flex text-xs font-bold text-[#0070f3] hover:underline items-center gap-1">
               View Site <ArrowUpRight className="w-3 h-3" />
             </Link>
-            <button className="w-8 h-8 rounded-full hover:bg-[#f5f5f5] flex items-center justify-center text-[#595959] transition-colors relative">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-2 w-1.5 h-1.5 bg-[#dc2626] rounded-full border border-white"></span>
-            </button>
+            <AdminNotifications />
           </div>
         </header>
 
