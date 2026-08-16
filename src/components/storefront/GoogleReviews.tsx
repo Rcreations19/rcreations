@@ -1,5 +1,6 @@
 import React from 'react';
-import { Star, ShieldCheck } from 'lucide-react';
+import { Star } from 'lucide-react';
+import { GoogleReviewsMarquee } from './GoogleReviewsMarquee';
 
 // Fetches live reviews from Google Places API (Server-Side)
 async function getLiveReviews() {
@@ -54,26 +55,50 @@ export async function GoogleReviews() {
     verified: true,
   })) : [
     {
-      author: 'Karthik Raja',
+      author: 'Naveen G',
       role: 'Verified Google Review',
       rating: 5,
-      date: '2 weeks ago',
-      comment: 'We have been sourcing synthetic frames and crystal awards from R Creation for over 3 years. Superb frame moulding quality, perfect miter joints, and punctual delivery for all our wedding studio orders.',
+      date: 'a month ago',
+      comment: 'I had a really good experience with R Creations. Mr. Raveendiran was very friendly, patient, and understood exactly what I wanted. He listened to all my suggestions without any hesitation and made every change I asked for. The final output came out exactly the way I had imagined. I\'m genuinely happy with the work and can confidently say he is very talented at photo editing. Thank you, R Creations, for turning my imagination into reality. Keep up the great work! Highly recommended.',
       verified: true,
     },
     {
-      author: 'Praveen Kumar',
+      author: 'Mahendran Nataraj',
       role: 'Verified Google Review',
       rating: 5,
-      date: '3 weeks ago',
-      comment: 'Created a custom 24x36 family collage frame using their online frame customizer. The acrylic glass is crystal clear and packaging was sturdy enough to survive transit without a scratch!',
+      date: '2 months ago',
+      comment: 'Excellent service for customized photos and old memories! They beautifully recreated our photos from 4 years ago with great attention to detail. The quality, creativity, and finishing were outstanding. A wonderful way to preserve precious moments and make them even more special. Highly recommended for anyone looking to relive their cherished memories.',
+      verified: true,
+    },
+    {
+      author: 'Ram',
+      role: 'Verified Google Review',
+      rating: 5,
+      date: 'a month ago',
+      comment: 'Amazing photo frame quality and excellent finishing. The design was beautiful, excellent customer service, great attention to detail. I\'m very happy with the final product. Highly recommended!',
+      verified: true,
+    },
+    {
+      author: 'Ramya A',
+      role: 'Verified Google Review',
+      rating: 5,
+      date: '2 months ago',
+      comment: 'I\'m from Chennai and found this page by chance while looking for a photo frame gift for my uncle in Vellore. I trusted them and placed an order. The frame was delivered to my uncle\'s home, and both of us absolutely loved it. Thank you for the beautiful work.',
+      verified: true,
+    },
+    {
+      author: 'Monisha Devi',
+      role: 'Verified Google Review',
+      rating: 5,
+      date: '5 months ago',
+      comment: 'I visited R Creation to buy a gift, and I had a great experience. They have beautiful and creative gift collections. The staff were very friendly and helped me choose the perfect gift. The quality was very good, and the price was reasonable. I am fully satisfied with their service. Highly recommended!',
       verified: true,
     }
   ];
 
   return (
-    <section className="py-20 lg:py-28 bg-[#fcfcfc] border-t border-[#eaeaea] relative overflow-hidden">
-      {/* Background subtle glow */}
+    <section className="py-20 lg:py-28 bg-transparent border-t border-neutral-100/50 relative overflow-hidden">
+      {/* Background subtle teal glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#2aabb0]/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-full relative z-10">
@@ -112,48 +137,8 @@ export async function GoogleReviews() {
           </div>
         </div>
 
-        {/* Infinite CSS Marquee */}
-        <div className="flex overflow-hidden relative w-full group">
-          {[1, 2].map((marqueeGroup) => (
-            <div key={marqueeGroup} className="flex gap-6 animate-google-marquee shrink-0 px-3" aria-hidden={marqueeGroup === 2}>
-              {Array(10).fill(displayReviews).flat().map((review: any, i: number) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow border border-neutral-100 flex flex-col justify-between relative w-[320px] sm:w-[380px] shrink-0"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center text-amber-400">
-                        {[...Array(review.rating)].map((_, idx) => (
-                          <Star key={idx} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                        ))}
-                      </div>
-                      <span className="text-[11px] text-neutral-400 font-mono">{review.date}</span>
-                    </div>
-
-                    <p className="text-sm text-neutral-700 leading-relaxed mb-6 line-clamp-4">
-                      &ldquo;{review.comment}&rdquo;
-                    </p>
-                  </div>
-
-                  <div className="pt-4 border-t border-neutral-100 flex items-center justify-between">
-                    <div>
-                      <h4 className="text-sm font-bold text-[#0a0e27] truncate max-w-[160px]">{review.author}</h4>
-                      <p className="text-xs text-neutral-500 truncate max-w-[160px]">{review.role}</p>
-                    </div>
-                    {review.verified && (
-                      <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full shrink-0">
-                        <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>Verified</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-        
+        {/* Infinite CSS Marquee - paused on hover/focus for accessibility */}
+        <GoogleReviewsMarquee reviews={displayReviews} />
 
       </div>
     </section>

@@ -85,7 +85,7 @@ export default function ContactPage() {
 
                 {/* Inquiry Type */}
                 <div className="space-y-3">
-                  <label className="text-sm font-semibold text-neutral-900">What can we help you with?</label>
+                  <span className="text-sm font-semibold text-neutral-900">What can we help you with?</span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
                       { id: 'wholesale', label: 'Wholesale / B2B' },
@@ -94,7 +94,7 @@ export default function ContactPage() {
                       { id: 'general', label: 'General Info' },
                     ].map((t) => (
                       <button key={t.id} type="button" onClick={() => setForm({ ...form, type: t.id })}
-                        className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border ${
+                        className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2 ${
                           form.type === t.id 
                             ? 'bg-secondary border-secondary text-white shadow-md shadow-secondary/20 scale-[1.02]' 
                             : 'bg-white border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50'
@@ -107,14 +107,14 @@ export default function ContactPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-neutral-900">Full Name <span className="text-red-500">*</span></label>
-                    <input type="text" required placeholder="e.g. Ramesh Kumar" value={form.name}
+                    <label htmlFor="contact-name" className="text-sm font-semibold text-neutral-900">Full Name <span className="text-red-500">*</span></label>
+                    <input id="contact-name" type="text" required placeholder="e.g. Ramesh Kumar" value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
                       className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-base md:text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-sm font-bold text-[#0a0e27] mb-2 uppercase tracking-wide">Phone Number</label>
-                    <input type="tel" required placeholder="+91 87549 40610" value={form.phone}
+                    <label htmlFor="contact-phone" className="block text-sm font-bold text-[#0a0e27] mb-2 uppercase tracking-wide">Phone Number</label>
+                    <input id="contact-phone" type="tel" inputMode="tel" required placeholder="+91 87549 40610" value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
                       className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-base md:text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
                   </div>
@@ -122,28 +122,28 @@ export default function ContactPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="block text-sm font-bold text-[#0a0e27] mb-2 uppercase tracking-wide">Email Address</label>
-                    <input type="email" required placeholder="rcreationsstudio@gmail.com" value={form.email}
+                    <label htmlFor="contact-email" className="block text-sm font-bold text-[#0a0e27] mb-2 uppercase tracking-wide">Email Address</label>
+                    <input id="contact-email" type="email" required placeholder="rcreationsstudio@gmail.com" value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
                       className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-base md:text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-neutral-900">Company / Studio <span className="text-neutral-400 font-normal">(Optional)</span></label>
-                    <input type="text" placeholder="Your business name" value={form.company}
+                    <label htmlFor="contact-company" className="text-sm font-semibold text-neutral-900">Company / Studio <span className="text-neutral-400 font-normal">(Optional)</span></label>
+                    <input id="contact-company" type="text" placeholder="Your business name" value={form.company}
                       onChange={(e) => setForm({ ...form, company: e.target.value })}
                       className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-base md:text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-neutral-900">Message / Requirements <span className="text-red-500">*</span></label>
-                  <textarea rows={5} required placeholder="Describe your order requirements, quantities, customization needs..."
+                  <label htmlFor="contact-message" className="text-sm font-semibold text-neutral-900">Message / Requirements <span className="text-red-500">*</span></label>
+                  <textarea id="contact-message" rows={5} required placeholder="Describe your order requirements, quantities, customization needs..."
                     value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
                     className="w-full px-4 py-3.5 bg-neutral-50/50 border border-neutral-200 rounded-xl text-base md:text-sm placeholder:text-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 transition-all outline-none resize-none" />
                 </div>
 
                 <button type="submit" disabled={loading}
-                  className="w-full py-4 bg-gradient-to-r from-[#10164A] to-[#1a237e] text-white rounded-xl text-sm font-bold uppercase tracking-wider hover:shadow-lg hover:shadow-secondary/20 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed group">
+                  className="w-full py-4 bg-gradient-to-r from-[#10164A] to-[#1a237e] text-white rounded-xl text-sm font-bold uppercase tracking-wider hover:shadow-lg hover:shadow-secondary/20 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                   {loading ? <Loader2 className="w-5 h-5 animate-spin text-white/80" /> : <Send className="w-5 h-5 text-[#2aabb0] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
                   <span>{loading ? 'Sending Inquiry...' : 'Submit Inquiry'}</span>
                 </button>

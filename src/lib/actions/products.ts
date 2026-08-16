@@ -18,7 +18,7 @@ export async function getProducts() {
     .order('created_at', { ascending: false });
 
   if (error) throw new Error(error.message);
-  return data;
+  return data ?? [];
 }
 
 export async function getProduct(id: string) {
@@ -51,27 +51,27 @@ export async function getCategoriesForSelect() {
 
 const productSchema = z.object({
   title: z.string().min(1, "Title is required").max(200, "Title is too long"),
-  subtitle: z.string().max(200).optional().default(""),
+  subtitle: z.string().nullable().optional().transform(val => val || ""),
   slug: z.string().min(1, "Slug is required").max(100),
   category_id: z.string().uuid("Invalid category ID"),
   price: z.coerce.number().min(0, "Price must be positive"),
   wholesale_price: z.coerce.number().min(0, "Wholesale price must be positive"),
   moq: z.coerce.number().int().min(1, "MOQ must be at least 1"),
-  image_url: z.string().url("Invalid image URL").max(1000).or(z.string().length(0)).optional(),
+  image_url: z.string().nullable().optional().transform(val => val || ""),
   gallery_images: z.array(z.string().url().max(1000)).optional().default([]),
-  description: z.string().max(10000).optional().default(""),
-  dimensions: z.string().max(100).optional().default(""),
-  material: z.string().max(100).optional().default(""),
-  lead_time: z.string().max(100).optional().default(""),
+  description: z.string().nullable().optional().transform(val => val || ""),
+  dimensions: z.string().nullable().optional().transform(val => val || ""),
+  material: z.string().nullable().optional().transform(val => val || ""),
+  lead_time: z.string().nullable().optional().transform(val => val || ""),
   is_bestseller: z.boolean().default(false),
   is_wholesale_featured: z.boolean().default(false),
   is_active: z.boolean().default(true),
   specifications: z.any().optional(),
   rating: z.coerce.number().min(0).max(5).optional().default(5.0),
   review_count: z.coerce.number().int().min(0).optional().default(0),
-  stock_urgency_remaining: z.string().optional().transform(val => val === "" ? null : Number(val)),
-  urgency_timer_title: z.string().optional().or(z.literal("")),
-  urgency_timer_subtitle: z.string().optional().or(z.literal(""))
+  stock_urgency_remaining: z.union([z.string(), z.number(), z.null()]).optional().transform(val => (val === "" || val == null) ? null : Number(val)),
+  urgency_timer_title: z.string().nullable().optional().transform(val => val || null),
+  urgency_timer_subtitle: z.string().nullable().optional().transform(val => val || null)
 });
 
 export async function saveProduct(formData: FormData) {
@@ -145,7 +145,8 @@ export async function saveProduct(formData: FormData) {
     }
 
     revalidatePath('/admin/products');
-    revalidatePath('/products'); // Revalidate storefront
+    revalidatePath('/products'); // Revalidate storefront catalog
+    revalidatePath('/');         // Revalidate homepage (TopSellers section)
     
     return { success: true };
   } catch (err: any) {
@@ -176,6 +177,7 @@ export async function deleteProducts(ids: string[]) {
 
     revalidatePath('/admin/products');
     revalidatePath('/products');
+    revalidatePath('/'); // Revalidate homepage (TopSellers section)
     
     return { success: true };
   } catch (err: any) {

@@ -1,5 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://rcreationframes.com'),
@@ -26,7 +32,6 @@ export const metadata: Metadata = {
 
 import { Montserrat, Jost, Cormorant_Garamond } from 'next/font/google';
 import { ToastProvider } from '@/components/shared/ToastContext';
-import Script from 'next/script';
 
 const montserrat = Montserrat({ 
   subsets: ['latin'],
@@ -42,10 +47,49 @@ const jost = Jost({
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '600', '700'],
   display: 'swap',
   variable: '--font-cormorant',
 });
+
+const orgSchema = {
+  "@context": "https://schema.org",
+  "@type": "ManufacturingBusiness",
+  "name": "R Creation",
+  "url": "https://rcreationframes.com",
+  "logo": "https://rcreationframes.com/logo.svg",
+  "image": "https://rcreationframes.com/logo.svg",
+  "description": "Manufacturer & wholesaler of synthetic photo frames, crystal trophies, wooden mementos, and personalized gifts.",
+  "priceRange": "₹₹",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+91-8754940610",
+    "contactType": "customer service",
+    "areaServed": "IN",
+    "availableLanguage": ["English", "Tamil"]
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Gudiyattam",
+    "addressLocality": "Gudiyattam",
+    "addressRegion": "Tamil Nadu",
+    "postalCode": "632602",
+    "addressCountry": "IN"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "12.9472",
+    "longitude": "78.8711"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      "opens": "09:00",
+      "closes": "20:00"
+    }
+  ]
+};
 
 export default function RootLayout({
   children,
@@ -54,66 +98,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${montserrat.variable} ${jost.variable} ${cormorant.variable} font-sans`}>
-      <body className="antialiased">
-        <ToastProvider>
-          <main>
-            {children}
-          </main>
-        </ToastProvider>
-        <Script
-          id="org-schema"
+      <head>
+        <script
           type="application/ld+json"
-          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema).replace(/</g, '\\u003c') }}
+        />
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-FJSLXW6598" />
+        <script
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "ManufacturingBusiness",
-              "name": "R Creation",
-              "url": "https://rcreationframes.com",
-              "logo": "https://rcreationframes.com/logo.svg",
-              "image": "https://rcreationframes.com/logo.svg",
-              "description": "Manufacturer & wholesaler of synthetic photo frames, crystal trophies, wooden mementos, and personalized gifts.",
-              "priceRange": "₹₹",
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": "+91-7942874626",
-                "contactType": "customer service",
-                "areaServed": "IN",
-                "availableLanguage": ["English", "Tamil"]
-              },
-              "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "Gudiyattam",
-                "addressLocality": "Gudiyattam",
-                "addressRegion": "Tamil Nadu",
-                "postalCode": "632602",
-                "addressCountry": "IN"
-              },
-              "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": "12.9472",
-                "longitude": "78.8711"
-              },
-              "openingHoursSpecification": [
-                {
-                  "@type": "OpeningHoursSpecification",
-                  "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-                  "opens": "09:00",
-                  "closes": "20:00"
-                }
-              ]
-            }).replace(/</g, '\\u003c')
+            __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-FJSLXW6598');`
           }}
         />
-        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-FJSLXW6598" />
-        <Script id="google-analytics">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-FJSLXW6598');
-          `}
-        </Script>
+      </head>
+      <body className="antialiased">
+        <ToastProvider>
+          {children}
+        </ToastProvider>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ReactCrop, { type Crop, centerCrop, makeAspectCrop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { X, Check } from 'lucide-react';
@@ -32,6 +32,11 @@ export default function PhotoCropper({ imageSrc, onCropComplete, onCancel }: Pho
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const imgRef = useRef<HTMLImageElement>(null);
 
+  useEffect(() => {
+    document.body.classList.add('scroll-locked');
+    return () => { document.body.classList.remove('scroll-locked'); };
+  }, []);
+
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
     setCrop(defaultCrop(width, height));
@@ -59,7 +64,7 @@ export default function PhotoCropper({ imageSrc, onCropComplete, onCancel }: Pho
           completedCrop.height * scaleY
         );
 
-        const base64Image = canvas.toDataURL('image/jpeg', 0.95);
+        const base64Image = canvas.toDataURL('image/jpeg', 0.85);
         const newAspect = completedCrop.width / completedCrop.height;
         onCropComplete(base64Image, newAspect);
       }

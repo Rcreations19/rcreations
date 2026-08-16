@@ -3,11 +3,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, ShoppingBag, Menu, X, ArrowRight, User, LogOut, ChevronDown } from 'lucide-react';
+import { Search, ShoppingBag, ArrowRight, User, LogOut, ChevronDown } from 'lucide-react';
 import { useCart } from './CartContext';
 import { useAuth } from './AuthContext';
 import { RCreationLogo } from '../shared/Logo';
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
+import { AnnouncementTicker } from './AnnouncementTicker';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -35,8 +36,12 @@ export default function Navbar() {
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
 
-    // Background glass effect
-    setIsScrolled(latest > 50);
+    // Background glass effect (with change guard)
+    const nowScrolled = latest > 50;
+    setIsScrolled((prev) => {
+      if (prev !== nowScrolled) return nowScrolled;
+      return prev;
+    });
 
     // Hide/Show logic
     if (latest > 200 && latest > previous && !mobileMenuOpen) {
@@ -62,9 +67,19 @@ export default function Navbar() {
         setUserMenuOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener('pointerdown', handleClick);
+    return () => document.removeEventListener('pointerdown', handleClick);
   }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.classList.add('scroll-locked');
+    } else {
+      document.body.classList.remove('scroll-locked');
+    }
+    return () => document.body.classList.remove('scroll-locked');
+  }, [mobileMenuOpen]);
 
   // Focus trap for mobile menu
   const getFocusableElements = useCallback(() => {
@@ -108,26 +123,13 @@ export default function Navbar() {
         }}
         animate={isHidden ? "hidden" : "visible"}
         transition={{ duration: 0.35, ease: "easeInOut" }}
-        className={`sticky top-0 left-0 right-0 z-50 transition-all duration-500 border-b bg-[#050714]/85 backdrop-blur-md md:bg-[#050714] md:backdrop-blur-none text-white ${isScrolled
+        className={`sticky top-0 left-0 right-0 z-50 transition-shadow duration-500 border-b bg-[#050714]/85 backdrop-blur-md md:bg-[#050714] md:backdrop-blur-none text-white ${isScrolled
             ? 'border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)]'
             : 'border-transparent'
           }`}
       >
-        {/* Announcement Bar */}
-        <div className="w-full bg-[#2aabb0] text-[#0a0e27] overflow-hidden py-3 cursor-pointer flex items-center">
-          {[1, 2].map((marqueeGroup) => (
-            <div key={marqueeGroup} className="animate-marquee whitespace-nowrap text-xs font-bold uppercase tracking-widest flex items-center shrink-0" aria-hidden={marqueeGroup === 2}>
-              {Array.from({ length: 12 }).map((_, i) => (
-                <React.Fragment key={i}>
-                  <span className="mx-6">Latest Offers</span> <span className="opacity-60">•</span>
-                  <span className="mx-6">Latest Designs</span> <span className="opacity-60">•</span>
-                  <span className="mx-6">Local Delivery (40km Radius)</span> <span className="opacity-60">•</span>
-                  <span className="mx-6">Cash on Delivery (COD)</span> <span className="opacity-60">•</span>
-                </React.Fragment>
-              ))}
-            </div>
-          ))}
-        </div>
+        {/* Announcement Bar — rAF-driven ticker (immune to CSS animation overrides) */}
+        <AnnouncementTicker />
 
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-500 py-4 md:py-10">
 
@@ -159,7 +161,8 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`text-xs font-bold tracking-widest uppercase transition-all duration-300 relative py-2 group ${isActive ? 'text-[#2aabb0]' : 'text-neutral-300 hover:text-white'
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`text-xs font-bold tracking-widest uppercase transition-all duration-300 relative py-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-[#050714] group ${isActive ? 'text-[#2aabb0]' : 'text-neutral-300 hover:text-white'
                     }`}
                 >
                   {link.name}
@@ -172,7 +175,7 @@ export default function Navbar() {
 
           {/* Action Buttons */}
           <div className="hidden md:flex flex-1 lg:flex-none items-center justify-end gap-3">
-            <Link href="/products" className="hidden sm:flex text-neutral-300 hover:text-[#2aabb0] transition-colors p-2" aria-label="Search products">
+            <Link href="/products" className="hidden sm:flex text-neutral-300 hover:text-[#2aabb0] transition-colors p-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Search products">
               <Search className="w-5 h-5" />
             </Link>
 
@@ -235,8 +238,8 @@ export default function Navbar() {
 
             <button
               onClick={openCart}
-              className="relative p-3 -m-1 text-white hover:text-[#2aabb0] transition-colors group hidden md:block"
-              aria-label="Shopping cart"
+              className="relative p-3 -m-1 text-white hover:text-[#2aabb0] transition-colors group hidden md:block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={`Shopping cart, ${cartItemCount} items`}
             >
               <ShoppingBag className="w-5 h-5 group-hover:scale-110 transition-transform" />
               <AnimatePresence>
@@ -245,7 +248,7 @@ export default function Navbar() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
-                    className="absolute 0 right-0 top-0 bg-[#2aabb0] text-[#10164A] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center"
+                    className="absolute -top-1 -right-1 bg-[#2aabb0] text-[#10164A] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center"
                   >
                     {cartItemCount}
                   </motion.span>
@@ -256,7 +259,7 @@ export default function Navbar() {
             {/* B2B CTA - Von Restorff Effect */}
             <Link
               href="/contact"
-              className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-[#2aabb0] text-[#0a0e27] text-xs font-bold uppercase tracking-wider rounded overflow-hidden relative group"
+              className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-[#2aabb0] text-primary text-xs font-bold uppercase tracking-wider rounded overflow-hidden relative group active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <div className="absolute inset-0 w-0 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-20"></div>
               <span className="relative">Inquire</span>
@@ -279,16 +282,17 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-[#0a0e27]/95 backdrop-blur-xl pt-24 pb-6 px-6 lg:hidden flex flex-col"
+            className="fixed inset-0 z-[70] bg-[#0a0e27]/95 backdrop-blur-md pt-24 pb-8 px-6 lg:hidden flex flex-col"
           >
-            <nav className="flex flex-col space-y-6 flex-1">
+            <nav className="flex flex-col space-y-2 flex-1">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
                 return (
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`text-2xl font-extrabold tracking-tight ${isActive ? 'text-[#2aabb0]' : 'text-white'
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`text-2xl font-extrabold tracking-tight py-3 min-h-[44px] flex items-center ${isActive ? 'text-[#2aabb0]' : 'text-white'
                       }`}
                   >
                     {link.name}

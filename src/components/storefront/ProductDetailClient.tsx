@@ -12,10 +12,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 const FaqItem = ({ faq, isOpen, onClick }: { faq: { question: string; answer: string }, isOpen: boolean, onClick: () => void }) => {
   return (
     <div className="border-b border-[#eaeaea]">
-      <button 
-        onClick={onClick}
-        className="w-full flex items-center justify-between py-5 text-left focus:outline-none group"
-      >
+        <button 
+          onClick={onClick}
+          aria-expanded={isOpen}
+          className="w-full flex items-center justify-between py-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0]/40 focus-visible:ring-offset-2 rounded group"
+        >
         <h3 className="text-xs font-bold text-[#0a0e27] uppercase tracking-wider group-hover:text-[#2aabb0] transition-colors pr-8">{faq.question}</h3>
         <span className="text-[#0a0e27] group-hover:text-[#2aabb0] transition-colors font-serif-heading text-xl">
           {isOpen ? '—' : '+'}
@@ -186,7 +187,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                 <button
                   key={idx}
                   onClick={() => setCurrentImage(img)}
-                  className={`relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-colors ${currentImage === img ? 'border-[#10164A]' : 'border-transparent hover:border-neutral-300'}`}
+                  className={`relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2 ${currentImage === img ? 'border-[#10164A]' : 'border-transparent hover:border-neutral-300'}`}
                 >
                   <Image src={img} alt={`${product.title} view ${idx + 1}`} fill className="object-cover" />
                 </button>
@@ -215,11 +216,11 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             <div className="flex items-baseline gap-6">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 block mb-1">Retail Price</span>
-                <span className="text-2xl font-black text-[#10164A] font-mono">₹{product.price}</span>
+                  <span className="text-2xl font-black text-[#10164A] font-mono tabular">₹{product.price}</span>
               </div>
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 block mb-1">Wholesale Price</span>
-                <span className="text-2xl font-black text-emerald-600 font-mono">₹{product.wholesale_price}</span>
+                  <span className="text-2xl font-black text-emerald-600 font-mono tabular">₹{product.wholesale_price}</span>
               </div>
             </div>
             <p className="text-[10px] text-neutral-500 font-mono mt-3">MOQ: {product.moq} units • GST (18%) applicable on all orders</p>
@@ -279,7 +280,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             <button
               onClick={handleAddToCart}
               disabled={added}
-              className={`flex-1 py-3.5 rounded-none text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 ${
+              className={`flex-1 py-3.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                 added 
                   ? 'bg-emerald-500 text-white' 
                   : 'bg-[#2aabb0] text-[#0a0e27] hover:bg-[#38C8CC]'
@@ -293,14 +294,14 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             </button>
             <Link
               href="/contact"
-              className="py-3.5 px-6 border border-[#0a0e27] text-[#0a0e27] rounded-none text-xs font-bold uppercase tracking-wider hover:bg-[#0a0e27] hover:text-white transition-all flex items-center justify-center gap-2"
+              className="py-3.5 px-6 border border-[#0a0e27] text-[#0a0e27] rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#0a0e27] hover:text-white active:scale-[0.98] transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               Bulk Inquiry <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
           {/* Sticky Mobile CTA Bar */}
-          <div className="sm:hidden fixed bottom-[90px] left-4 right-4 z-40">
+          <div className="sm:hidden fixed bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] left-0 right-0 z-40 bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.08)] p-3 border-t border-neutral-200">
             <button
               onClick={handleAddToCart}
               disabled={added}
@@ -381,8 +382,11 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                 href={`/products/${related.slug}`}
                 className="group bg-white rounded-none border-b border-[#eaeaea] overflow-hidden hover:border-[#0a0e27] transition-all pb-4"
               >
-                <div className="aspect-[4/5] bg-[#FAFAFA] overflow-hidden">
-                  <Image src={related.image_url} alt={related.title} width={400} height={500} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" unoptimized />
+                <div className="aspect-[4/5] bg-[#FAFAFA] overflow-hidden relative group/image">
+                  <Image src={related.image_url} alt={related.title} width={400} height={500} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover/image:scale-105 ${related.gallery_images && related.gallery_images.length > 1 ? 'group-hover/image:opacity-0' : ''}`} />
+                  {related.gallery_images && related.gallery_images.length > 1 && (
+                    <Image src={related.gallery_images[1]} alt={related.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="w-full h-full object-cover absolute inset-0 opacity-0 transition-all duration-700 ease-out group-hover/image:opacity-100 group-hover/image:scale-105" />
+                  )}
                 </div>
                 <div className="pt-4">
                   <h3 className="text-lg font-serif-heading font-extrabold text-[#0a0e27] line-clamp-1 mb-1">{related.title}</h3>
@@ -395,29 +399,6 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
           </div>
         </div>
       )}
-
-      {/* Sticky Mobile Add-To-Cart Bar */}
-      <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] left-0 right-0 z-40 bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.08)] p-3 md:hidden border-t border-neutral-200">
-        <div className="flex items-center justify-between gap-3">
-          <button
-            onClick={handleAddToCart}
-            disabled={added}
-            className={`flex-1 py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-sm ${
-              added 
-                ? 'bg-emerald-500 text-white' 
-                : 'bg-[#2aabb0] text-[#0a0e27] active:bg-[#38C8CC]'
-            }`}
-          >
-            {added ? <><Check className="w-4 h-4" /> Added</> : <><ShoppingBag className="w-4 h-4" /> Quick Add</>}
-          </button>
-          <label
-            className={`w-12 h-12 flex items-center justify-center bg-emerald-50 text-emerald-600 rounded-xl border-2 border-emerald-500 cursor-pointer shadow-sm shrink-0 relative overflow-hidden ${isSharing ? 'opacity-50 pointer-events-none' : ''}`}
-          >
-            <input type="file" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" disabled={isSharing} />
-            <Camera className="w-5 h-5" />
-          </label>
-        </div>
-      </div>
 
       {cropImageSrc && (
         <PhotoCropper 

@@ -107,7 +107,7 @@ export default function SpecsPage() {
         </section>
 
         <div className="text-center pt-8">
-          <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-[#10164A] text-[#10164A] font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#10164A] hover:text-white transition-all">
+          <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-[#10164A] text-[#10164A] font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#10164A] hover:text-white active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2">
             <FileText className="w-4 h-4" />
             <span>Request Full Specification PDF</span>
             <ArrowRight className="w-4 h-4" />

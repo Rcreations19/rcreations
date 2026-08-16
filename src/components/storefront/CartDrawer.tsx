@@ -5,9 +5,11 @@ import { X, Minus, Plus, Trash2, ArrowRight, ShoppingBag, AlertTriangle, ShieldC
 import { useCart } from './CartContext';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useToast } from '@/components/shared/ToastContext';
 
 export function CartDrawer() {
-  const { items, isOpen, closeCart, updateQuantity, removeItem, clearCart, moqWarnings } = useCart();
+  const { items, isOpen, closeCart, updateQuantity, removeItem, clearCart, moqWarnings, addPreset } = useCart();
+  const { showToast } = useToast();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -25,10 +27,13 @@ export function CartDrawer() {
     if (!dialog) return;
     if (isOpen) {
       dialog.showModal();
+      document.body.classList.add('scroll-locked');
       closeButtonRef.current?.focus();
     } else {
       dialog.close();
+      document.body.classList.remove('scroll-locked');
     }
+    return () => document.body.classList.remove('scroll-locked');
   }, [isOpen]);
 
   useEffect(() => {
@@ -116,7 +121,7 @@ export function CartDrawer() {
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold font-mono text-secondary">₹{item.price * item.quantity}</span>
+                      <span className="text-sm font-bold font-mono text-secondary">₹{(item.price * item.quantity).toLocaleString()}</span>
                       <button
                         onClick={() => removeItem(item.id)}
                         aria-label={`Remove ${item.title}`}
@@ -144,7 +149,10 @@ export function CartDrawer() {
             </div>
             <div className="flex flex-col items-end gap-1 shrink-0">
               <span className="text-xs font-black font-mono text-[#0a0e27]">₹250</span>
-              <button className="text-[10px] font-bold uppercase tracking-wider bg-white border border-[#eaeaea] px-3 py-1.5 rounded-lg hover:bg-[#eaeaea] active:bg-neutral-200 transition-colors min-h-[36px]">
+              <button onClick={() => {
+                addPreset({ id: 'gift-box', title: 'Premium Gift Box', price: 250, image: '/images/placeholder.jpg', subtitle: 'Velvet lined, ribbon tie', moq: 1 });
+                showToast('Gift box added to cart', 'success');
+              }} className="text-[10px] font-bold uppercase tracking-wider bg-white border border-[#eaeaea] px-3 py-1.5 rounded-lg hover:bg-[#eaeaea] active:bg-neutral-200 transition-colors min-h-[36px]">
                 Add
               </button>
             </div>
@@ -211,7 +219,11 @@ export function CartDrawer() {
             </div>
 
             <button
-              onClick={clearCart}
+              onClick={() => {
+                if (window.confirm('Remove all items from your cart?')) {
+                  clearCart();
+                }
+              }}
               className="w-full py-2 text-xs font-mono text-neutral-500 hover:text-red-500 transition-colors"
             >
               Clear Cart

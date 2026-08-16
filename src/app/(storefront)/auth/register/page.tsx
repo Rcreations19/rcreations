@@ -140,7 +140,7 @@ function RegisterForm() {
                   className="space-y-4"
                 >
                   {error && (
-                    <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-xs font-medium rounded-xl text-center animate-in fade-in slide-in-from-top-1">
+                    <div role="alert" className="p-3 bg-red-50 border border-red-200 text-red-600 text-xs font-medium rounded-xl text-center animate-in fade-in slide-in-from-top-1">
                       {error}
                     </div>
                   )}
@@ -192,6 +192,7 @@ function RegisterForm() {
                       <Phone className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                       <input
                         type="tel"
+                        inputMode="tel"
                         value={form.phone}
                         onChange={(e) => update('phone', e.target.value)}
                         className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
@@ -306,7 +307,7 @@ function RegisterForm() {
                   </div>
 
                   {error && (
-                    <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-xs font-medium rounded-xl text-center animate-in fade-in slide-in-from-top-1">
+                    <div role="alert" className="p-3 bg-red-50 border border-red-200 text-red-600 text-xs font-medium rounded-xl text-center animate-in fade-in slide-in-from-top-1">
                       {error}
                     </div>
                   )}
@@ -317,6 +318,8 @@ function RegisterForm() {
                     </label>
                     <input
                       type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       required
                       maxLength={6}
                       value={otp}

@@ -16,9 +16,10 @@ export default function ProductsListPage() {
   const fetchProducts = async () => {
     try {
       const data = await getProducts();
-      setProducts(data);
+      setProducts(data ?? []);
     } catch (err) {
       console.error(err);
+      setProducts([]);
     } finally {
       setLoading(false);
     }

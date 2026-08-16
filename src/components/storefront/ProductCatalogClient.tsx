@@ -38,10 +38,18 @@ export default function ProductCatalogClient({
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const { addPreset } = useCart();
 
+  // Lock body scroll when mobile filters are open
+  React.useEffect(() => {
+    if (showMobileFilters) {
+      document.body.classList.add('scroll-locked');
+    } else {
+      document.body.classList.remove('scroll-locked');
+    }
+    return () => document.body.classList.remove('scroll-locked');
+  }, [showMobileFilters]);
+
   const handleFilterChange = (setter: any, value: any) => {
-    setIsFiltering(true);
     setter(value);
-    setTimeout(() => setIsFiltering(false), 400);
   };
 
   const filteredProducts = useMemo(() => {
@@ -101,16 +109,16 @@ export default function ProductCatalogClient({
               <label className="text-[10px] font-bold uppercase tracking-wider text-[#595959] block mb-3">Categories</label>
               <div className="space-y-1.5">
                 <button onClick={() => handleFilterChange(setSelectedCategory, 'all')}
-                  className={`w-full text-left px-4 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-between ${
-                    selectedCategory === 'all' ? 'bg-[#0a0e27] text-white shadow-md' : 'text-[#555555] hover:bg-[#f8f9fa] hover:text-[#0a0e27]'
+                  className={`w-full text-left px-4 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0]/60 focus-visible:ring-offset-2 ${
+                    selectedCategory === 'all' ? 'bg-primary text-white shadow-md' : 'text-[#555555] hover:bg-[#f8f9fa] hover:text-primary'
                   }`}>
                   <span>All Products</span>
                   {selectedCategory === 'all' && <motion.div layoutId="cat-indicator"><Check className="w-4 h-4 text-[#2aabb0]" /></motion.div>}
                 </button>
                 {categories.map((cat) => (
                   <button key={cat.id} onClick={() => handleFilterChange(setSelectedCategory, cat.name.toLowerCase())}
-                    className={`w-full text-left px-4 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-between ${
-                      selectedCategory === cat.name.toLowerCase() ? 'bg-[#0a0e27] text-white shadow-md' : 'text-[#555555] hover:bg-[#f8f9fa] hover:text-[#0a0e27]'
+                    className={`w-full text-left px-4 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0]/60 focus-visible:ring-offset-2 ${
+                      selectedCategory === cat.name.toLowerCase() ? 'bg-primary text-white shadow-md' : 'text-[#555555] hover:bg-[#f8f9fa] hover:text-primary'
                     }`}>
                     <span>{cat.name}</span>
                     {selectedCategory === cat.name.toLowerCase() && <motion.div layoutId="cat-indicator"><Check className="w-4 h-4 text-[#2aabb0]" /></motion.div>}
@@ -192,7 +200,7 @@ export default function ProductCatalogClient({
                 </button>
               ))}
             </div>
-            <div className="px-4 text-[10px] font-mono font-bold text-[#595959] uppercase tracking-wider hidden sm:block shrink-0">
+            <div className="px-4 text-[10px] font-mono font-bold text-[#595959] uppercase tracking-wider hidden sm:block shrink-0 tabular">
               Showing {filteredProducts.length} Items
             </div>
           </motion.div>
@@ -240,8 +248,27 @@ export default function ProductCatalogClient({
                   >
                     {/* Image Area */}
                     <Link href={`/products/${product.slug}`} className="relative aspect-[4/5] bg-[#f8f9fa] overflow-hidden group/image block">
-                      <Image src={product.image_url} alt={product.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out" />
+                      {/* Primary Image */}
+                      <Image 
+                        src={product.image_url} 
+                        alt={product.title} 
+                        fill 
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" 
+                        className={`object-cover transform transition-all duration-700 ease-out group-hover/image:scale-110 ${
+                          product.gallery_images && product.gallery_images.length > 1 ? 'group-hover/image:opacity-0' : ''
+                        }`} 
+                      />
                       
+                      {/* Secondary Image (Hover State) */}
+                      {product.gallery_images && product.gallery_images.length > 1 && (
+                        <Image
+                          src={product.gallery_images[1]}
+                          alt={`${product.title} Alternate View`}
+                          fill
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                          className="object-cover opacity-0 transition-all duration-700 ease-out absolute inset-0 group-hover/image:opacity-100 group-hover/image:scale-110"
+                        />
+                      )}
                       {/* Badges */}
                       <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
                         {discount > 0 && (
@@ -277,19 +304,19 @@ export default function ProductCatalogClient({
                         <div className="flex flex-col">
                           <div className="flex items-center gap-2">
                             <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">Wholesale</span>
-                            <span className="text-sm text-neutral-400 line-through font-mono">₹{product.price}</span>
-                          </div>
-                          <span className="text-xl font-black text-[#0a0e27] font-mono">₹{product.wholesale_price}</span>
+                          <span className="text-sm text-neutral-400 line-through font-mono tabular">₹{product.price}</span>
+                           </div>
+                           <span className="text-xl font-black text-[#0a0e27] font-mono tabular">₹{product.wholesale_price}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Full Width Quick Add (Desktop Hover, Mobile Always Visible) */}
                     <div className="p-3 pt-0 sm:absolute sm:bottom-0 sm:left-0 sm:right-0 sm:translate-y-full sm:group-hover:translate-y-0 sm:bg-white sm:p-5 sm:shadow-[0_-10px_15px_-3px_rgba(255,255,255,1)] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] z-20">
-                      <button 
-                        onClick={(e) => { e.preventDefault(); addPreset({ id: product.id, title: product.title, price: product.price, image: product.image_url, subtitle: product.subtitle, moq: product.moq }); }}
-                        className="w-full bg-[#0a0e27] hover:bg-[#2aabb0] text-white py-3 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
-                      >
+                       <button 
+                         onClick={(e) => { e.preventDefault(); addPreset({ id: product.id, title: product.title, price: product.price, image: product.image_url, subtitle: product.subtitle, moq: product.moq }); }}
+                         className="w-full bg-[#0a0e27] hover:bg-[#2aabb0] text-white py-3 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2"
+                       >
                         <ShoppingBag className="w-4 h-4" /> Quick Add
                       </button>
                     </div>
@@ -299,15 +326,6 @@ export default function ProductCatalogClient({
             </motion.div>
           )}
         </div>
-      </div>
-      {/* Mobile FAB for Filters */}
-      <div className="xl:hidden fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40">
-        <button
-          onClick={() => setShowMobileFilters(true)}
-          className="flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#0a0e27] text-white text-xs font-bold uppercase tracking-wider shadow-[0_4px_15px_rgba(10,14,39,0.3)] border border-white/10 active:scale-95 transition-transform"
-        >
-          <Filter className="w-4 h-4" /> Filters
-        </button>
       </div>
     </div>
   );

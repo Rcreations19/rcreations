@@ -1,6 +1,7 @@
 import React from 'react';
 import HomePageClient from '@/components/storefront/HomePageClient';
 import { GoogleReviews } from '@/components/storefront/GoogleReviews';
+import { TopSellers } from '@/components/storefront/TopSellers';
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -45,9 +46,13 @@ export default function HomePage() {
   return (
     <>
       <HomePageClient>
+        {/* TopSellers fetches is_bestseller products from Supabase.
+            Returns null silently if no products are flagged yet. */}
+        <TopSellers />
         <GoogleReviews />
       </HomePageClient>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema).replace(/</g, '\\u003c') }} />
     </>
   );
 }
+

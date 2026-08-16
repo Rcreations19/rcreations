@@ -11,7 +11,7 @@ export default function FloatingWhatsApp() {
       href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(defaultMessage)}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] md:bottom-6 right-4 md:right-6 z-[100] w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 animate-bounce group"
+      className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] md:bottom-6 right-4 md:right-6 z-[100] w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-[0_8px_24px_rgba(37,211,102,0.35)] hover:scale-110 active:scale-95 transition-all duration-300 group animate-fade-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       aria-label="Chat with us on WhatsApp"
     >
       <svg

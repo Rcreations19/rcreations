@@ -6,9 +6,6 @@ import Image from 'next/image';
 import { Package, Receipt, ShieldCheck, ChevronDown, ArrowRight, Percent, Building2, PhoneCall, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const NAVY = '#10164A';
-const CYAN = '#2aabb0';
-
 const benefits = [
   { icon: Percent,      title: 'High Retail Margins',      desc: 'Enjoy 30–45% volume discounts off retail catalog pricing to maximise store profitability.' },
   { icon: Receipt,      title: 'GST B2B Invoicing',        desc: 'Full GST compliance with proper input tax credit eligibility on every order.' },
@@ -74,7 +71,7 @@ export default function WholesalePage() {
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Link
                   href="/contact"
-                  className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#2aabb0] hover:bg-[#10164A] text-white rounded-lg text-xs font-extrabold uppercase tracking-widest transition-all duration-300 shadow-[0_4px_20px_rgba(42,171,176,0.35)] hover:shadow-[0_4px_20px_rgba(16,22,74,0.35)]"
+                  className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#2aabb0] hover:bg-[#10164A] text-white rounded-lg text-xs font-extrabold uppercase tracking-widest transition-all duration-300 shadow-[0_4px_20px_rgba(42,171,176,0.35)] hover:shadow-[0_4px_20px_rgba(16,22,74,0.35)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2"
                 >
                   <PhoneCall className="w-4 h-4" />
                   Request Rate Card
@@ -82,7 +79,7 @@ export default function WholesalePage() {
                 </Link>
                 <Link
                   href="/products"
-                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border-2 border-[#10164A]/20 hover:border-[#10164A] text-[#10164A] rounded-lg text-xs font-extrabold uppercase tracking-widest transition-all duration-300 hover:bg-[#10164A]/5"
+                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border-2 border-[#10164A]/20 hover:border-[#10164A] text-[#10164A] rounded-lg text-xs font-extrabold uppercase tracking-widest transition-all duration-300 hover:bg-[#10164A]/5 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2"
                 >
                   View Bulk Catalogue
                 </Link>
@@ -102,7 +99,7 @@ export default function WholesalePage() {
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover hover:scale-105 transition-transform duration-[2.5s] ease-out"
+                className="object-cover transition-transform duration-[2.5s] ease-out"
               />
               {/* Subtle tint overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#10164A]/20 to-transparent" />
@@ -114,7 +111,7 @@ export default function WholesalePage() {
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Volume Discount</p>
-                  <p className="text-sm font-black text-[#10164A]">Up to 45% Off Retail</p>
+                  <p className="text-sm font-black text-[#10164A] tabular">Up to 45% Off Retail</p>
                 </div>
               </div>
             </motion.div>
@@ -131,23 +128,37 @@ export default function WholesalePage() {
             <p className="text-slate-500 text-base leading-relaxed">Built for photo studios, gift boutiques, and large-scale corporate procurement.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {benefits.map((b, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className="group bg-white border border-slate-100 hover:border-[#2aabb0]/40 rounded-2xl p-7 shadow-sm hover:shadow-md transition-all duration-300"
-              >
-                <div className="w-12 h-12 bg-[#2aabb0]/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-[#2aabb0] transition-colors duration-300">
-                  <b.icon className="w-6 h-6 text-[#2aabb0] group-hover:text-white transition-colors duration-300" />
-                </div>
-                <h3 className="text-sm font-extrabold text-[#10164A] mb-2">{b.title}</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">{b.desc}</p>
-              </motion.div>
-            ))}
+          {/* Featured benefit spans two columns for visual rhythm */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6">
+            {benefits.map((b, i) => {
+              // First card takes wider span on lg, breaks the generic 4-equal-column grid
+              const featured = i === 0;
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className={`group relative overflow-hidden bg-white border border-slate-100 hover:border-[#2aabb0]/40 rounded-2xl p-7 shadow-sm hover:shadow-md transition-all duration-300 focus-within:ring-2 focus-within:ring-[#2aabb0]/60 ${
+                    featured ? 'lg:col-span-3' : 'lg:col-span-3'
+                  }`}
+                >
+                  {featured && (
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#2aabb0]/8 blur-3xl" />
+                  )}
+                  <div className="relative flex items-start gap-5">
+                    <div className="w-12 h-12 bg-[#2aabb0]/10 rounded-xl flex items-center justify-center group-hover:bg-[#2aabb0] transition-colors duration-300 shrink-0 group-focus-visible:scale-110">
+                      <b.icon className="w-6 h-6 text-[#2aabb0] group-hover:text-white transition-colors duration-300" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-extrabold text-[#10164A] mb-2">{b.title}</h3>
+                      <p className="text-xs text-slate-500 leading-relaxed">{b.desc}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -217,7 +228,7 @@ export default function WholesalePage() {
                     <button
                       onClick={() => setOpenFaq(openFaq === i ? null : i)}
                       aria-expanded={openFaq === i}
-                      className="w-full flex items-start justify-between gap-4 py-5 text-left group focus-visible:outline-none"
+                      className="w-full flex items-start justify-between gap-4 py-5 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50 rounded"
                     >
                       <span className={`text-sm font-bold leading-snug transition-colors duration-200 ${openFaq === i ? 'text-[#2aabb0]' : 'text-[#10164A] group-hover:text-[#2aabb0]'}`}>
                         {faq.q}
@@ -243,14 +254,16 @@ export default function WholesalePage() {
               </div>
 
               {/* Still have questions */}
-              <div className="mt-10 p-6 rounded-2xl bg-[#10164A] flex items-center justify-between gap-4">
-                <div>
+              <div className="mt-10 p-6 rounded-2xl bg-[#10164A] relative overflow-hidden flex items-center justify-between gap-4">
+                <div className="noise-overlay" aria-hidden />
+                <div className="relative z-10">
                   <p className="text-sm font-extrabold text-white">Still have questions?</p>
                   <p className="text-xs text-slate-300 mt-0.5">Our wholesale team replies within 2 hours.</p>
                 </div>
                 <Link
                   href="/contact"
-                  className="shrink-0 w-11 h-11 rounded-full bg-[#2aabb0] hover:bg-white flex items-center justify-center text-[#10164A] shadow-[0_0_16px_rgba(42,171,176,0.5)] transition-all duration-300"
+                  aria-label="Contact wholesale team"
+                  className="relative z-10 shrink-0 w-11 h-11 rounded-full bg-[#2aabb0] hover:bg-white flex items-center justify-center text-[#10164A] active:scale-95 shadow-[0_0_16px_rgba(42,171,176,0.5)] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2 focus-visible:ring-offset-[#10164A]"
                 >
                   <ArrowRight className="w-5 h-5" />
                 </Link>

@@ -24,7 +24,7 @@ export default function MobileBottomNav() {
   ];
 
   return (
-    <div className="md:hidden fixed bottom-4 left-4 right-4 z-[60] bg-white/80 backdrop-blur-xl border border-white/40 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] pb-0">
+    <div className="md:hidden fixed bottom-2 left-2 right-2 z-[60] bg-white/80 backdrop-blur-xl border border-white/40 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.12)]" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
       <div className="flex items-center justify-around px-2 h-[4.5rem]">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -35,8 +35,9 @@ export default function MobileBottomNav() {
               key={item.name} 
               href={item.href}
               onClick={handleVibrate}
-              className={`relative flex flex-col items-center justify-center w-full h-full space-y-1.5 transition-all duration-300 ${
-                isActive ? 'text-[#2aabb0]' : 'text-neutral-500 hover:text-neutral-900'
+              aria-current={isActive ? 'page' : undefined}
+              className={`relative flex flex-col items-center justify-center w-full h-full space-y-1.5 transition-all duration-300 rounded-lg active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                isActive ? 'text-[#2aabb0]' : 'text-neutral-500'
               }`}
             >
               {isActive && (
@@ -53,7 +54,8 @@ export default function MobileBottomNav() {
             handleVibrate();
             openCart();
           }}
-          className="relative flex flex-col items-center justify-center w-full h-full space-y-1.5 text-neutral-500 hover:text-neutral-900 transition-all duration-300"
+          aria-label={`Shopping cart, ${totalCount} items`}
+          className="relative flex flex-col items-center justify-center w-full h-full space-y-1.5 text-neutral-500 transition-all duration-300 rounded-lg active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <div className="relative">
             <ShoppingCart className="w-5 h-5 stroke-[1.5]" />

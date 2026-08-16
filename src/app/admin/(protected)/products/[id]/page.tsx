@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getProduct, getCategoriesForSelect, saveProduct } from '@/lib/actions/products';
-import { ChevronRight, Save, Trash2, Plus, GripVertical } from 'lucide-react';
+import { getProduct, getCategoriesForSelect, saveProduct, deleteProducts } from '@/lib/actions/products';
+import { ChevronRight, Save, Trash2, Plus, GripVertical, Check } from 'lucide-react';
 import { MultiImageUploader } from '@/components/admin/MultiImageUploader';
 import Link from 'next/link';
 
@@ -113,10 +113,26 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
     loadData();
   }, [resolvedParams.id, isNew]);
 
+  const handleDelete = async () => {
+    if (!confirm('Delete this product? This cannot be undone.')) return;
+    setSaving(true);
+    setError(null);
+    const res = await deleteProducts([resolvedParams.id]);
+    if (res?.error) {
+      setError(res.error);
+      setSaving(false);
+    } else {
+      router.push('/admin/products');
+    }
+  };
+
+  const [success, setSuccess] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
+    setSuccess(false);
 
     try {
       const formData = new FormData();
@@ -127,21 +143,34 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
         }
       });
 
-      // Extract primary image from gallery_images
+      // First gallery image becomes the primary image_url
       if (form.gallery_images.length > 0) {
         formData.set('image_url', form.gallery_images[0]);
       }
       formData.append('gallery_images', JSON.stringify(form.gallery_images));
-      
-      // Combine and append specifications and faqs
+
+      // Combine specs + faqs into the specifications JSONB field
       formData.append('specifications', JSON.stringify({ specs, faqs }));
 
       const res = await saveProduct(formData);
-      if (res?.error) {
-        throw new Error(res.error);
-      }
       
-      router.push('/admin/products');
+      if (res?.error) {
+        if (res.details && res.details.fieldErrors) {
+          const fieldErrors = Object.entries(res.details.fieldErrors)
+            .map(([field, errors]) => `${field}: ${(errors as string[]).join(', ')}`)
+            .join(' | ');
+          throw new Error(`${res.error} - ${fieldErrors}`);
+        }
+        throw new Error(typeof res.error === 'string' ? res.error : JSON.stringify(res.error));
+      }
+
+      setSuccess(true);
+      
+      // Delay redirect slightly so user sees the success message
+      setTimeout(() => {
+        router.push('/admin/products');
+      }, 800);
+      
     } catch (err: unknown) {
       setError((err as Error).message);
       setSaving(false);
@@ -183,8 +212,16 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-6 font-bold">
-          {error}
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-6 font-bold flex items-center justify-between">
+          <span>{error}</span>
+          <button type="button" onClick={() => setError(null)} className="text-red-700 hover:text-red-900">&times;</button>
+        </div>
+      )}
+
+      {success && (
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg text-sm mb-6 font-bold flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+          Product saved successfully! Redirecting...
         </div>
       )}
 
@@ -414,17 +451,32 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
         {/* Form Actions (Django-style sticky bar) */}
         <div className="bg-neutral-100 border border-neutral-200 rounded-lg p-4 flex items-center justify-between shadow-sm sticky bottom-4 z-10">
           {!isNew ? (
-            <button type="button" className="px-4 py-2 bg-red-600 text-white text-sm font-bold rounded hover:bg-red-700 transition-colors flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={saving}
+              className="px-4 py-2 bg-red-600 text-white text-sm font-bold rounded hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+            >
               <Trash2 className="w-4 h-4" /> Delete
             </button>
-          ) : <div></div>}
+          ) : <div />}
           
           <div className="flex items-center gap-3">
             <Link href="/admin/products" className="px-4 py-2 text-neutral-600 text-sm font-bold rounded hover:bg-neutral-200 transition-colors">
               Cancel
             </Link>
-            <button type="submit" disabled={saving} className="px-6 py-2 bg-[#10164A] text-white text-sm font-bold rounded hover:bg-[#1c246e] transition-colors flex items-center gap-2 disabled:opacity-50">
-              <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save'}
+            <button
+              type="submit"
+              disabled={saving || success}
+              className={`px-6 py-2 text-white text-sm font-bold rounded transition-colors flex items-center gap-2 disabled:opacity-50 ${
+                success ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-[#10164A] hover:bg-[#1c246e]'
+              }`}
+            >
+              {success ? (
+                <><Check className="w-4 h-4" /> Saved!</>
+              ) : (
+                <><Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save'}</>
+              )}
             </button>
           </div>
         </div>

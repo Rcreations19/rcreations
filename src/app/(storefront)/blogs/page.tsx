@@ -13,7 +13,7 @@ export default async function BlogsPage() {
   const blogs = await getPublicBlogs();
 
   return (
-      <div className="bg-[#fcfcfc] min-h-screen pt-24 pb-20">
+      <div className="bg-[#fcfcfc] min-h-screen pt-28 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 animate-fade-in">
             <h1 className="text-4xl md:text-5xl font-bold text-[#0a0e27] mb-4">Our Blog</h1>

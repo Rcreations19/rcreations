@@ -53,7 +53,7 @@ function LoginForm() {
 
             <form onSubmit={handleLogin} className="space-y-5">
               {error && (
-                <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-xs font-medium rounded-xl text-center animate-in fade-in slide-in-from-top-1">
+                <div role="alert" className="p-3 bg-red-50 border border-red-200 text-red-600 text-xs font-medium rounded-xl text-center animate-in fade-in slide-in-from-top-1">
                   {error}
                 </div>
               )}

@@ -83,7 +83,11 @@ export default function ConfiguratorPage() {
     }
 
     const encodedMessage = encodeURIComponent(`${message}\n\n*Status:* I will send my cropped photo in the next message.`);
-    alert("Please attach your photo in the WhatsApp chat after it opens!");
+    const notice = document.createElement('div');
+    notice.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-[200] px-5 py-3 bg-primary text-white text-sm font-bold rounded-lg shadow-lg animate-fade-in';
+    notice.textContent = 'Attach your photo in the WhatsApp chat after it opens.';
+    document.body.appendChild(notice);
+    setTimeout(() => notice.remove(), 4000);
     window.open(`https://wa.me/${adminNumber}?text=${encodedMessage}`, '_blank');
   };
 
@@ -95,7 +99,7 @@ export default function ConfiguratorPage() {
   };
 
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pt-28 pb-20 overflow-hidden">
+    <div className="bg-[#fcfcfc] min-h-screen pt-28 pb-20 overflow-x-hidden">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header & Zeigarnik Progress Bar */}
@@ -134,7 +138,7 @@ export default function ConfiguratorPage() {
           
           {/* Left Column: Wizard Steps */}
           <div className="lg:col-span-7 order-2 lg:order-1">
-            <div className="bg-white rounded-3xl border border-[#eaeaea] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] overflow-hidden relative min-h-[500px]">
+            <div className="bg-white rounded-3xl border border-[#eaeaea] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] overflow-hidden relative">
               
               <AnimatePresence mode="wait">
                 
@@ -148,7 +152,7 @@ export default function ConfiguratorPage() {
                     <div className="flex overflow-x-auto snap-x gap-4 pb-6 mb-8 -mx-8 px-8 sm:mx-0 sm:px-0 sm:flex-col sm:overflow-visible sm:snap-none sm:space-y-4 sm:gap-0 hide-scrollbar">
                       {FRAME_OPTIONS.map(opt => (
                         <button key={opt.id} onClick={() => setMaterialId(opt.id)}
-                          className={`shrink-0 w-[260px] sm:w-full sm:shrink-1 flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left group snap-start ${
+                          className={`shrink-0 w-[260px] sm:w-full sm:shrink-1 flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left group snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2 ${
                             materialId === opt.id ? 'border-[#0a0e27] bg-[#f8f9fa] shadow-md' : 'border-[#eaeaea] hover:border-[#2aabb0]/50 hover:bg-[#fcfcfc]'
                           }`}>
                           <div className="w-12 h-12 rounded-lg shadow-inner shrink-0 relative overflow-hidden" style={{ backgroundColor: opt.colorHex }}>
@@ -189,7 +193,7 @@ export default function ConfiguratorPage() {
                         { val: 2.0, label: '2.0 inch' },
                       ].map((thick) => (
                         <button key={thick.val} onClick={() => setFrameThickness(thick.val)}
-                          className={`py-3 rounded-xl border-2 text-center transition-all ${
+                          className={`py-3 rounded-xl border-2 text-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2 ${
                             frameThickness === thick.val ? 'border-[#0a0e27] bg-[#f8f9fa] shadow-sm' : 'border-[#eaeaea] hover:border-[#2aabb0]/50 hover:bg-[#fcfcfc]'
                           }`}>
                           <span className={`text-sm font-bold ${frameThickness === thick.val ? 'text-[#0a0e27]' : 'text-[#555555]'}`}>{thick.label}</span>
@@ -210,7 +214,7 @@ export default function ConfiguratorPage() {
                         { id: 'led-backlit-panel', name: 'LED Backlit Panel', desc: '12V edge-lit glowing base' },
                       ].map(g => (
                         <button key={g.id} onClick={() => setGlassType(g.id as GlassType)}
-                          className={`shrink-0 w-[240px] sm:w-auto p-5 rounded-xl border-2 text-left transition-all snap-start ${glassType === g.id ? 'border-[#0a0e27] bg-[#f8f9fa] shadow-md' : 'border-[#eaeaea] hover:border-[#2aabb0]/50 hover:bg-[#fcfcfc]'}`}>
+                          className={`shrink-0 w-[240px] sm:w-auto p-5 rounded-xl border-2 text-left transition-all snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2 ${glassType === g.id ? 'border-[#0a0e27] bg-[#f8f9fa] shadow-md' : 'border-[#eaeaea] hover:border-[#2aabb0]/50 hover:bg-[#fcfcfc]'}`}>
                           <h4 className={`text-sm font-bold mb-1 ${glassType === g.id ? 'text-[#0a0e27]' : 'text-[#555555]'}`}>{g.name}</h4>
                           <p className="text-[10px] text-[#595959]">{g.desc}</p>
                         </button>
@@ -226,7 +230,7 @@ export default function ConfiguratorPage() {
                         { id: 'custom-double', name: 'Premium Double Mount' },
                       ].map(m => (
                         <button key={m.id} onClick={() => setMountBoard(m.id as MountBoard)}
-                          className={`shrink-0 w-[240px] sm:w-auto p-4 rounded-xl border-2 text-left transition-all flex items-center justify-between snap-start ${mountBoard === m.id ? 'border-[#0a0e27] bg-[#f8f9fa]' : 'border-[#eaeaea] hover:border-[#2aabb0]/50'}`}>
+                          className={`shrink-0 w-[240px] sm:w-auto p-4 rounded-xl border-2 text-left transition-all flex items-center justify-between snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2 ${mountBoard === m.id ? 'border-[#0a0e27] bg-[#f8f9fa]' : 'border-[#eaeaea] hover:border-[#2aabb0]/50'}`}>
                           <span className={`text-sm font-bold ${mountBoard === m.id ? 'text-[#0a0e27]' : 'text-[#555555]'}`}>{m.name}</span>
                           {mountBoard === m.id && <CheckCircle2 className="w-4 h-4 text-[#2aabb0]" />}
                         </button>
@@ -270,19 +274,19 @@ export default function ConfiguratorPage() {
               </AnimatePresence>
 
               {/* Navigation Footer */}
-              <div className="p-4 sm:p-6 border-t border-[#eaeaea] bg-[#f8f9fa] flex items-center justify-between sticky bottom-[96px] md:bottom-0 md:relative z-40 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] md:shadow-none">
+              <div className="p-4 sm:p-6 border-t border-[#eaeaea] bg-[#f8f9fa] flex items-center justify-between md:bottom-0 md:relative z-40 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] md:shadow-none">
                 {currentStep > 1 ? (
-                  <button onClick={() => setCurrentStep(currentStep - 1)} className="px-6 py-2.5 rounded-lg text-xs font-bold text-[#555555] hover:text-[#0a0e27] hover:bg-[#eaeaea] transition-all flex items-center gap-2">
+                  <button onClick={() => setCurrentStep(currentStep - 1)} className="px-6 py-2.5 rounded-lg text-xs font-bold text-[#555555] hover:text-[#0a0e27] hover:bg-[#eaeaea] active:scale-[0.98] transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                     <ArrowLeft className="w-4 h-4" /> Back
                   </button>
                 ) : <div></div>}
                 
                 {currentStep < 3 ? (
-                  <button onClick={() => setCurrentStep(currentStep + 1)} className="px-8 py-2.5 bg-[#0a0e27] text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#121840] shadow-md transition-all flex items-center gap-2">
+                  <button onClick={() => setCurrentStep(currentStep + 1)} className="px-8 py-2.5 bg-[#0a0e27] text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#121840] active:scale-[0.98] shadow-md transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                     Continue <ArrowRight className="w-4 h-4" />
                   </button>
                 ) : (
-                  <button onClick={handleWhatsAppOrder} className="px-6 py-2.5 bg-[#25D366] text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#1DA851] shadow-md transition-all flex items-center gap-2">
+                  <button onClick={handleWhatsAppOrder} className="px-6 py-2.5 bg-[#25D366] text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#1DA851] active:scale-[0.98] shadow-md transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                     <MessageCircle className="w-4 h-4" /> Order via WhatsApp
                   </button>
                 )}

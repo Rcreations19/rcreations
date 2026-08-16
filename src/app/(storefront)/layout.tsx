@@ -16,14 +16,18 @@ export default function StorefrontLayout({
     <AuthProvider>
       <CartProvider>
         <div className="min-h-screen relative font-sans text-neutral-900 selection:bg-neutral-200 bg-[#FAFAFA]">
-          {/* Overlay to reduce background image opacity */}
-          <div className="absolute inset-0 bg-white/70 pointer-events-none z-0"></div>
-          
           <FallingAnimation className="opacity-15 !z-0" />
+          {/* Skip to content — keyboard accessibility */}
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-lg focus:shadow-lg"
+          >
+            Skip to content
+          </a>
           {/* Main Page Layout */}
-          <div className="relative z-10 flex flex-col min-h-screen pb-16 md:pb-0">
+          <div className="relative z-10 flex flex-col min-h-screen pb-24 md:pb-0">
             <Navbar />
-            <main className="flex-1">{children}</main>
+            <main id="main-content" className="flex-1">{children}</main>
             <Footer />
           </div>
 

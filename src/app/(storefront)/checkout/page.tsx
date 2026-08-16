@@ -246,7 +246,7 @@ export default function CheckoutPage() {
                   <label htmlFor="checkout-phone" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Mobile Number *</label>
                   <div className="relative">
                     <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-phone" type="tel" autoComplete="tel" required value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} onBlur={e => handleBlur('phone', e.target.value)}
+                    <input id="checkout-phone" type="tel" inputMode="tel" autoComplete="tel" required value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} onBlur={e => handleBlur('phone', e.target.value)}
                       aria-describedby={fieldErrors.phone ? 'checkout-phone-error' : undefined}
                       aria-invalid={!!fieldErrors.phone || undefined}
                       className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.phone ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
@@ -340,7 +340,7 @@ export default function CheckoutPage() {
             </fieldset>
 
             {error && (
-              <div className="p-4 bg-red-50 text-red-600 text-sm font-medium rounded-xl border border-red-200">
+              <div role="alert" className="p-4 bg-red-50 text-red-600 text-sm font-medium rounded-xl border border-red-200">
                 {error}
               </div>
             )}
@@ -372,19 +372,19 @@ export default function CheckoutPage() {
             <div className="border-t border-neutral-200 pt-4 space-y-3 mb-6">
               <div className="flex justify-between text-sm">
                 <span className="text-neutral-600">Subtotal ({totalCount} items)</span>
-                <span className="font-bold font-mono text-secondary">₹{subtotal}</span>
+                <span className="font-bold font-mono text-secondary tabular">₹{subtotal}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-neutral-600">GST (18%)</span>
-                <span className="font-bold font-mono text-secondary">₹{taxAmount}</span>
+                <span className="font-bold font-mono text-secondary tabular">₹{taxAmount}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-neutral-600">Shipping</span>
-                <span className="font-bold font-mono text-secondary">{shippingCost === 0 ? 'FREE' : `₹${shippingCost}`}</span>
+                <span className="font-bold font-mono text-secondary tabular">{shippingCost === 0 ? 'FREE' : `₹${shippingCost}`}</span>
               </div>
               <div className="flex justify-between text-lg pt-3 border-t border-neutral-200">
                 <span className="font-extrabold text-secondary">Total</span>
-                <span className="font-black font-mono text-[#2aabb0]">₹{total}</span>
+                <span className="font-black font-mono text-[#2aabb0] tabular">₹{total}</span>
               </div>
             </div>
 
@@ -392,7 +392,7 @@ export default function CheckoutPage() {
               type="submit"
               form="checkout-form"
               disabled={isSubmitting}
-              className="w-full py-4 bg-secondary text-white rounded-xl text-sm font-bold uppercase tracking-wider hover:bg-secondary-hover transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full py-4 bg-secondary text-white rounded-xl text-sm font-bold uppercase tracking-wider hover:bg-secondary-hover active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               {isSubmitting ? 'Processing...' : 'Place Order (COD)'}
               {!isSubmitting && <ArrowRight className="w-4 h-4" />}

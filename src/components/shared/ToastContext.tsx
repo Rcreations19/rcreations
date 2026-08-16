@@ -26,17 +26,31 @@ export function useToast() {
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const timeoutsRef = React.useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   const showToast = useCallback((message: string, type: ToastType) => {
     const id = Math.random().toString(36).substring(2, 9);
     setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 5000);
+    const timeoutId = setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+      timeoutsRef.current.delete(id);
+    }, 5000);
+    timeoutsRef.current.set(id, timeoutId);
+  }, []);
+
+  const dismissToast = useCallback((id: string) => {
+    const timeoutId = timeoutsRef.current.get(id);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutsRef.current.delete(id);
+    }
+    setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
 
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2">
+      <div className="fixed bottom-4 right-4 sm:bottom-4 sm:right-4 z-[100] flex flex-col gap-2" style={{ bottom: 'max(1rem, env(safe-area-inset-bottom, 0px))' }} role="status" aria-live="polite">
         <AnimatePresence>
           {toasts.map(toast => (
             <motion.div
@@ -54,7 +68,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               {toast.type === 'error' && <AlertCircle className="w-5 h-5" />}
               {toast.type === 'info' && <Info className="w-5 h-5" />}
               <span className="text-sm font-medium">{toast.message}</span>
-              <button onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))} className="ml-auto opacity-50 hover:opacity-100">
+              <button onClick={() => dismissToast(toast.id)} aria-label="Dismiss notification" className="ml-auto opacity-50 hover:opacity-100">
                 <X className="w-4 h-4" />
               </button>
             </motion.div>

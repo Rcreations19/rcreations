@@ -17,25 +17,27 @@ export default function NotFoundPage() {
         <p className="text-neutral-600 mb-8 leading-relaxed">
           The page you&apos;re looking for doesn&apos;t exist or has been moved. Let&apos;s get you back on track.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <div className="flex flex-col gap-3">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-secondary text-white rounded-xl text-sm font-bold hover:bg-secondary-hover transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-secondary text-white rounded-xl text-sm font-bold hover:bg-secondary-hover transition-colors"
           >
             <Home className="w-4 h-4" /> Back to Home
           </Link>
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-2 px-6 py-3 border-2 border-secondary/20 text-secondary rounded-xl text-sm font-bold hover:bg-secondary/5 transition-colors"
-          >
-            <Package className="w-4 h-4" /> Browse Catalog
-          </Link>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3 border-2 border-secondary/20 text-secondary rounded-xl text-sm font-bold hover:bg-secondary/5 transition-colors"
-          >
-            <Mail className="w-4 h-4" /> Contact Us
-          </Link>
+          <div className="flex gap-3">
+            <Link
+              href="/products"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-secondary/20 text-secondary rounded-xl text-sm font-bold hover:bg-secondary/5 transition-colors"
+            >
+              <Package className="w-4 h-4" /> Browse Catalog
+            </Link>
+            <Link
+              href="/contact"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-secondary/20 text-secondary rounded-xl text-sm font-bold hover:bg-secondary/5 transition-colors"
+            >
+              <Mail className="w-4 h-4" /> Contact Us
+            </Link>
+          </div>
         </div>
       </div>
     </div>

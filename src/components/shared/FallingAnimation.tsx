@@ -1,442 +1,363 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-// ==========================================
-// 1. CONFIGURATION
-// ==========================================
-export const FALLING_CONFIG = {
-  density: 80, // Maximum active particles on screen
-  spawnRateMs: 150, // Milliseconds between spawning a new particle
-  ratios: {
-    petals: 0.70, // 70% petals
-    frames: 0.15, // 15% photo frames
-    boxes: 0.15,  // 15% gift boxes
-  },
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const CONFIG = {
+  densityDesktop: 50,   // Max active particles on desktop
+  densityTablet: 28,    // Max active particles on tablet (768–1023px)
+  spawnRateMs: 180,     // ms between spawns
+  ratios: { petals: 0.70, frames: 0.15, boxes: 0.15 },
   physics: {
-    windBase: 0.3,
-    windVariance: 1.5,
-    windSpeed: 0.001, // How fast the wind sine wave changes
-    gravityMin: 1.0,
-    gravityMax: 3.5,
+    // Two overlapping sine waves create organic, non-mechanical gusting
+    wind1Base: 0.25, wind1Freq: 0.0008,
+    wind2Base: 0.10, wind2Freq: 0.0023,
+    gravityMin: 0.9,
+    gravityMax: 3.2,
   },
-  layers: 3, // Depth layers for parallax (1 = closest, 3 = farthest)
+  layers: 3,
+  fadeInFrames: 45,   // Frames to ramp opacity from 0 → target on spawn
+  fadeOutStart: 0.88, // Start fading at 88% of canvas height
 };
 
-// ==========================================
-// 2. MATH & UTILS
-// ==========================================
-const MathUtils = {
-  randomRange: (min: number, max: number) => Math.random() * (max - min) + min,
-  randomInt: (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min,
-  chooseWeighted: (weights: { [key: string]: number }) => {
+// ============================================================
+// UTILS
+// ============================================================
+const rng = {
+  range: (min: number, max: number) => Math.random() * (max - min) + min,
+  int:   (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min,
+  weighted: (w: { [k: string]: number }) => {
     let sum = 0;
     const r = Math.random();
-    for (const key in weights) {
-      sum += weights[key];
-      if (r <= sum) return key as 'petal' | 'frame' | 'box';
-    }
-    return 'petal';
-  }
+    for (const k in w) { sum += w[k]; if (r <= sum) return k as 'petals' | 'frames' | 'boxes'; }
+    return 'petals';
+  },
 };
 
-// ==========================================
-// 3. DRAWING FUNCTIONS (CANVAS 2D)
-// ==========================================
+// ============================================================
+// DRAW — Petals
+// ============================================================
 function drawPetal(ctx: CanvasRenderingContext2D, variant: number, size: number) {
   ctx.beginPath();
-  
-  // 6 distinct rose petal variants
   if (variant === 0) {
-    // Standard Heart-ish Petal
     ctx.moveTo(0, size * 0.5);
     ctx.bezierCurveTo(size * 0.5, size * 0.5, size, size * 0.2, size * 0.5, -size * 0.5);
     ctx.bezierCurveTo(0, -size * 0.2, -size * 0.5, size * 0.2, 0, size * 0.5);
-    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, size);
-    grad.addColorStop(0, '#e63946');
-    grad.addColorStop(1, '#9b2226');
-    ctx.fillStyle = grad;
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, size);
+    g.addColorStop(0, '#e63946'); g.addColorStop(1, '#9b2226');
+    ctx.fillStyle = g;
   } else if (variant === 1) {
-    // Elongated Curve
     ctx.moveTo(0, size * 0.8);
     ctx.bezierCurveTo(size * 0.3, size * 0.4, size * 0.2, -size * 0.8, 0, -size * 0.9);
     ctx.bezierCurveTo(-size * 0.4, -size * 0.8, -size * 0.6, size * 0.2, 0, size * 0.8);
     ctx.fillStyle = '#c1121f';
   } else if (variant === 2) {
-    // Curled Edge Petal
     ctx.moveTo(0, size * 0.6);
     ctx.quadraticCurveTo(size * 0.8, size * 0.2, size * 0.4, -size * 0.6);
     ctx.quadraticCurveTo(0, -size * 0.4, -size * 0.3, -size * 0.6);
     ctx.quadraticCurveTo(-size * 0.8, size * 0.2, 0, size * 0.6);
-    const grad = ctx.createLinearGradient(-size, -size, size, size);
-    grad.addColorStop(0, '#ff4d6d');
-    grad.addColorStop(1, '#a81c2b');
-    ctx.fillStyle = grad;
+    const g = ctx.createLinearGradient(-size, -size, size, size);
+    g.addColorStop(0, '#ff4d6d'); g.addColorStop(1, '#a81c2b');
+    ctx.fillStyle = g;
   } else if (variant === 3) {
-    // Small Round Petal
     ctx.arc(0, 0, size * 0.5, 0, Math.PI * 2);
     ctx.fillStyle = '#da1e37';
   } else if (variant === 4) {
-    // White with Pink Edge
     ctx.moveTo(0, size * 0.5);
     ctx.bezierCurveTo(size * 0.6, size * 0.4, size * 0.8, -size * 0.4, 0, -size * 0.6);
     ctx.bezierCurveTo(-size * 0.8, -size * 0.4, -size * 0.6, size * 0.4, 0, size * 0.5);
-    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 0.8);
-    grad.addColorStop(0, '#ffffff');
-    grad.addColorStop(0.7, '#ffccd5');
-    grad.addColorStop(1, '#ff8fa3');
-    ctx.fillStyle = grad;
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 0.8);
+    g.addColorStop(0, '#ffffff'); g.addColorStop(0.7, '#ffccd5'); g.addColorStop(1, '#ff8fa3');
+    ctx.fillStyle = g;
   } else {
-    // Dark Burgundy Leaf
     ctx.moveTo(0, size);
     ctx.quadraticCurveTo(size * 0.5, 0, 0, -size);
     ctx.quadraticCurveTo(-size * 0.5, 0, 0, size);
     ctx.fillStyle = '#590d22';
   }
-
   ctx.fill();
-  
-  // Subtle vein line for extra detail
+  // Vein detail (no shadow cost)
   ctx.beginPath();
-  ctx.moveTo(0, size * 0.4);
-  ctx.lineTo(0, -size * 0.2);
-  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-  ctx.lineWidth = 1;
+  ctx.moveTo(0, size * 0.4); ctx.lineTo(0, -size * 0.2);
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 0.8;
   ctx.stroke();
 }
 
+// ============================================================
+// DRAW — Frames (no shadow — use stroke for depth instead)
+// ============================================================
 function drawFrame(ctx: CanvasRenderingContext2D, variant: number, size: number) {
-  const w = size;
-  const h = size * 1.3; // Rectangular frames
-  
-  // Base drop shadow
-  ctx.shadowColor = 'rgba(0,0,0,0.3)';
-  ctx.shadowBlur = size * 0.2;
-  ctx.shadowOffsetY = size * 0.1;
-
+  const w = size, h = size * 1.3;
   if (variant === 0) {
-    // Gold Ornate
-    const grad = ctx.createLinearGradient(-w/2, -h/2, w/2, h/2);
-    grad.addColorStop(0, '#bf953f');
-    grad.addColorStop(0.5, '#fcf6ba');
-    grad.addColorStop(1, '#b38728');
-    ctx.fillStyle = grad;
+    const g = ctx.createLinearGradient(-w/2, -h/2, w/2, h/2);
+    g.addColorStop(0, '#bf953f'); g.addColorStop(0.5, '#fcf6ba'); g.addColorStop(1, '#b38728');
+    ctx.fillStyle = g;
     ctx.fillRect(-w/2, -h/2, w, h);
-    // Inner Photo Placeholder
     ctx.fillStyle = '#e5e5e5';
-    ctx.fillRect(-w/2 + w*0.15, -h/2 + w*0.15, w * 0.7, h - w*0.3);
+    ctx.fillRect(-w/2 + w*0.15, -h/2 + w*0.15, w*0.7, h - w*0.3);
   } else if (variant === 1) {
-    // Minimal Black
-    ctx.fillStyle = '#111';
-    ctx.fillRect(-w/2, -h/2, w, h);
-    // Inner Photo Placeholder
+    ctx.fillStyle = '#111'; ctx.fillRect(-w/2, -h/2, w, h);
     ctx.fillStyle = '#f5f5f5';
-    ctx.fillRect(-w/2 + w*0.1, -h/2 + w*0.1, w * 0.8, h - w*0.2);
+    ctx.fillRect(-w/2 + w*0.1, -h/2 + w*0.1, w*0.8, h - w*0.2);
   } else if (variant === 2) {
-    // Polaroid
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(-w/2, -h/2, w, h);
-    // Inner Photo Placeholder (top heavy)
-    ctx.fillStyle = '#222'; // Dark photo area
-    ctx.fillRect(-w/2 + w*0.1, -h/2 + w*0.1, w * 0.8, w * 0.9);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(-w/2, -h/2, w, h);
+    ctx.fillStyle = '#222';
+    ctx.fillRect(-w/2 + w*0.1, -h/2 + w*0.1, w*0.8, w*0.9);
   } else {
-    // White Wood
-    ctx.fillStyle = '#f8f9fa';
-    ctx.fillRect(-w/2, -h/2, w, h);
-    ctx.strokeStyle = '#eaeaea';
-    ctx.lineWidth = 2;
+    ctx.fillStyle = '#f8f9fa'; ctx.fillRect(-w/2, -h/2, w, h);
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1.5;
     ctx.strokeRect(-w/2, -h/2, w, h);
-    // Inner
     ctx.fillStyle = '#e9ecef';
-    ctx.fillRect(-w/2 + w*0.15, -h/2 + w*0.15, w * 0.7, h - w*0.3);
+    ctx.fillRect(-w/2 + w*0.15, -h/2 + w*0.15, w*0.7, h - w*0.3);
   }
-  
-  // Clear shadow after drawing base
-  ctx.shadowColor = 'transparent';
+  // Subtle right-edge darkening for depth (replaces costly shadow)
+  const edgeG = ctx.createLinearGradient(w/2 - w*0.3, 0, w/2, 0);
+  edgeG.addColorStop(0, 'rgba(0,0,0,0)'); edgeG.addColorStop(1, 'rgba(0,0,0,0.18)');
+  ctx.fillStyle = edgeG;
+  ctx.fillRect(-w/2, -h/2, w, h);
 }
 
+// ============================================================
+// DRAW — Gift Boxes (no shadow)
+// ============================================================
 function drawBox(ctx: CanvasRenderingContext2D, variant: number, size: number) {
-  const w = size;
-  const h = size * 0.8;
-  
-  // Colors based on variant
+  const w = size, h = size * 0.8;
   const colors = [
     { box: '#38C8CC', ribbon: '#ffffff', lid: '#2eb3b8' },
     { box: '#0a0e27', ribbon: '#bf953f', lid: '#121840' },
     { box: '#ff4d6d', ribbon: '#ffffff', lid: '#e63946' },
-    { box: '#f8f9fa', ribbon: '#0a0e27', lid: '#e9ecef' }
+    { box: '#f8f9fa', ribbon: '#0a0e27', lid: '#e9ecef' },
   ];
   const c = colors[variant % colors.length];
-
-  // Drop shadow
-  ctx.shadowColor = 'rgba(0,0,0,0.2)';
-  ctx.shadowBlur = size * 0.2;
-  ctx.shadowOffsetY = size * 0.15;
-
-  // Box Main Body (Front face)
-  ctx.fillStyle = c.box;
-  ctx.fillRect(-w/2, -h/2, w, h);
-  
-  ctx.shadowColor = 'transparent'; // Turn off shadow for internal details
-
-  // Shading / fake 3D volume (darken right edge)
-  ctx.fillStyle = 'rgba(0,0,0,0.1)';
-  ctx.fillRect(w/2 - w*0.2, -h/2, w*0.2, h);
-
-  // Vertical Ribbon
+  ctx.fillStyle = c.box; ctx.fillRect(-w/2, -h/2, w, h);
+  // Depth shade (replaces shadow)
+  const shade = ctx.createLinearGradient(w/2 - w*0.25, 0, w/2, 0);
+  shade.addColorStop(0, 'rgba(0,0,0,0)'); shade.addColorStop(1, 'rgba(0,0,0,0.15)');
+  ctx.fillStyle = shade; ctx.fillRect(-w/2, -h/2, w, h);
+  // Ribbons
   ctx.fillStyle = c.ribbon;
   ctx.fillRect(-w*0.1, -h/2, w*0.2, h);
-
-  // Horizontal Ribbon
-  if (variant % 2 === 0) { // Some have cross ribbons
-    ctx.fillRect(-w/2, -h*0.1, w, h*0.2);
-  }
-
-  // Box Lid (Slightly wider)
-  ctx.fillStyle = c.lid;
-  const lidH = h * 0.3;
-  const lidW = w * 1.05;
-  
-  // Lid shadow onto the box
-  ctx.shadowColor = 'rgba(0,0,0,0.3)';
-  ctx.shadowBlur = 4;
-  ctx.shadowOffsetY = 4;
-  ctx.fillRect(-lidW/2, -h/2 - lidH*0.2, lidW, lidH);
-  ctx.shadowColor = 'transparent';
-
-  // Lid ribbon
-  ctx.fillStyle = c.ribbon;
-  ctx.fillRect(-w*0.1, -h/2 - lidH*0.2, w*0.2, lidH);
-
-  // Simple Bow (two loops)
+  if (variant % 2 === 0) ctx.fillRect(-w/2, -h*0.1, w, h*0.2);
+  // Lid
+  const lidH = h * 0.3, lidW = w * 1.05;
+  ctx.fillStyle = c.lid; ctx.fillRect(-lidW/2, -h/2 - lidH*0.2, lidW, lidH);
+  ctx.fillStyle = c.ribbon; ctx.fillRect(-w*0.1, -h/2 - lidH*0.2, w*0.2, lidH);
+  // Bow
   if (variant !== 1) {
     ctx.beginPath();
-    ctx.ellipse(-w*0.15, -h/2 - lidH*0.2, w*0.15, w*0.1, Math.PI/4, 0, Math.PI*2);
-    ctx.ellipse(w*0.15, -h/2 - lidH*0.2, w*0.15, w*0.1, -Math.PI/4, 0, Math.PI*2);
-    ctx.fillStyle = c.ribbon;
-    ctx.fill();
+    ctx.ellipse(-w*0.15, -h/2 - lidH*0.2, w*0.15, w*0.09, Math.PI/4, 0, Math.PI*2);
+    ctx.ellipse( w*0.15, -h/2 - lidH*0.2, w*0.15, w*0.09, -Math.PI/4, 0, Math.PI*2);
+    ctx.fillStyle = c.ribbon; ctx.fill();
   }
 }
 
-// ==========================================
-// 4. PARTICLE CLASS
-// ==========================================
+// ============================================================
+// PARTICLE CLASS
+// ============================================================
 class Particle {
-  type: 'petal' | 'frame' | 'box';
-  variant: number;
-  layer: number; // 1 (front) to 3 (back)
-  
-  x: number = 0;
-  y: number = 0;
-  
-  size: number = 0;
-  baseSize: number = 0;
-  
-  speedY: number = 0;
-  speedX: number = 0;
-  
-  angle: number = 0;
-  angularSpeed: number = 0;
-  
-  driftPhase: number = 0;
-  driftSpeed: number = 0;
-  driftAmp: number = 0;
-  
-  opacity: number = 1;
-  active: boolean = false;
-  
-  canvasWidth: number = 1000;
-  canvasHeight: number = 1000;
+  type: 'petals' | 'frames' | 'boxes' = 'petals';
+  variant = 0;
+  layer = 1;
+  x = 0; y = 0;
+  size = 0;
+  speedY = 0;
+  gravityMod = 1; // per-particle gravity variance
+  angle = 0;
+  angularSpeed = 0;
+  driftPhase = 0; driftSpeed = 0; driftAmp = 0;
+  baseOpacity = 1;
+  opacity = 0; // starts at 0 for fade-in
+  frameAge = 0; // counts up for fade-in
+  active = false;
+  cw = 1000; ch = 1000;
 
-  constructor(cw: number, ch: number) {
-    this.type = 'petal';
-    this.variant = 0;
-    this.layer = 1;
-    this.canvasWidth = cw;
-    this.canvasHeight = ch;
-  }
+  constructor(cw: number, ch: number) { this.cw = cw; this.ch = ch; }
 
   spawn() {
     this.active = true;
-    this.type = MathUtils.chooseWeighted(FALLING_CONFIG.ratios);
-    this.layer = MathUtils.randomInt(1, FALLING_CONFIG.layers); // Parallax depth
-    
-    // Position
-    this.x = MathUtils.randomRange(-50, this.canvasWidth + 50);
-    this.y = -MathUtils.randomRange(50, 200); // Spawn above screen
-    
-    // Depth scaling (Layer 1 = 100%, Layer 2 = 60%, Layer 3 = 35%)
-    const depthScale = this.layer === 1 ? 1 : this.layer === 2 ? 0.6 : 0.35;
-    
-    // Type specific configs
-    if (this.type === 'petal') {
-      this.variant = MathUtils.randomInt(0, 5);
-      this.baseSize = MathUtils.randomRange(15, 25);
-      this.speedY = MathUtils.randomRange(0.5, 1.5) * depthScale;
-      this.angularSpeed = MathUtils.randomRange(-0.05, 0.05);
-      this.driftAmp = MathUtils.randomRange(10, 30) * depthScale; // High flutter
-      this.driftSpeed = MathUtils.randomRange(0.02, 0.05);
-    } else if (this.type === 'frame') {
-      this.variant = MathUtils.randomInt(0, 3);
-      this.baseSize = MathUtils.randomRange(40, 80);
-      this.speedY = MathUtils.randomRange(2.0, 4.0) * depthScale; // Heavier
-      this.angularSpeed = MathUtils.randomRange(-0.01, 0.01); // Slow tumble
-      this.driftAmp = MathUtils.randomRange(2, 5) * depthScale; // Low flutter
-      this.driftSpeed = MathUtils.randomRange(0.01, 0.02);
-    } else { // box
-      this.variant = MathUtils.randomInt(0, 3);
-      this.baseSize = MathUtils.randomRange(30, 60);
-      this.speedY = MathUtils.randomRange(1.8, 3.5) * depthScale; // Heavier
-      this.angularSpeed = MathUtils.randomRange(-0.02, 0.02);
-      this.driftAmp = MathUtils.randomRange(3, 8) * depthScale;
-      this.driftSpeed = MathUtils.randomRange(0.01, 0.03);
+    this.frameAge = 0;
+    this.opacity = 0;
+    this.type = rng.weighted(CONFIG.ratios) as 'petals' | 'frames' | 'boxes';
+    this.layer = rng.int(1, CONFIG.layers);
+    this.x = rng.range(-50, this.cw + 50);
+    this.y = -rng.range(40, 180);
+
+    const depth = this.layer === 1 ? 1 : this.layer === 2 ? 0.6 : 0.35;
+    this.baseOpacity = this.layer === 3 ? 0.45 : this.layer === 2 ? 0.75 : 1;
+    this.gravityMod = rng.range(0.85, 1.2);
+
+    if (this.type === 'petals') {
+      this.variant = rng.int(0, 5);
+      this.size = rng.range(14, 24) * depth;
+      this.speedY = rng.range(0.4, 1.4) * depth;
+      // Wider angular speed variance — most slow, occasional fast spin
+      this.angularSpeed = (Math.random() < 0.15 ? rng.range(0.05, 0.09) : rng.range(0.008, 0.04))
+        * (Math.random() < 0.5 ? 1 : -1);
+      this.driftAmp = rng.range(8, 28) * depth;
+      this.driftSpeed = rng.range(0.018, 0.048);
+    } else if (this.type === 'frames') {
+      this.variant = rng.int(0, 3);
+      this.size = rng.range(35, 70) * depth;
+      this.speedY = rng.range(1.4, 3.0) * depth; // Slowed down vs original
+      this.angularSpeed = rng.range(0.003, 0.012) * (Math.random() < 0.5 ? 1 : -1);
+      this.driftAmp = rng.range(2, 6) * depth;
+      this.driftSpeed = rng.range(0.008, 0.018);
+    } else {
+      this.variant = rng.int(0, 3);
+      this.size = rng.range(28, 55) * depth;
+      this.speedY = rng.range(1.5, 3.0) * depth;
+      this.angularSpeed = rng.range(0.005, 0.022) * (Math.random() < 0.5 ? 1 : -1);
+      this.driftAmp = rng.range(3, 9) * depth;
+      this.driftSpeed = rng.range(0.01, 0.028);
     }
-    
-    this.size = this.baseSize * depthScale;
-    this.angle = MathUtils.randomRange(0, Math.PI * 2);
-    this.driftPhase = MathUtils.randomRange(0, Math.PI * 2);
-    this.opacity = this.layer === 3 ? 0.5 : this.layer === 2 ? 0.8 : 1; // Fade back layers
+
+    this.angle = rng.range(0, Math.PI * 2);
+    this.driftPhase = rng.range(0, Math.PI * 2);
   }
 
-  update(globalWind: number, gravityMod: number) {
+  update(wind: number) {
     if (!this.active) return;
-    
-    // Physics
-    this.y += this.speedY * gravityMod;
-    
-    // Flutter/Drift combines global wind + local sine wave
+
+    // Fade-in
+    if (this.frameAge < CONFIG.fadeInFrames) {
+      this.frameAge++;
+      this.opacity = this.baseOpacity * (this.frameAge / CONFIG.fadeInFrames);
+    } else {
+      // Fade-out near bottom
+      const fadeOutY = this.ch * CONFIG.fadeOutStart;
+      if (this.y > fadeOutY) {
+        const ratio = 1 - (this.y - fadeOutY) / (this.ch * (1 - CONFIG.fadeOutStart));
+        this.opacity = this.baseOpacity * Math.max(0, ratio);
+      } else {
+        this.opacity = this.baseOpacity;
+      }
+    }
+
+    const depth = this.layer === 1 ? 1 : this.layer === 2 ? 0.6 : 0.35;
+    this.y += this.speedY * this.gravityMod;
     this.driftPhase += this.driftSpeed;
     const localDrift = Math.sin(this.driftPhase) * this.driftAmp;
-    
-    // Apply depth scaling to wind so front items drift faster
-    const depthScale = this.layer === 1 ? 1 : this.layer === 2 ? 0.6 : 0.35;
-    this.x += (globalWind * depthScale) + (localDrift * 0.05);
-    
-    // Rotation
+    this.x += (wind * depth) + (localDrift * 0.05);
     this.angle += this.angularSpeed;
 
-    // Reset if off screen bottom
-    if (this.y > this.canvasHeight + this.size * 2) {
-      this.active = false;
-    }
+    if (this.y > this.ch + this.size * 2) this.active = false;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (!this.active) return;
-    
+    if (!this.active || this.opacity <= 0) return;
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
     ctx.globalAlpha = this.opacity;
-    
-    // Simple blur for background layer (performance heavy if overused, using globalAlpha mostly)
-    // If you want real blur: ctx.filter = this.layer === 3 ? 'blur(3px)' : 'none';
-    
-    if (this.type === 'petal') {
-      drawPetal(ctx, this.variant, this.size);
-    } else if (this.type === 'frame') {
-      drawFrame(ctx, this.variant, this.size);
-    } else {
-      drawBox(ctx, this.variant, this.size);
-    }
-    
+    if (this.type === 'petals') drawPetal(ctx, this.variant, this.size);
+    else if (this.type === 'frames') drawFrame(ctx, this.variant, this.size);
+    else drawBox(ctx, this.variant, this.size);
     ctx.restore();
   }
 }
 
-// ==========================================
-// 5. REACT COMPONENT
-// ==========================================
+// ============================================================
+// REACT COMPONENT
+// ============================================================
 export default function FallingAnimation({ className = '' }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const poolRef = useRef<Particle[]>([]);
-  const animationFrameRef = useRef<number>(0);
-  const lastSpawnRef = useRef<number>(0);
-  const timeRef = useRef<number>(0);
-
-  const [isMobile, setIsMobile] = useState(true);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+    // Respect prefers-reduced-motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  useEffect(() => {
-    if (isMobile) return;
+    // Skip on mobile (< 768px)
+    if (window.innerWidth < 768) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Handle Resize
+    // Density based on viewport
+    const density = window.innerWidth >= 1024 ? CONFIG.densityDesktop : CONFIG.densityTablet;
+
+    // Resize handler (single, throttled)
+    let resizeTimer: ReturnType<typeof setTimeout>;
     const handleResize = () => {
-      canvas.width = document.documentElement.clientWidth;
-      canvas.height = window.innerHeight;
-      // Update canvas bounds in existing pool
-      poolRef.current.forEach(p => {
-        p.canvasWidth = canvas.width;
-        p.canvasHeight = canvas.height;
-      });
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (window.innerWidth < 768) {
+          // Hide if resized to mobile
+          canvas.style.display = 'none';
+          return;
+        }
+        canvas.style.display = '';
+        canvas.width  = document.documentElement.clientWidth;
+        canvas.height = window.innerHeight;
+        pool.forEach(p => { p.cw = canvas.width; p.ch = canvas.height; });
+      }, 120);
     };
-    
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initial sizing
+    // Initial size
+    canvas.width  = document.documentElement.clientWidth;
+    canvas.height = window.innerHeight;
 
-    // Initialize Object Pool
-    poolRef.current = Array.from({ length: FALLING_CONFIG.density }, () => new Particle(canvas.width, canvas.height));
+    // Pre-bucketed layers (avoids Array.sort() every frame)
+    const pool: Particle[] = Array.from({ length: density }, () => new Particle(canvas.width, canvas.height));
+    // Layer buckets: index 0 = unused, 1 = front, 2 = mid, 3 = back
+    const buckets: Particle[][] = [[], [], [], []];
+    const rebucket = (p: Particle) => { buckets[p.layer]?.push(p); };
+    pool.forEach(rebucket);
 
-    // Render Loop
-    const render = (timestamp: number) => {
-      // Delta time calculation for spawning
-      if (!lastSpawnRef.current) lastSpawnRef.current = timestamp;
-      const elapsed = timestamp - lastSpawnRef.current;
-      
-      // Spawn new particles from pool
-      if (elapsed > FALLING_CONFIG.spawnRateMs) {
-        const deadParticle = poolRef.current.find(p => !p.active);
-        if (deadParticle) {
-          deadParticle.spawn();
-          lastSpawnRef.current = timestamp;
+    let lastSpawn = 0;
+    let timeRef = 0;
+    let rafId = 0;
+
+    const render = (ts: number) => {
+      // Spawn
+      if (ts - lastSpawn > CONFIG.spawnRateMs) {
+        const dead = pool.find(p => !p.active);
+        if (dead) {
+          dead.spawn();
+          rebucket(dead);
+          lastSpawn = ts;
         }
       }
 
-      // Calculate Global Wind (Sine wave slowly shifting over time)
-      timeRef.current += FALLING_CONFIG.physics.windSpeed;
-      const globalWind = FALLING_CONFIG.physics.windBase + Math.sin(timeRef.current) * FALLING_CONFIG.physics.windVariance;
-      
-      // Clear Canvas
+      // Organic wind: two overlapping sines
+      timeRef += 0.016; // ~60fps tick
+      const wind =
+        CONFIG.physics.wind1Base * Math.sin(timeRef * CONFIG.physics.wind1Freq * 1000) +
+        CONFIG.physics.wind2Base * Math.sin(timeRef * CONFIG.physics.wind2Freq * 1000);
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Sort pool by layer to draw background items first (painters algorithm)
-      // Since it's a fixed pool, we can just filter or sort. Sorting 60 items is fast enough.
-      const activeParticles = poolRef.current.filter(p => p.active);
-      activeParticles.sort((a, b) => b.layer - a.layer); // layer 3 (back) drawn first
+      // Draw back → front (painters algorithm, no sort needed)
+      for (let layer = 3; layer >= 1; layer--) {
+        const bucket = buckets[layer];
+        for (let i = bucket.length - 1; i >= 0; i--) {
+          const p = bucket[i];
+          if (!p.active) { bucket.splice(i, 1); continue; }
+          p.update(wind);
+          p.draw(ctx);
+        }
+      }
 
-      // Update and Draw
-      activeParticles.forEach(p => {
-        p.update(globalWind, 1.0); // 1.0 = normal gravity modifier
-        p.draw(ctx);
-      });
-
-      animationFrameRef.current = requestAnimationFrame(render);
+      rafId = requestAnimationFrame(render);
     };
 
-    animationFrameRef.current = requestAnimationFrame(render);
+    rafId = requestAnimationFrame(render);
 
-    // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      clearTimeout(resizeTimer);
+      cancelAnimationFrame(rafId);
     };
   }, []);
 
   return (
-    <canvas 
-      ref={canvasRef} 
-      className={`fixed inset-0 pointer-events-none z-50 ${className}`}
+    <canvas
+      ref={canvasRef}
+      className={`fixed inset-0 pointer-events-none z-0 ${className}`}
       aria-hidden="true"
     />
   );

@@ -181,7 +181,7 @@ export function Hero10({
     <h1
       className={cn(
         'text-[#0a0e27] font-serif-heading font-normal tracking-tight text-balance leading-tight',
-        'text-5xl sm:text-6xl md:text-7xl lg:text-[4.5rem]'
+        'text-4xl sm:text-5xl md:text-7xl lg:text-[4.5rem]'
       )}
     >
       <span>{title}</span>
@@ -222,7 +222,7 @@ export function Hero10({
   )
 
   const socialProofElement = socialProof && (
-    <div className="inline-flex items-center rounded-full px-5 py-2 mb-2 border border-[#0a0e27]/10 bg-white/50 backdrop-blur-md shadow-sm">
+    <div className="inline-flex items-center rounded-full px-5 py-2 mb-2 border border-[#0a0e27]/10 bg-white/80 shadow-sm">
       <span className="text-xs sm:text-sm font-bold text-[#2aabb0] tracking-wider uppercase">
         {socialProof}
       </span>
@@ -245,7 +245,7 @@ export function Hero10({
     >
       <motion.div
         className={cn(
-          'relative z-10 mx-auto flex max-w-7xl flex-col lg:flex-row items-center justify-between px-6 text-center lg:text-left gap-16 lg:gap-8',
+          'relative z-10 mx-auto flex max-w-7xl flex-col lg:flex-row items-center justify-between px-6 text-center lg:text-left gap-8 lg:gap-8',
           vs.section,
         )}
         variants={animate ? container : undefined}

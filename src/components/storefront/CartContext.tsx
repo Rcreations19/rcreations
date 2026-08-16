@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import type { CartItem, CustomFrameConfig } from '@/lib/supabase/types';
 
 interface CartContextType {
@@ -120,14 +120,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = useCallback(() => setItems([]), []);
 
-  const totalCount = items.reduce((sum, i) => sum + i.quantity, 0);
+  const totalCount = useMemo(() => items.reduce((sum, i) => sum + i.quantity, 0), [items]);
 
-  const moqWarnings = items
-    .filter(i => i.moq && i.quantity < i.moq)
-    .map(i => `${i.title}: minimum ${i.moq} units (currently ${i.quantity})`);
+  const moqWarnings = useMemo(() =>
+    items
+      .filter(i => i.moq && i.quantity < i.moq)
+      .map(i => `${i.title}: minimum ${i.moq} units (currently ${i.quantity})`),
+    [items]
+  );
+
+  const value = useMemo(() => ({
+    items, isOpen, totalCount, openCart, closeCart, addPreset, addCustom, updateQuantity, removeItem, clearCart, moqWarnings
+  }), [items, isOpen, totalCount, openCart, closeCart, addPreset, addCustom, updateQuantity, removeItem, clearCart, moqWarnings]);
 
   return (
-    <CartContext.Provider value={{ items, isOpen, totalCount, openCart, closeCart, addPreset, addCustom, updateQuantity, removeItem, clearCart, moqWarnings }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
