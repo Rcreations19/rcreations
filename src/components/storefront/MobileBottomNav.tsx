@@ -24,7 +24,7 @@ export default function MobileBottomNav() {
   ];
 
   return (
-    <div className="md:hidden fixed bottom-4 left-4 right-4 z-[60] bg-white/25 backdrop-blur-2xl border border-white/60 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.08)]" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+    <div className="md:hidden fixed bottom-4 left-4 right-4 z-[60] bg-white border border-neutral-200 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
       <div className="flex items-center justify-around px-2 h-14">
         {navItems.map((item) => {
           const Icon = item.icon;

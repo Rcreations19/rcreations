@@ -148,7 +148,7 @@ export default function Navbar() {
                 type="text" 
                 name="search" 
                 placeholder="Search products..." 
-                className="w-full pl-12 pr-5 py-3.5 bg-neutral-100/50 backdrop-blur-xl border border-neutral-200/60 shadow-[0_4px_16px_rgba(0,0,0,0.04)] rounded-2xl text-neutral-900 text-base placeholder:text-neutral-500 focus:outline-none focus:border-[#2aabb0] focus:bg-white focus:ring-1 focus:ring-[#2aabb0] transition-all"
+                className="w-full pl-12 pr-5 py-3.5 bg-white border border-neutral-200 shadow-[0_4px_16px_rgba(0,0,0,0.04)] rounded-2xl text-neutral-900 text-base placeholder:text-neutral-500 focus:outline-none focus:border-[#2aabb0] focus:ring-1 focus:ring-[#2aabb0] transition-all"
               />
             </form>
           </div>
