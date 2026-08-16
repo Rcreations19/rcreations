@@ -9,8 +9,9 @@ import { ArrowLeft, Calendar, User } from 'lucide-react';
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
   try {
-    const blog = await getPublicBlogBySlug(slug);
+    const blog = await getPublicBlogBySlug(decodedSlug);
     return {
       title: `${blog.title} | R Creation Blog`,
       description: blog.summary,
@@ -38,10 +39,11 @@ export async function generateStaticParams() {
 
 export default async function BlogArticlePage({ params }: { params: { slug: string } }) {
   const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
   let blog;
 
   try {
-    blog = await getPublicBlogBySlug(slug);
+    blog = await getPublicBlogBySlug(decodedSlug);
   } catch (e) {
     notFound();
   }

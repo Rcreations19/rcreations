@@ -59,7 +59,8 @@ export async function createBlog(formData: FormData) {
   const supabase = await getAdminClient();
   
   const title = formData.get('title') as string;
-  const slug = formData.get('slug') as string;
+  const rawSlug = formData.get('slug') as string;
+  const slug = rawSlug.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   const summary = formData.get('summary') as string;
   const content = formData.get('content') as string;
   const author = formData.get('author') as string;
@@ -111,7 +112,8 @@ export async function updateBlog(id: string, formData: FormData) {
   const supabase = await getAdminClient();
   
   const title = formData.get('title') as string;
-  const slug = formData.get('slug') as string;
+  const rawSlug = formData.get('slug') as string;
+  const slug = rawSlug.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   const summary = formData.get('summary') as string;
   const content = formData.get('content') as string;
   const author = formData.get('author') as string;
