@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Star, ShieldCheck, Quote } from 'lucide-react';
 
 interface Review {
@@ -39,7 +39,7 @@ export function GoogleReviewsMarquee({ reviews }: { reviews: Review[] }) {
 
   if (!count) return null;
 
-  const variants = {
+  const variants: Variants = {
     enter: (d: number) => ({
       x: d >= 0 ? '60%' : '-60%',
       opacity: 0,
