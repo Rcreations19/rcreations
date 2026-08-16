@@ -24,7 +24,7 @@ export interface Hero10Props {
 
 const variantStyles = {
   standard: {
-    section: 'py-20 sm:py-28',
+    section: 'pt-8 pb-20 sm:pt-20 sm:pb-28',
     title: 'text-3xl sm:text-4xl md:text-5xl',
     description: 'max-w-lg text-sm sm:text-base',
     header: 'gap-5',

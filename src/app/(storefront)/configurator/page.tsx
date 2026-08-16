@@ -99,7 +99,7 @@ export default function ConfiguratorPage() {
   };
 
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pt-28 pb-20 overflow-x-hidden">
+    <div className="bg-[#fcfcfc] min-h-screen pt-8 md:pt-28 pb-20 overflow-x-hidden">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header & Zeigarnik Progress Bar */}

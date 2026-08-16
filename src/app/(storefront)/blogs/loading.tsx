@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="pt-8 md:pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12 space-y-3">
         <div className="skeleton h-3 w-32 mx-auto rounded" />
         <div className="skeleton h-9 w-48 mx-auto rounded-lg" />

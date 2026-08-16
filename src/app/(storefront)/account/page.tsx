@@ -87,7 +87,7 @@ export default function AccountPage() {
 
   if (isLoading || !user) {
     return (
-      <div className="pt-32 pb-20 flex items-center justify-center">
+      <div className="pt-10 md:pt-32 pb-20 flex items-center justify-center">
         <Loader2 className="w-6 h-6 animate-spin text-[#2aabb0]" />
       </div>
     );
@@ -103,7 +103,7 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="pt-28 pb-20 max-w-4xl mx-auto px-4 sm:px-6">
+    <div className="pt-8 md:pt-28 pb-20 max-w-4xl mx-auto px-4 sm:px-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>

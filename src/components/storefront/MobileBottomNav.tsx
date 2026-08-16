@@ -24,8 +24,8 @@ export default function MobileBottomNav() {
   ];
 
   return (
-    <div className="md:hidden fixed bottom-2 left-2 right-2 z-[60] bg-white/80 backdrop-blur-xl border border-white/40 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.12)]" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
-      <div className="flex items-center justify-around px-2 h-[4.5rem]">
+    <div className="md:hidden fixed bottom-4 left-4 right-4 z-[60] bg-white/25 backdrop-blur-2xl border border-white/60 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.08)]" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      <div className="flex items-center justify-around px-2 h-14">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
@@ -36,8 +36,8 @@ export default function MobileBottomNav() {
               href={item.href}
               onClick={handleVibrate}
               aria-current={isActive ? 'page' : undefined}
-              className={`relative flex flex-col items-center justify-center w-full h-full space-y-1.5 transition-all duration-300 rounded-lg active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                isActive ? 'text-[#2aabb0]' : 'text-neutral-500'
+              className={`relative flex flex-col items-center justify-center w-full h-full space-y-0.5 transition-all duration-300 rounded-lg active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                isActive ? 'text-[#2aabb0]' : 'text-[#0a0e27]'
               }`}
             >
               {isActive && (
@@ -55,12 +55,12 @@ export default function MobileBottomNav() {
             openCart();
           }}
           aria-label={`Shopping cart, ${totalCount} items`}
-          className="relative flex flex-col items-center justify-center w-full h-full space-y-1.5 text-neutral-500 transition-all duration-300 rounded-lg active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="relative flex flex-col items-center justify-center w-full h-full space-y-0.5 text-[#0a0e27] transition-all duration-300 rounded-lg active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <div className="relative">
             <ShoppingCart className="w-5 h-5 stroke-[1.5]" />
             {totalCount > 0 && (
-              <span className="absolute -top-1.5 -right-2 bg-[#2aabb0] text-[#0a0e27] text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm border border-white">
+              <span className="absolute -top-1.5 -right-2 bg-[#2aabb0] text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm border border-white">
                 {totalCount > 99 ? '99+' : totalCount}
               </span>
             )}

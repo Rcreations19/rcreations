@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function SpecsPage() {
   return (
-    <div className="pt-28 pb-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="pt-8 md:pt-28 pb-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12 space-y-2">
         <span className="text-xs font-mono font-bold uppercase text-[#2aabb0] bg-[#10164A] px-2.5 py-1 rounded inline-block">
           Manufacturing Standards

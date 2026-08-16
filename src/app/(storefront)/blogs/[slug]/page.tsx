@@ -49,7 +49,7 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
   }
 
   return (
-      <article className="bg-[#fcfcfc] min-h-screen pt-24 pb-20">
+      <article className="bg-[#fcfcfc] min-h-screen pt-6 md:pt-24 pb-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <Link href="/blogs" className="inline-flex items-center text-sm text-[#595959] hover:text-[#0a0e27] mb-8 transition-colors animate-fade-in">

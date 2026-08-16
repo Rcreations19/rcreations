@@ -123,8 +123,8 @@ export default function Navbar() {
         }}
         animate={isHidden ? "hidden" : "visible"}
         transition={{ duration: 0.35, ease: "easeInOut" }}
-        className={`sticky top-0 left-0 right-0 z-50 transition-shadow duration-500 border-b bg-[#050714]/85 backdrop-blur-md md:bg-[#050714] md:backdrop-blur-none text-white ${isScrolled
-            ? 'border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)]'
+        className={`sticky top-0 left-0 right-0 z-50 transition-shadow duration-500 border-b bg-transparent md:bg-[#050714] md:backdrop-blur-none text-white ${isScrolled
+            ? 'border-white/10 md:shadow-[0_4px_30px_rgba(0,0,0,0.1)]'
             : 'border-transparent'
           }`}
       >
@@ -143,12 +143,12 @@ export default function Navbar() {
           {/* Mobile Search Bar (Only visible on mobile) */}
           <div className="flex w-full md:hidden items-center mt-1">
             <form action="/products" method="GET" className="w-full relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-600" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black z-10 pointer-events-none" />
               <input 
                 type="text" 
                 name="search" 
                 placeholder="Search products..." 
-                className="w-full pl-12 pr-5 py-3.5 bg-white/80 backdrop-blur-md border border-white/40 shadow-sm rounded-2xl text-neutral-900 text-base placeholder:text-neutral-500 focus:outline-none focus:border-[#2aabb0] focus:bg-white focus:ring-1 focus:ring-[#2aabb0] transition-all"
+                className="w-full pl-12 pr-5 py-3.5 bg-neutral-100/50 backdrop-blur-xl border border-neutral-200/60 shadow-[0_4px_16px_rgba(0,0,0,0.04)] rounded-2xl text-neutral-900 text-base placeholder:text-neutral-500 focus:outline-none focus:border-[#2aabb0] focus:bg-white focus:ring-1 focus:ring-[#2aabb0] transition-all"
               />
             </form>
           </div>

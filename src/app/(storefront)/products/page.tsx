@@ -11,7 +11,7 @@ export default async function ProductsPage() {
   ]);
 
   return (
-    <div className="bg-transparent min-h-screen pt-28 pb-20">
+    <div className="bg-transparent min-h-screen pt-8 md:pt-28 pb-20">
       <Suspense fallback={<div className="h-96 flex items-center justify-center">Loading catalog...</div>}>
         <ProductCatalogClient 
           initialProducts={products || []} 

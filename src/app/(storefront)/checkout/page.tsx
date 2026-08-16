@@ -136,7 +136,7 @@ export default function CheckoutPage() {
 
   if (success) {
     return (
-      <div className="pt-32 pb-20 max-w-3xl mx-auto px-4 text-center">
+      <div className="pt-10 md:pt-32 pb-20 max-w-3xl mx-auto px-4 text-center">
         <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-6" />
         <h1 className="text-3xl font-extrabold text-secondary mb-4">Order Placed Successfully!</h1>
         <p className="text-neutral-600 mb-2">Thank you for shopping with R Creation.</p>
@@ -153,7 +153,7 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="pt-32 pb-20 max-w-3xl mx-auto px-4 text-center">
+      <div className="pt-10 md:pt-32 pb-20 max-w-3xl mx-auto px-4 text-center">
         <ShoppingBag className="w-16 h-16 text-neutral-300 mx-auto mb-6" />
         <h1 className="text-3xl font-extrabold text-secondary mb-4">Your Cart is Empty</h1>
         <Link href="/products" className="inline-flex items-center gap-2 px-6 py-3 bg-secondary text-white font-bold rounded-xl hover:bg-secondary-hover transition-colors">
@@ -164,7 +164,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="pt-8 md:pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-secondary">Secure Checkout</h1>
         <p className="text-sm text-neutral-600">Please provide your shipping and contact details below.</p>
