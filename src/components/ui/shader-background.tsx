@@ -17,15 +17,10 @@ const ShaderBackground = () => {
     precision highp float;
     uniform vec2 iResolution;
     uniform float iTime;
+    uniform float iQuality;
 
     const float overallSpeed = 0.2;
     const float gridSmoothWidth = 0.015;
-    const float axisWidth = 0.05;
-    const float majorLineWidth = 0.025;
-    const float minorLineWidth = 0.0125;
-    const float majorLineFrequency = 5.0;
-    const float minorLineFrequency = 1.0;
-    const vec4 gridColor = vec4(0.5);
     const float scale = 5.0;
     const vec4 lineColor = vec4(0.0, 0.85, 1.0, 1.0);
     const float minLineWidth = 0.01;
@@ -40,22 +35,11 @@ const ShaderBackground = () => {
     const float offsetSpeed = 1.33 * overallSpeed;
     const float minOffsetSpread = 0.6;
     const float maxOffsetSpread = 2.0;
-    const int linesPerGroup = 16;
+    const int maxLines = 16;
 
     #define drawCircle(pos, radius, coord) smoothstep(radius + gridSmoothWidth, radius, length(coord - (pos)))
     #define drawSmoothLine(pos, halfWidth, t) smoothstep(halfWidth, 0.0, abs(pos - (t)))
     #define drawCrispLine(pos, halfWidth, t) smoothstep(halfWidth + gridSmoothWidth, halfWidth, abs(pos - (t)))
-    #define drawPeriodicLine(freq, width, t) drawCrispLine(freq / 2.0, width, abs(mod(t, freq) - (freq) / 2.0))
-
-    float drawGridLines(float axis) {
-      return drawCrispLine(0.0, axisWidth, axis)
-            + drawPeriodicLine(majorLineFrequency, majorLineWidth, axis)
-            + drawPeriodicLine(minorLineFrequency, minorLineWidth, axis);
-    }
-
-    float drawGrid(vec2 space) {
-      return 0.0;
-    }
 
     float random(float t) {
       return (cos(t) + cos(t * 1.3 + 1.3) + cos(t * 1.4 + 1.4)) / 3.0;
@@ -72,15 +56,16 @@ const ShaderBackground = () => {
       vec2 space = (fragCoord - iResolution.xy / 2.0) / iResolution.x * 2.0 * scale;
 
       float horizontalFade = 1.0 - (cos(uv.x * 6.28) * 0.5 + 0.5);
-      float verticalFade = 1.0 - (cos(uv.y * 6.28) * 0.5 + 0.5);
 
       space.y += random(space.x * warpFrequency + iTime * warpSpeed) * warpAmplitude * (0.5 + horizontalFade);
       space.x += random(space.y * warpFrequency + iTime * warpSpeed + 2.0) * warpAmplitude * horizontalFade;
 
       vec4 lines = vec4(0.0);
+      int lineCount = int(float(maxLines) * iQuality);
 
-      for(int l = 0; l < linesPerGroup; l++) {
-        float normalizedLineIndex = float(l) / float(linesPerGroup);
+      for(int l = 0; l < maxLines; l++) {
+        if(l >= lineCount) break;
+        float normalizedLineIndex = float(l) / float(lineCount);
         float offsetTime = iTime * offsetSpeed;
         float offsetPosition = float(l) + space.x * offsetFrequency;
         float rand = random(offsetPosition + offsetTime) * 0.5 + 0.5;
@@ -145,6 +130,8 @@ const ShaderBackground = () => {
     const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false });
     if (!gl) return;
 
+    const isMobile = window.innerWidth < 768;
+
     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
     if (!shaderProgram) return;
 
@@ -165,12 +152,13 @@ const ShaderBackground = () => {
       uniformLocations: {
         resolution: gl.getUniformLocation(shaderProgram, 'iResolution'),
         time: gl.getUniformLocation(shaderProgram, 'iTime'),
+        quality: gl.getUniformLocation(shaderProgram, 'iQuality'),
       },
     };
 
     const resizeCanvas = () => {
       const rect = container.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 2);
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
       canvas.style.width = `${rect.width}px`;
@@ -184,8 +172,15 @@ const ShaderBackground = () => {
 
     let startTime = Date.now();
     let rafId: number;
+    let lastFrame = 0;
+    const frameInterval = isMobile ? 33.33 : 16.67;
 
-    const render = () => {
+    const render = (timestamp: number) => {
+      rafId = requestAnimationFrame(render);
+
+      if (timestamp - lastFrame < frameInterval) return;
+      lastFrame = timestamp;
+
       const currentTime = (Date.now() - startTime) / 1000;
 
       gl.clearColor(0.0, 0.0, 0.0, 0.0);
@@ -195,13 +190,13 @@ const ShaderBackground = () => {
 
       gl.uniform2f(programInfo.uniformLocations.resolution, canvas.width, canvas.height);
       gl.uniform1f(programInfo.uniformLocations.time, currentTime);
+      gl.uniform1f(programInfo.uniformLocations.quality, isMobile ? 0.5 : 1.0);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
       gl.vertexAttribPointer(programInfo.attribLocations.vertexPosition, 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
 
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      rafId = requestAnimationFrame(render);
     };
 
     rafId = requestAnimationFrame(render);
