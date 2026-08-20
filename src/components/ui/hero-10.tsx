@@ -7,6 +7,7 @@ import { motion, type Variants } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 import { Cta, type CtaProps } from '@/components/ui/hero-10-utils/cta'
+import ShaderBackground from '@/components/ui/shader-background'
 
 export interface Hero10Props {
   title: string
@@ -139,7 +140,7 @@ function ImageFan({
             custom={slot}
             variants={fanCard}
             className={cn(
-              'relative shrink-0 overflow-hidden rounded-xl shadow-xl outline outline-black/10 dark:outline-white/10',
+              'relative shrink-0 overflow-hidden rounded-xl shadow-xl outline outline-black/10',
               cardAspect,
               slot.width,
               slot.layout,
@@ -243,6 +244,7 @@ export function Hero10({
       className="bg-transparent relative isolate w-full overflow-hidden"
       style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}
     >
+      <ShaderBackground />
       <motion.div
         className={cn(
           'relative z-10 mx-auto flex max-w-7xl flex-col lg:flex-row items-center justify-between px-6 text-center lg:text-left gap-8 lg:gap-8',
