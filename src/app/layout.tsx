@@ -11,8 +11,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://rcreationframes.com'),
   title: {
-    template: '%s | R Creation — Gudiyattam',
-    default: 'R Creation — Premium Photo Frames, Trophies & Custom Gifts | Gudiyattam, Vellore',
+    template: '%s | R Creation',
+    default: 'R Creation — Premium Photo Frames & Custom Gifts',
   },
   description: 'Manufacturer & wholesaler of synthetic photo frames, crystal trophies, wooden mementos, personalized gifts, and framing accessories in Gudiyattam, Vellore, Tamil Nadu. Wholesale MOQ 10 units.',
   keywords: ['R Creation', 'photo frames', 'Gudiyattam', 'Vellore', 'wholesale frames', 'crystal trophies', 'wooden mementos', 'custom gifts', 'Tamil Nadu'],
