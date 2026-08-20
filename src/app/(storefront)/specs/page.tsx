@@ -4,8 +4,11 @@ import { ShieldCheck, Ruler, Settings, FileText, ArrowRight } from 'lucide-react
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Technical Specifications | R Creation Gudiyattam',
+  title: 'Technical Specifications',
   description: 'Technical specifications, material details, and manufacturing standards for R Creation synthetic frames, crystal trophies, and custom engraving.',
+  alternates: {
+    canonical: '/specs',
+  },
 };
 
 export default function SpecsPage() {

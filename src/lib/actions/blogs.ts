@@ -2,6 +2,7 @@
 
 import { createClient, getAdminClient } from '../supabase/server';
 import { revalidatePath } from 'next/cache';
+import { validateImageFile, generateUploadPath } from '../supabase/upload-utils';
 
 // ========== PUBLIC ACTIONS ==========
 
@@ -13,7 +14,7 @@ export async function getPublicBlogs() {
     .eq('is_published', true)
     .order('created_at', { ascending: false });
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Failed to fetch blogs.');
   return data;
 }
 
@@ -26,7 +27,7 @@ export async function getPublicBlogBySlug(slug: string) {
     .eq('is_published', true)
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Blog not found.');
   return data;
 }
 
@@ -39,7 +40,7 @@ export async function getAdminBlogs() {
     .select('*')
     .order('created_at', { ascending: false });
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Failed to fetch blogs.');
   return data;
 }
 
@@ -51,7 +52,7 @@ export async function getAdminBlogById(id: string) {
     .eq('id', id)
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Blog not found.');
   return data;
 }
 
@@ -70,15 +71,17 @@ export async function createBlog(formData: FormData) {
   let cover_image_url = null;
 
   if (coverImageFile && coverImageFile.size > 0) {
-    const fileExt = coverImageFile.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `blogs/${fileName}`;
+    const validation = validateImageFile(coverImageFile, 'blog');
+    if (!validation.valid) throw new Error(validation.error);
+
+    const fileExt = coverImageFile.name.split('.').pop()!;
+    const filePath = generateUploadPath('blog', fileExt);
     
     const { error: uploadError } = await supabase.storage
       .from('public')
       .upload(filePath, coverImageFile);
       
-    if (uploadError) throw new Error(`Upload error: ${uploadError.message}`);
+    if (uploadError) throw new Error('Failed to upload cover image.');
     
     const { data: { publicUrl } } = supabase.storage
       .from('public')
@@ -101,7 +104,7 @@ export async function createBlog(formData: FormData) {
     .select()
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Failed to create blog.');
   
   revalidatePath('/admin/blogs');
   revalidatePath('/blogs');
@@ -124,15 +127,17 @@ export async function updateBlog(id: string, formData: FormData) {
   let cover_image_url = existingImageUrl;
 
   if (coverImageFile && coverImageFile.size > 0) {
-    const fileExt = coverImageFile.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `blogs/${fileName}`;
+    const validation = validateImageFile(coverImageFile, 'blog');
+    if (!validation.valid) throw new Error(validation.error);
+
+    const fileExt = coverImageFile.name.split('.').pop()!;
+    const filePath = generateUploadPath('blog', fileExt);
     
     const { error: uploadError } = await supabase.storage
       .from('public')
       .upload(filePath, coverImageFile);
       
-    if (uploadError) throw new Error(`Upload error: ${uploadError.message}`);
+    if (uploadError) throw new Error('Failed to upload cover image.');
     
     const { data: { publicUrl } } = supabase.storage
       .from('public')
@@ -156,7 +161,7 @@ export async function updateBlog(id: string, formData: FormData) {
     .select()
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Failed to update blog.');
   
   revalidatePath('/admin/blogs');
   revalidatePath('/blogs');
@@ -172,7 +177,7 @@ export async function deleteBlog(id: string) {
     .delete()
     .eq('id', id);
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Failed to delete blog.');
   
   revalidatePath('/admin/blogs');
   revalidatePath('/blogs');

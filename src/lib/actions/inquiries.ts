@@ -13,7 +13,7 @@ export async function updateInquiryStatus(id: string, status: string) {
     .eq('id', id);
 
   if (error) {
-    return { error: error.message };
+    return { error: 'Failed to update inquiry.' };
   }
 
   revalidatePath('/admin/inquiries');
@@ -68,7 +68,7 @@ export async function submitInquiry(formData: FormData): Promise<ApiResponse> {
   });
 
   if (error) {
-    console.error('Inquiry Submission Error:', error);
+    console.error('Inquiry submission failed');
     return createErrorResponse('DB_ERROR', 'Failed to save inquiry.');
   }
 

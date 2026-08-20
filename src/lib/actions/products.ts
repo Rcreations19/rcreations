@@ -74,7 +74,10 @@ const productSchema = z.object({
   urgency_timer_subtitle: z.string().nullable().optional().transform(val => val || null)
 });
 
-export async function saveProduct(formData: FormData) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ProductResult = { success: true; error?: undefined; details?: undefined } | { error: string; details?: any; success?: undefined };
+
+export async function saveProduct(formData: FormData): Promise<ProductResult> {
   try {
     const supabase = await getAdminClient();
     const id = formData.get('id') as string;
@@ -126,10 +129,10 @@ export async function saveProduct(formData: FormData) {
 
     if (isNew) {
       const { error } = await supabase.from('products').insert(productData as never);
-      if (error) return { error: error.message };
+      if (error) return { error: 'Failed to create product.' };
     } else {
       const { error } = await supabase.from('products').update(productData as never).eq('id', id);
-      if (error) return { error: error.message };
+      if (error) return { error: 'Failed to update product.' };
     }
 
     // Log activity
@@ -149,12 +152,12 @@ export async function saveProduct(formData: FormData) {
     revalidatePath('/');         // Revalidate homepage (TopSellers section)
     
     return { success: true };
-  } catch (err: any) {
-    return { error: err.message || "An unexpected error occurred" };
+  } catch {
+    return { error: 'An unexpected error occurred.' };
   }
 }
 
-export async function deleteProducts(ids: string[]) {
+export async function deleteProducts(ids: string[]): Promise<ProductResult> {
   try {
     const supabase = await getAdminClient();
     
@@ -163,7 +166,7 @@ export async function deleteProducts(ids: string[]) {
       .delete()
       .in('id', ids);
 
-    if (error) return { error: error.message };
+    if (error) return { error: 'Failed to delete products.' };
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
@@ -180,7 +183,7 @@ export async function deleteProducts(ids: string[]) {
     revalidatePath('/'); // Revalidate homepage (TopSellers section)
     
     return { success: true };
-  } catch (err: any) {
-    return { error: err.message || "An unexpected error occurred" };
+  } catch {
+    return { error: 'An unexpected error occurred.' };
   }
 }

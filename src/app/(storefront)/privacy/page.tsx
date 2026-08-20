@@ -6,6 +6,9 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description: 'Privacy policy for R Creation — how we collect, use, and protect your personal information.',
+  alternates: {
+    canonical: '/privacy',
+  },
 };
 
 export default function PrivacyPage() {
@@ -52,7 +55,7 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-lg font-bold text-secondary">7. Contact</h2>
           <p>For privacy-related inquiries, reach us at:<br />
-          R Creation, Gudiyattam, Vellore District, Tamil Nadu — 632602<br />
+          R Creation, Gudiyattam, Vellore District, Tamil Nadu - 632602<br />
           Phone: +91 87549 40610<br />
           Email: rcreationsstudio@gmail.com</p>
         </section>

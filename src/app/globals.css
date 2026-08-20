@@ -41,10 +41,10 @@
   --color-admin-success: #0070f3; /* Vercel blue for primary actions */
   
   /* Font Families */
-  --font-sans: var(--font-jost), system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-outfit), system-ui, -apple-system, sans-serif;
   --font-heading: var(--font-cormorant), Georgia, serif;
-  --font-body: var(--font-jost), system-ui, -apple-system, sans-serif;
-  --font-admin: var(--font-jost), system-ui, -apple-system, sans-serif;
+  --font-body: var(--font-outfit), system-ui, -apple-system, sans-serif;
+  --font-admin: var(--font-outfit), system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-script-extra: 'Dancing Script', cursive;
 
@@ -118,7 +118,8 @@
 
     /* Only stop infinite CSS-class marquees, not JS-driven rAF tickers */
     .animate-marquee,
-    .animate-google-marquee {
+    .animate-google-marquee,
+    .animate-pulse {
       animation: none !important;
     }
   }

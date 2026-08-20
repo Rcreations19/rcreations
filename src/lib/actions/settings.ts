@@ -22,8 +22,8 @@ export async function updateSiteSettings(formData: FormData) {
         }, { onConflict: 'key' });
         
       if (error) {
-        console.error(`Error updating setting ${key}:`, error);
-        return { error: error.message };
+        console.error(`Failed to update setting`);
+        return { error: 'Failed to update setting.' };
       }
     }
   }

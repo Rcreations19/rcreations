@@ -154,14 +154,14 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
 
       const res = await saveProduct(formData);
       
-      if (res?.error) {
+      if (res && 'error' in res) {
         if (res.details && res.details.fieldErrors) {
           const fieldErrors = Object.entries(res.details.fieldErrors)
             .map(([field, errors]) => `${field}: ${(errors as string[]).join(', ')}`)
             .join(' | ');
           throw new Error(`${res.error} - ${fieldErrors}`);
         }
-        throw new Error(typeof res.error === 'string' ? res.error : JSON.stringify(res.error));
+        throw new Error(res.error);
       }
 
       setSuccess(true);

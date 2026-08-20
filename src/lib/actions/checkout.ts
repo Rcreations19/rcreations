@@ -36,8 +36,8 @@ export async function submitOrder(
   try {
     formData = checkoutSchema.parse(rawFormData);
     cartItems = cartSchema.parse(rawCartItems);
-  } catch (err) {
-    console.error("Checkout validation failed:", err);
+  } catch {
+    console.error("Checkout validation failed");
     return { error: "Invalid checkout payload." };
   }
 
@@ -47,8 +47,9 @@ export async function submitOrder(
   const { data: { user } } = await userClient.auth.getUser();
   const customerId = user?.id || null;
 
-  // Generate a unique order number
-  const orderNumber = `ORD-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 1000)}`;
+  // Generate a unique order number using cryptographically secure random
+  const uuid = crypto.randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase();
+  const orderNumber = `ORD-${uuid}`;
 
   const orderData = {
     order_number: orderNumber,
@@ -70,15 +71,8 @@ export async function submitOrder(
   });
 
   if (error) {
-    console.error(JSON.stringify({
-      event: 'checkout_rpc_failure',
-      error: error,
-      idempotencyKey,
-      orderNumber,
-      customerId,
-      timestamp: new Date().toISOString()
-    }));
-    return { error: error.message };
+    console.error('Checkout RPC failed', { code: error.code });
+    return { error: 'Failed to save order.' };
   }
 
   // Trigger admin notification asynchronously (don't await it to block the response)
@@ -88,7 +82,7 @@ export async function submitOrder(
       message: `${formData.name} placed a new order.`,
       type: 'order',
       link_url: '/admin/orders', // or specific order URL if available
-    }).catch(err => console.error("Failed to create admin notification:", err));
+    }).catch(() => {});
   });
 
   return { success: true, orderId: orderNumber };

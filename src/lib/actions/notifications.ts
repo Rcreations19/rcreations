@@ -1,9 +1,10 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient, getServiceRoleClient, verifyAdmin } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 export async function getAdminNotifications() {
+  try { await verifyAdmin(); } catch { return []; }
   const supabase = await createClient();
   
   const { data, error } = await supabase
@@ -13,7 +14,7 @@ export async function getAdminNotifications() {
     .limit(20);
 
   if (error) {
-    console.error('Error fetching admin notifications:', error);
+    console.error('Error fetching admin notifications');
     return [];
   }
 
@@ -21,6 +22,7 @@ export async function getAdminNotifications() {
 }
 
 export async function markNotificationAsRead(id: string) {
+  try { await verifyAdmin(); } catch { return false; }
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -29,7 +31,7 @@ export async function markNotificationAsRead(id: string) {
     .eq('id', id);
 
   if (error) {
-    console.error('Error marking notification as read:', error);
+    console.error('Error marking notification as read');
     return false;
   }
 
@@ -38,6 +40,7 @@ export async function markNotificationAsRead(id: string) {
 }
 
 export async function markAllNotificationsAsRead() {
+  try { await verifyAdmin(); } catch { return false; }
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -46,7 +49,7 @@ export async function markAllNotificationsAsRead() {
     .eq('is_read', false);
 
   if (error) {
-    console.error('Error marking all notifications as read:', error);
+    console.error('Error marking all notifications as read');
     return false;
   }
 
@@ -54,21 +57,21 @@ export async function markAllNotificationsAsRead() {
   return true;
 }
 
-// Helper to create a notification
+// Helper to create a notification (system-level, uses service role to bypass RLS)
 export async function createAdminNotification(data: {
   title: string;
   message: string;
   type: 'order' | 'inquiry' | 'system';
   link_url?: string;
 }) {
-  const supabase = await createClient();
+  const supabase = await getServiceRoleClient();
 
   const { error } = await supabase
     .from('admin_notifications')
     .insert([data]);
 
   if (error) {
-    console.error('Error creating notification:', error);
+    console.error('Error creating notification');
     return false;
   }
 

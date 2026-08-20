@@ -1,7 +1,8 @@
 import { createClient } from './client';
 import imageCompression from 'browser-image-compression';
+import { validateImageFile, generateUploadPath, resizeImageIfNecessary, type UploadContext } from './upload-utils';
 
-export async function compressImage(file: File) {
+export async function compressImage(file: File): Promise<File> {
   const options = {
     maxSizeMB: 0.4,
     maxWidthOrHeight: 1920,
@@ -10,39 +11,39 @@ export async function compressImage(file: File) {
   };
   try {
     return await imageCompression(file, options);
-  } catch (error) {
-    console.error('Error compressing image:', error);
-    return file; // Fallback to original file if compression fails
+  } catch {
+    return file;
   }
 }
 
-export async function uploadProductImage(file: File): Promise<string> {
-  if (!file.type.startsWith('image/')) {
-    throw new Error('Invalid file type. Only images are allowed.');
+export async function uploadProductImage(file: File, context: UploadContext = 'product'): Promise<string> {
+  const validation = validateImageFile(file, context);
+  if (!validation.valid) {
+    throw new Error(validation.error);
   }
 
   const supabase = createClient();
-  const compressedFile = await compressImage(file);
-  
-  // Generate a unique file name
-  const fileExt = file.name.split('.').pop();
-  const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-  const filePath = `${fileName}`;
+  const resized = await resizeImageIfNecessary(file);
+  const compressedFile = await compressImage(resized);
+
+  const fileExt = file.name.split('.').pop()!;
+  const filePath = generateUploadPath(context, fileExt);
+
+  const bucket = context === 'blog' ? 'public' : 'product-images';
 
   const { data, error } = await supabase.storage
-    .from('product-images')
+    .from(bucket)
     .upload(filePath, compressedFile, {
       cacheControl: '3600',
       upsert: false
     });
 
   if (error) {
-    throw new Error(`Failed to upload image: ${error.message}`);
+    throw new Error('Failed to upload image.');
   }
 
-  // Get public URL
   const { data: publicUrlData } = supabase.storage
-    .from('product-images')
+    .from(bucket)
     .getPublicUrl(filePath);
 
   return publicUrlData.publicUrl;

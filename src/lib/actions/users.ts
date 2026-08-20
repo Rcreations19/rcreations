@@ -14,7 +14,7 @@ export async function toggleUserActive(id: string, is_active: boolean) {
     .eq('id', id);
 
   if (error) {
-    return { error: error.message };
+    return { error: 'Failed to update user.' };
   }
 
   revalidatePath('/admin/users');

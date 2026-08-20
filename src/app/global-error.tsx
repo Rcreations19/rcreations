@@ -17,7 +17,7 @@ export default function GlobalError({
   }, [error]);
  
   return (
-    <html>
+    <html lang="en">
       <body>
         <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-50 px-4 text-center">
           <h2 className="text-2xl font-bold text-neutral-900 mb-4">A critical system error occurred</h2>

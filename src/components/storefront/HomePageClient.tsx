@@ -2,10 +2,26 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Check, Building2, User } from 'lucide-react';
+import Image from 'next/image';
+import { Check, Building2, User, Target, Eye, Sparkles, ArrowRight, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Hero10, type Hero10Props } from '@/components/ui/hero-10';
 import { InfiniteSlider } from '@/components/ui/infinite-slider';
+
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string | null;
+  cover_image_url: string | null;
+  created_at: string;
+}
+
+interface HomePageClientProps {
+  children: React.ReactNode;
+  latestBlogs?: BlogPost[];
+  topSellers: React.ReactNode;
+}
 
 const heroValues = {
   title: 'Give Life to Your Memories',
@@ -37,7 +53,7 @@ const heroValues = {
   },
 } satisfies Hero10Props;
 
-export default function HomePageClient({ children }: { children: React.ReactNode }) {
+export default function HomePageClient({ children, latestBlogs = [], topSellers }: HomePageClientProps) {
   return (
     <div className="bg-transparent overflow-hidden">
 
@@ -66,6 +82,59 @@ export default function HomePageClient({ children }: { children: React.ReactNode
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H18.75m-7.5-3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
               Local Delivery (40km Radius)
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== MISSION & VISION ==================== */}
+      <section className="py-12 md:py-24 relative overflow-hidden">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 items-stretch">
+
+            {/* Mission Panel (Dark - 2/5 width) */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="glass-panel-dark p-8 md:p-12 lg:col-span-2 rounded-3xl lg:rounded-[2rem] border border-[#2aabb0]/20 relative overflow-hidden flex flex-col"
+            >
+              <div className="noise-overlay" aria-hidden />
+              <div className="absolute bottom-0 right-0 w-48 h-48 bg-[#2aabb0]/8 rounded-full blur-3xl -mr-16 -mb-16" />
+              <Target className="w-8 h-8 md:w-10 md:h-10 text-[#2aabb0] mb-6 relative z-10" />
+              <span className="text-xs uppercase tracking-widest text-[#2aabb0] font-semibold mb-3 relative z-10">Our Mission</span>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-4 relative z-10">Preserve What Matters</h2>
+              <p className="text-sm md:text-base text-neutral-300 leading-relaxed font-medium relative z-10 text-balance">
+                To craft premium, affordable photo frames and awards that help families, studios, and businesses preserve their most meaningful moments with industrial precision and personal care.
+              </p>
+            </motion.div>
+
+            {/* Vision Panel (Light - 3/5 width) */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="glass-panel p-8 md:p-12 lg:col-span-3 rounded-3xl lg:rounded-[2rem] border border-neutral-200 bg-white flex flex-col shadow-[var(--shadow-soft)] relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#2aabb0]/5 rounded-full blur-3xl -mr-20 -mt-20" />
+              <Eye className="w-8 h-8 md:w-10 md:h-10 text-primary mb-6 relative z-10" />
+              <span className="text-xs uppercase tracking-widest text-primary/50 font-semibold mb-3 relative z-10">Our Vision</span>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-primary tracking-tight mb-4 relative z-10">Become South India&apos;s Trusted Frame Partner</h2>
+              <p className="text-sm md:text-base text-primary/80 leading-relaxed font-medium relative z-10 text-balance mb-8">
+                To be the most trusted manufacturer and wholesaler of photo frames, crystal trophies, and custom mementos across Tamil Nadu and South India, serving 1,000+ studios and retailers by 2030.
+              </p>
+              <ul className="space-y-4 mt-auto relative z-10">
+                <li className="flex items-center gap-3 text-sm font-medium text-primary/70">
+                  <div className="p-1 rounded-full bg-[#2aabb0]/10"><Sparkles className="w-4 h-4 text-[#2aabb0]" /></div>
+                  Factory-direct quality at wholesale pricing
+                </li>
+                <li className="flex items-center gap-3 text-sm font-medium text-primary/70">
+                  <div className="p-1 rounded-full bg-[#2aabb0]/10"><Sparkles className="w-4 h-4 text-[#2aabb0]" /></div>
+                  Expanding across South India by 2030
+                </li>
+              </ul>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -124,10 +193,79 @@ export default function HomePageClient({ children }: { children: React.ReactNode
       </section>
 
       {/* ==================== SERVER COMPONENTS ====================
-           Rendered in page.tsx (server context) and passed as children:
-           1. <TopSellers />  — bestseller product grid
-           2. <GoogleReviews /> — testimonials
+           Rendered in page.tsx (server context) and passed as props/children:
+           1. topSellers  — bestseller product grid (prop)
+           2. {children}  — <GoogleReviews /> testimonials (children)
       ====================================================== */}
+      {topSellers}
+
+      {/* ==================== LATEST FROM BLOG ==================== */}
+      {latestBlogs.length > 0 && (
+        <section className="py-12 md:py-24 relative overflow-hidden">
+          <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="flex items-end justify-between mb-10 md:mb-14">
+              <div>
+                <span className="text-xs uppercase tracking-widest text-[#2aabb0] font-semibold block mb-3">From Our Blog</span>
+                <h2 className="text-2xl md:text-4xl font-extrabold text-primary tracking-tight">Latest Insights</h2>
+              </div>
+              <Link href="/blogs" className="hidden sm:inline-flex items-center gap-2 text-sm font-bold text-primary/60 hover:text-[#2aabb0] transition-colors group">
+                View All
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {latestBlogs.map((blog, i) => (
+                <motion.div
+                  key={blog.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                >
+                  <Link href={`/blogs/${blog.slug}`} className="group block glass-panel rounded-3xl overflow-hidden border border-neutral-200 bg-white shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-glow)] transition-all duration-300 h-full">
+                    {blog.cover_image_url ? (
+                      <div className="relative aspect-[16/10] overflow-hidden">
+                        <Image
+                          src={blog.cover_image_url}
+                          alt={blog.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                      </div>
+                    ) : (
+                      <div className="aspect-[16/10] bg-gradient-to-br from-[#0a0e27] to-[#10164A] flex items-center justify-center">
+                        <span className="text-4xl font-serif-heading text-white/20">{blog.title.charAt(0)}</span>
+                      </div>
+                    )}
+                    <div className="p-6 md:p-8">
+                      <div className="flex items-center gap-2 text-xs font-medium text-primary/40 mb-3">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {new Date(blog.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </div>
+                      <h3 className="text-lg font-extrabold text-primary tracking-tight mb-2 group-hover:text-[#2aabb0] transition-colors line-clamp-2">{blog.title}</h3>
+                      {blog.summary && (
+                        <p className="text-sm text-primary/60 leading-relaxed line-clamp-2">{blog.summary}</p>
+                      )}
+                      <span className="inline-flex items-center gap-1.5 mt-4 text-xs font-bold text-[#2aabb0] uppercase tracking-wider group-hover:gap-2.5 transition-all">
+                        Read Article
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <Link href="/blogs" className="sm:hidden inline-flex items-center gap-2 mt-8 text-sm font-bold text-primary/60 hover:text-[#2aabb0] transition-colors group">
+              View All Articles
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        </section>
+      )}
+
       {children}
     </div>
   );

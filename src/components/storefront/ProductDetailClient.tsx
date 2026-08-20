@@ -159,7 +159,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             <div className="flex sm:hidden overflow-x-auto snap-x snap-mandatory hide-scrollbar aspect-[4/5]">
               {allImages.map((img: string, idx: number) => (
                 <div key={idx} className="w-full flex-shrink-0 snap-center relative aspect-[4/5]">
-                  <Image src={img} alt={`${product.title} ${idx + 1}`} fill className="object-cover" sizes="100vw" priority={idx === 0} fetchPriority={idx === 0 ? "high" : "auto"} />
+                  <Image src={img} alt={`${product.title} ${idx + 1}`} fill className="object-cover" sizes="100vw" priority={idx === 0} />
                 </div>
               ))}
             </div>
@@ -167,7 +167,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             {/* Desktop Single Image */}
             <div className="hidden sm:block relative aspect-[4/5]">
               {currentImage ? (
-                <Image src={currentImage} alt={product.title} fill className="object-cover transition-opacity duration-300" priority sizes="50vw" fetchPriority="high" />
+                <Image src={currentImage} alt={product.title} fill className="object-cover transition-opacity duration-300" priority sizes="50vw" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-neutral-400">No Image</div>
               )}

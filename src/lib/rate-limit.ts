@@ -16,7 +16,7 @@ export async function rateLimit(limit: number = 5, windowMs: number = 60000) {
     });
 
     if (error) {
-      console.error('Rate limit RPC error:', error);
+      console.error('Rate limit RPC failed');
       // Fail open if the database is unreachable to not block legitimate traffic
       return { success: true };
     }
@@ -26,8 +26,8 @@ export async function rateLimit(limit: number = 5, windowMs: number = 60000) {
     }
 
     return { success: true };
-  } catch (err) {
-    console.error('Rate limit exception:', err);
+  } catch {
+    console.error('Rate limit exception');
     // Fail open
     return { success: true };
   }

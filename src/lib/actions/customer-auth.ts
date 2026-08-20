@@ -18,6 +18,12 @@ const registerSchema = z.object({
   phone: z.string().max(20, 'Phone is too long').optional(),
 });
 
+const verifyOtpSchema = z.object({
+  email: z.string().email('Invalid email format').max(255),
+  password: z.string().min(6, 'Password must be at least 6 characters').max(255),
+  code: z.string().length(6, 'OTP must be exactly 6 digits'),
+});
+
 export async function registerCustomer(formData: FormData): Promise<AuthResult> {
   const rl = await rateLimit(5, 60000); 
   if (!rl.success) return { error: rl.error };
@@ -44,8 +50,10 @@ export async function registerCustomer(formData: FormData): Promise<AuthResult> 
     return { error: 'An account with this email already exists. Please login instead.' };
   }
 
-  // 2. Generate 6-digit OTP
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  // 2. Generate 6-digit OTP using cryptographically secure random
+  const arr = new Uint32Array(1);
+  crypto.getRandomValues(arr);
+  const code = (100000 + (arr[0] % 900000)).toString();
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 mins
 
   const adminSupabase = await getServiceRoleClient();
@@ -60,7 +68,7 @@ export async function registerCustomer(formData: FormData): Promise<AuthResult> 
   });
 
   if (insertError) {
-    console.error('Failed to store OTP:', insertError);
+    console.error('Failed to store OTP', { code: insertError.code });
     return { error: 'Failed to generate security code.' };
   }
 
@@ -73,8 +81,8 @@ export async function registerCustomer(formData: FormData): Promise<AuthResult> 
       subject: 'Verify your R Creation Account',
       html: `<p>Hi ${fullName},</p><p>Your verification code is: <strong>${code}</strong></p><p>This code expires in 10 minutes.</p>`
     });
-  } catch (err) {
-    console.error('Failed to send OTP email:', err);
+  } catch {
+    console.error('Failed to send OTP email');
     return { error: 'Failed to send security code.' };
   }
 
@@ -85,13 +93,17 @@ export async function verifyCustomerRegistrationOtp(formData: FormData): Promise
   const rl = await rateLimit(10, 60000); 
   if (!rl.success) return { error: rl.error };
 
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string; // Passed from client state
-  const code = formData.get('code') as string;
+  const parsed = verifyOtpSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+    code: formData.get('code'),
+  });
 
-  if (!email || !password || !code) {
-    return { error: 'Missing information.' };
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
   }
+
+  const { email, password, code } = parsed.data;
 
   const adminSupabase = await getServiceRoleClient();
   
@@ -123,8 +135,8 @@ export async function verifyCustomerRegistrationOtp(formData: FormData): Promise
   });
 
   if (signUpError) {
-    console.error('Registration error:', signUpError);
-    return { error: signUpError.message };
+    console.error('Registration error');
+    return { error: 'Registration failed. Please try again.' };
   }
 
   if (!authData.user) {
@@ -140,7 +152,7 @@ export async function verifyCustomerRegistrationOtp(formData: FormData): Promise
   });
 
   if (profileError) {
-    console.error('Customer profile creation error:', profileError);
+    console.error('Customer profile creation failed');
   }
 
   // 4. Cleanup used OTP
@@ -150,6 +162,9 @@ export async function verifyCustomerRegistrationOtp(formData: FormData): Promise
 }
 
 export async function loginCustomer(formData: FormData): Promise<AuthResult> {
+  const rl = await rateLimit(5, 60000);
+  if (!rl.success) return { error: rl.error };
+
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
@@ -165,7 +180,7 @@ export async function loginCustomer(formData: FormData): Promise<AuthResult> {
   });
 
   if (signInError) {
-    console.error('Login error:', signInError);
+    console.error('Login failed');
     return { error: 'Invalid email or password.' };
   }
 

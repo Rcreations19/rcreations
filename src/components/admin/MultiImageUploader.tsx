@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { uploadProductImage } from '@/lib/supabase/storage';
+import { validateImageFile } from '@/lib/supabase/upload-utils';
 import { X, UploadCloud, Image as ImageIcon, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -30,15 +31,19 @@ export function MultiImageUploader({ images, onChange, maxImages = 10 }: MultiIm
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        // Validate file type
-        if (!file.type.startsWith('image/')) continue;
+        const validation = validateImageFile(file, 'product');
+        if (!validation.valid) {
+          alert(validation.error);
+          continue;
+        }
         
-        const url = await uploadProductImage(file);
+        const url = await uploadProductImage(file, 'product');
         newUrls.push(url);
       }
-      onChange([...images, ...newUrls]);
+      if (newUrls.length > 0) {
+        onChange([...images, ...newUrls]);
+      }
     } catch (err) {
-      console.error('Upload failed:', err);
       alert('Failed to upload some images. Please try again.');
     } finally {
       setIsUploading(false);

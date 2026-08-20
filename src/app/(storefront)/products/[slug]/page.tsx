@@ -64,7 +64,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         "url": `https://rcreationframes.com/products/${product.slug}`,
         "priceCurrency": "INR",
         "price": product.price,
-        "availability": "https://schema.org/InStock",
+        "availability": product.stock_quantity > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         "itemCondition": "https://schema.org/NewCondition"
       },
       "aggregateRating": {
@@ -142,10 +142,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
     return (
       <>
-        <ProductDetailClient product={product} relatedProducts={relatedProducts} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema).replace(/</g, '\\u003c') }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c') }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema).replace(/</g, '\\u003c') }} />
+        <ProductDetailClient product={product} relatedProducts={relatedProducts} />
       </>
     );
 

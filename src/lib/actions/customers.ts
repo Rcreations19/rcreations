@@ -13,7 +13,7 @@ export async function updateCustomerStatus(id: string, status: string) {
     .eq('id', id);
 
   if (error) {
-    return { error: error.message };
+    return { error: 'Failed to update customer.' };
   }
 
   revalidatePath('/admin/customers');

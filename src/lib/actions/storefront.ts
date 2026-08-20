@@ -95,7 +95,7 @@ export async function getBestsellerProducts(limit = 24): Promise<{
     return bestsellers.map(p => ({ ...p, is_curated: true }));
   }
 
-  if (err1) console.error('[getBestsellerProducts] bestseller query:', err1.message);
+  if (err1) console.error('[getBestsellerProducts] bestseller query failed');
 
   // 2️⃣ Fallback: if ZERO curated bestsellers exist, fetch recent active products
   // We'll limit the fallback to 8 items so the slider looks good
@@ -109,7 +109,7 @@ export async function getBestsellerProducts(limit = 24): Promise<{
     .limit(8); 
 
   if (err2) {
-    console.error('[getBestsellerProducts] fallback query:', err2.message);
+    console.error('[getBestsellerProducts] fallback query failed');
     return [];
   }
 

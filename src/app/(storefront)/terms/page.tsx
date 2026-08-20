@@ -6,6 +6,9 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Terms of Service',
   description: 'Terms and conditions governing orders, returns, and services provided by R Creation, Gudiyattam.',
+  alternates: {
+    canonical: '/terms',
+  },
 };
 
 export default function TermsPage() {
@@ -67,7 +70,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-lg font-bold text-secondary">10. Contact</h2>
           <p>For questions about these terms:<br />
-          R Creation, Gudiyattam, Vellore District, Tamil Nadu — 632602<br />
+          R Creation, Gudiyattam, Vellore District, Tamil Nadu - 632602<br />
           Phone: +91 87549 40610<br />
           Email: rcreationsstudio@gmail.com</p>
         </section>

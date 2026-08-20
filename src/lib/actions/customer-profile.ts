@@ -1,6 +1,16 @@
 'use server';
 
 import { createClient } from '../supabase/server';
+import { z } from 'zod';
+
+const profileUpdateSchema = z.object({
+  fullName: z.string().min(1, 'Name is required').max(200),
+  phone: z.string().max(20).optional().default(''),
+  address: z.string().max(500).optional().default(''),
+  city: z.string().max(100).optional().default(''),
+  state: z.string().max(100).optional().default(''),
+  pincode: z.string().max(10).optional().default(''),
+});
 
 export interface CustomerProfile {
   id: string;
@@ -32,7 +42,18 @@ export async function getCustomerSession(): Promise<CustomerProfile | null> {
 
   if (!customer) {
     // User is authenticated but has no customer profile (could be an admin)
-    // Self-heal: create a customer profile for them
+    // Do NOT create customer profiles for admin users
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.role === 'admin') {
+      return null;
+    }
+
+    // Self-heal: create a customer profile for non-admin users
     const { data: newCustomer } = await supabase.from('customers').insert({
       id: user.id,
       email: user.email || '',
@@ -57,13 +78,28 @@ export async function updateCustomerProfile(formData: FormData) {
     return { error: 'Not authenticated.' };
   }
 
+  const parsed = profileUpdateSchema.safeParse({
+    fullName: formData.get('fullName'),
+    phone: formData.get('phone') || undefined,
+    address: formData.get('address') || undefined,
+    city: formData.get('city') || undefined,
+    state: formData.get('state') || undefined,
+    pincode: formData.get('pincode') || undefined,
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  const { fullName, phone, address, city, state, pincode } = parsed.data;
+
   const updates = {
-    full_name: formData.get('fullName') as string,
-    phone: formData.get('phone') as string || null,
-    default_address: formData.get('address') as string || null,
-    default_city: formData.get('city') as string || null,
-    default_state: formData.get('state') as string || null,
-    default_pincode: formData.get('pincode') as string || null,
+    full_name: fullName,
+    phone: phone || null,
+    default_address: address || null,
+    default_city: city || null,
+    default_state: state || null,
+    default_pincode: pincode || null,
     updated_at: new Date().toISOString(),
   };
 
@@ -73,7 +109,6 @@ export async function updateCustomerProfile(formData: FormData) {
     .eq('id', user.id);
 
   if (error) {
-    console.error('Profile update error:', error);
     return { error: 'Failed to update profile.' };
   }
 

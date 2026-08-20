@@ -9,7 +9,7 @@ export async function getOrders() {
     .select('*')
     .order('created_at', { ascending: false });
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Failed to fetch orders.');
   return data;
 }
 
@@ -24,7 +24,7 @@ export async function getOrderById(id: string) {
     .eq('id', id)
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Failed to fetch order details.');
   return data;
 }
 
@@ -36,7 +36,7 @@ export async function updateOrderStatus(id: string, status: string) {
     .update({ status })
     .eq('id', id);
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error('Failed to update order status.');
 
   revalidatePath('/admin/orders');
   revalidatePath(`/admin/orders/${id}`);

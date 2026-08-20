@@ -54,6 +54,7 @@ export default function AdminLoginPage() {
       const formData = new FormData();
       formData.append('email', email);
       formData.append('code', otp);
+      formData.append('password', password);
 
       const result = await verifyAdminOtp(formData);
 

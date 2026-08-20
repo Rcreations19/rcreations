@@ -7,7 +7,7 @@ import { RCreationLogo } from '../shared/Logo';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0a0e27]/90 backdrop-blur-xl text-white pt-20 pb-10 border-t border-white/10 relative overflow-hidden">
+    <footer className="bg-[#0a0e27]/90 backdrop-blur-xl text-white pt-12 pb-8 md:pt-20 md:pb-10 border-t border-white/10 relative overflow-hidden">
       {/* Decorative gradient orb - hidden on mobile for performance */}
       <div className="hidden md:block absolute top-0 right-0 w-96 h-96 bg-[#2aabb0] rounded-full mix-blend-screen filter blur-[150px] opacity-10 pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
       
@@ -69,6 +69,7 @@ export default function Footer() {
                 <li><Link href="/wholesale" className="text-sm text-neutral-400 hover:text-white transition-colors">B2B Wholesale</Link></li>
                 <li><Link href="/configurator" className="text-sm text-neutral-400 hover:text-white transition-colors">Frame Builder</Link></li>
                 <li><Link href="/specs" className="text-sm text-neutral-400 hover:text-white transition-colors">Tech Specs</Link></li>
+                <li><Link href="/blogs" className="text-sm text-neutral-400 hover:text-white transition-colors">Blog</Link></li>
               </ul>
             </details>
             
@@ -79,6 +80,7 @@ export default function Footer() {
                 <li><Link href="/wholesale" className="text-sm text-neutral-400 hover:text-white transition-colors">B2B Wholesale</Link></li>
                 <li><Link href="/configurator" className="text-sm text-neutral-400 hover:text-white transition-colors">Frame Builder</Link></li>
                 <li><Link href="/specs" className="text-sm text-neutral-400 hover:text-white transition-colors">Tech Specs</Link></li>
+                <li><Link href="/blogs" className="text-sm text-neutral-400 hover:text-white transition-colors">Blog</Link></li>
               </ul>
             </div>
           </div>
@@ -89,7 +91,7 @@ export default function Footer() {
             <div className="space-y-4">
               <div className="flex items-start gap-3 text-sm text-neutral-400">
                 <MapPin className="w-4 h-4 text-[#2aabb0] shrink-0 mt-1" />
-                <span className="leading-relaxed">R Creation, Gudiyattam,<br />Vellore District, Tamil Nadu — 632602</span>
+                <span className="leading-relaxed">R Creation, Gudiyattam,<br />Vellore District, Tamil Nadu - 632602</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-neutral-400">
                 <Phone className="w-4 h-4 text-[#2aabb0] shrink-0" />

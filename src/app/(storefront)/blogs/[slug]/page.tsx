@@ -13,15 +13,26 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   try {
     const blog = await getPublicBlogBySlug(decodedSlug);
     return {
-      title: `${blog.title} | R Creation Blog`,
+      title: blog.title,
       description: blog.summary,
+      alternates: {
+        canonical: `/blogs/${slug}`,
+      },
       openGraph: {
+        title: blog.title,
+        description: blog.summary,
         images: blog.cover_image_url ? [blog.cover_image_url] : [],
-      }
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: blog.title,
+        description: blog.summary,
+        images: blog.cover_image_url ? [blog.cover_image_url] : [],
+      },
     };
   } catch (e) {
     return {
-      title: 'Blog Not Found | R Creation',
+      title: 'Blog Not Found',
     };
   }
 }
@@ -48,7 +59,59 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
     notFound();
   }
 
+  const blogSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": blog.title,
+    "description": blog.summary,
+    "image": blog.cover_image_url || undefined,
+    "datePublished": blog.created_at,
+    "author": {
+      "@type": "Organization",
+      "name": blog.author || "R Creation"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "R Creation",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://rcreationframes.com/logo.svg"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://rcreationframes.com/blogs/${slug}`
+    }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://rcreationframes.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Blog",
+        "item": "https://rcreationframes.com/blogs"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": blog.title
+      }
+    ]
+  };
+
   return (
+      <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema).replace(/</g, '\\u003c') }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c') }} />
       <article className="bg-[#fcfcfc] min-h-screen pt-6 md:pt-24 pb-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -93,5 +156,6 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
 
         </div>
       </article>
+      </>
   );
 }

@@ -356,7 +356,7 @@ export default function CheckoutPage() {
               {items.map(item => (
                 <div key={item.id} className="flex gap-4">
                   <div className="w-16 h-16 bg-neutral-200 rounded-lg overflow-hidden shrink-0 relative">
-                    <Image src={item.image || '/images/placeholder.jpg'} alt={item.title} fill className="object-cover" sizes="64px" unoptimized />
+                    <Image src={item.image || '/images/placeholder.jpg'} alt={item.title} fill className="object-cover" sizes="64px" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs font-bold text-secondary line-clamp-2">{item.title}</h4>

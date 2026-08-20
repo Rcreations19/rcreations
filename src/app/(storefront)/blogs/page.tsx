@@ -5,16 +5,56 @@ import { getPublicBlogs } from '@/lib/actions/blogs';
 import { ArrowRight, Calendar } from 'lucide-react';
 
 export const metadata = {
-  title: 'Blog | R Creation',
+  title: 'Blog',
   description: 'Read the latest updates, tips, and insights on custom framing, corporate gifting, and more from R Creation.',
+  alternates: {
+    canonical: '/blogs',
+  },
+};
+
+const blogListSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "R Creation Blog",
+  "description": "Read the latest updates, tips, and insights on custom framing, corporate gifting, and more from R Creation.",
+  "url": "https://rcreationframes.com/blogs"
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://rcreationframes.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog"
+    }
+  ]
 };
 
 export default async function BlogsPage() {
   const blogs = await getPublicBlogs();
 
   return (
+      <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogListSchema).replace(/</g, '\\u003c') }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c') }} />
       <div className="bg-[#fcfcfc] min-h-screen pt-8 md:pt-28 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav aria-label="Breadcrumb" className="mb-8 text-sm text-[#595959] animate-fade-in">
+            <ol className="flex items-center gap-1.5">
+              <li><Link href="/" className="hover:text-[#0a0e27] transition-colors">Home</Link></li>
+              <li aria-hidden="true">/</li>
+              <li aria-current="page" className="text-[#0a0e27] font-medium">Blog</li>
+            </ol>
+          </nav>
+
           <div className="text-center mb-16 animate-fade-in">
             <h1 className="text-4xl md:text-5xl font-bold text-[#0a0e27] mb-4">Our Blog</h1>
             <p className="text-[#595959] max-w-2xl mx-auto text-lg">
@@ -67,5 +107,6 @@ export default async function BlogsPage() {
           )}
         </div>
       </div>
+      </>
   );
 }
