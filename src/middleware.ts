@@ -36,6 +36,8 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
   const isLoginPage = request.nextUrl.pathname === '/admin/login';
   const isAccountRoute = request.nextUrl.pathname.startsWith('/account');
+  const isCheckoutRoute = request.nextUrl.pathname.startsWith('/checkout');
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/auth');
 
   // Protect admin routes
   if (isAdminRoute && !isLoginPage) {
@@ -88,11 +90,12 @@ export async function middleware(request: NextRequest) {
   const isDev = process.env.NODE_ENV !== 'production';
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-inline' https://places.googleapis.com ${isDev ? "'unsafe-eval'" : ""};
+    script-src 'self' 'unsafe-inline' https://places.googleapis.com https://maps.googleapis.com ${isDev ? "'unsafe-eval'" : ""};
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
-    img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co;
-    connect-src 'self' https://*.supabase.co https://places.googleapis.com;
+    img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.google.com;
+    connect-src 'self' https://*.supabase.co https://places.googleapis.com https://maps.googleapis.com;
+    frame-src 'self' https://maps.google.com https://www.google.com https://*.google.com;
     frame-ancestors 'none';
     form-action 'self';
     base-uri 'self';
@@ -106,7 +109,7 @@ export async function middleware(request: NextRequest) {
   supabaseResponse.headers.set('X-Content-Type-Options', 'nosniff');
   supabaseResponse.headers.set('Referrer-Policy', 'origin-when-cross-origin');
 
-  if (isAdminRoute || isAccountRoute) {
+  if (isAdminRoute || isAccountRoute || isCheckoutRoute || isAuthRoute) {
     supabaseResponse.headers.set('X-Robots-Tag', 'noindex, nofollow');
   }
 
