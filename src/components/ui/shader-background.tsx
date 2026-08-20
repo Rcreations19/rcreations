@@ -18,13 +18,14 @@ const ShaderBackground = () => {
     uniform vec2 iResolution;
     uniform float iTime;
     uniform float iQuality;
+    uniform float iOpacity;
 
     const float overallSpeed = 0.2;
     const float gridSmoothWidth = 0.015;
     const float scale = 5.0;
     const vec4 lineColor = vec4(0.0, 0.85, 1.0, 1.0);
-    const float minLineWidth = 0.01;
-    const float maxLineWidth = 0.2;
+    const float minLineWidth = 0.005;
+    const float maxLineWidth = 0.12;
     const float lineSpeed = 1.0 * overallSpeed;
     const float lineAmplitude = 1.0;
     const float lineFrequency = 0.2;
@@ -83,7 +84,7 @@ const ShaderBackground = () => {
       }
 
       fragColor = vec4(0.0);
-      fragColor += lines * 0.2;
+      fragColor += lines * iOpacity;
 
       gl_FragColor = fragColor;
     }
@@ -153,6 +154,7 @@ const ShaderBackground = () => {
         resolution: gl.getUniformLocation(shaderProgram, 'iResolution'),
         time: gl.getUniformLocation(shaderProgram, 'iTime'),
         quality: gl.getUniformLocation(shaderProgram, 'iQuality'),
+        opacity: gl.getUniformLocation(shaderProgram, 'iOpacity'),
       },
     };
 
@@ -175,6 +177,9 @@ const ShaderBackground = () => {
     let lastFrame = 0;
     const frameInterval = isMobile ? 33.33 : 16.67;
 
+    const quality = isMobile ? 1.0 : 0.4;
+    const opacity = isMobile ? 1.0 : 0.8;
+
     const render = (timestamp: number) => {
       rafId = requestAnimationFrame(render);
 
@@ -190,7 +195,8 @@ const ShaderBackground = () => {
 
       gl.uniform2f(programInfo.uniformLocations.resolution, canvas.width, canvas.height);
       gl.uniform1f(programInfo.uniformLocations.time, currentTime);
-      gl.uniform1f(programInfo.uniformLocations.quality, isMobile ? 0.5 : 1.0);
+      gl.uniform1f(programInfo.uniformLocations.quality, quality);
+      gl.uniform1f(programInfo.uniformLocations.opacity, opacity);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
       gl.vertexAttribPointer(programInfo.attribLocations.vertexPosition, 2, gl.FLOAT, false, 0, 0);
