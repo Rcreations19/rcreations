@@ -1,6 +1,18 @@
 import { createServerClient } from '@supabase/ssr';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import type { Database } from './types';
+
+/**
+ * Lightweight public client for anonymous queries (products, blogs, categories).
+ * Does NOT use cookies — safe for server components in OpenNext/Cloudflare Workers.
+ */
+export function createPublicClient() {
+  return createSupabaseClient<any>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+}
 
 export async function createClient() {
   const cookieStore = await cookies();

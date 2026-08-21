@@ -1,9 +1,9 @@
 'use server';
 
-import { createClient } from '../supabase/server';
+import { createPublicClient } from '../supabase/server';
 
 export async function getPublicProducts() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('products')
     .select(`
@@ -18,7 +18,7 @@ export async function getPublicProducts() {
 }
 
 export async function getPublicProductBySlug(slug: string) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('products')
     .select(`
@@ -34,7 +34,7 @@ export async function getPublicProductBySlug(slug: string) {
 }
 
 export async function getPublicRelatedProducts(categoryId: string, excludeProductId: string) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('products')
     .select('id, title, price, image_url, gallery_images, slug')
@@ -48,7 +48,7 @@ export async function getPublicRelatedProducts(categoryId: string, excludeProduc
 }
 
 export async function getPublicCategories() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('categories')
     .select('id, name')
@@ -77,7 +77,7 @@ export async function getBestsellerProducts(limit = 24): Promise<{
   is_bestseller: boolean;
   is_curated: boolean; // true = real bestseller, false = fallback
 }[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   // 1️⃣ Try the curated bestsellers first (Fetch up to limit)
   const { data: bestsellers, error: err1 } = await supabase

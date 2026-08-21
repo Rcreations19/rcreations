@@ -1,13 +1,13 @@
 'use server';
 
-import { createClient, getAdminClient } from '../supabase/server';
+import { createPublicClient, getAdminClient } from '../supabase/server';
 import { revalidatePath } from 'next/cache';
 import { validateImageFile, generateUploadPath } from '../supabase/upload-utils';
 
 // ========== PUBLIC ACTIONS ==========
 
 export async function getPublicBlogs() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('blogs')
     .select('*')
@@ -19,7 +19,7 @@ export async function getPublicBlogs() {
 }
 
 export async function getPublicBlogBySlug(slug: string) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('blogs')
     .select('*')
