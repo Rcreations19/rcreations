@@ -41,9 +41,11 @@ async function getLiveReviews() {
 
 export async function GoogleReviews() {
   const placeData = await getLiveReviews();
-  const reviews = placeData?.reviews || [];
-  const averageRating = placeData?.rating || 5.0;
-  const totalReviews = placeData?.userRatingCount || "100+";
+  const reviews = Array.isArray(placeData?.reviews) ? placeData.reviews : [];
+  const averageRating = typeof placeData?.rating === 'number' ? placeData.rating : 5.0;
+  const totalReviews = typeof placeData?.userRatingCount === 'number'
+    ? placeData.userRatingCount
+    : "100+";
 
   // Fallback reviews in case the API fails or returns nothing
   const displayReviews = reviews.length > 0 ? reviews.map((r: any) => ({

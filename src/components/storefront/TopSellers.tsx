@@ -128,7 +128,13 @@ function BestsellerCard({ product, index }: { product: BestsellerProduct; index:
 
 // ── Section (async Server Component) ──────────────────────────────────────
 export async function TopSellers() {
-  const products = await getBestsellerProducts(8);
+  let products;
+  try {
+    products = await getBestsellerProducts(8);
+  } catch (e) {
+    console.error('[TopSellers] Failed to load products:', e);
+    return null;
+  }
 
   // Nothing in DB at all — render nothing
   if (!products || products.length === 0) return null;

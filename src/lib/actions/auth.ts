@@ -5,6 +5,7 @@ import { rateLimit } from '../rate-limit';
 import { z } from 'zod';
 import { Resend } from 'resend';
 import { createClient as createStatelessClient } from '@supabase/supabase-js';
+import bcrypt from 'bcryptjs';
 
 
 const loginSchema = z.object({
@@ -28,14 +29,16 @@ export async function loginAdmin(formData: FormData) {
   const { email, password } = parsed.data;
 
   const envEmail = process.env.ADMIN_EMAIL?.trim();
-  const envPassword = process.env.ADMIN_PASSWORD;
-  const isEnvAdmin = email.trim() === envEmail && password === envPassword;
+  const envPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+  const isEnvAdmin = envEmail
+    ? email.trim() === envEmail && !!(envPasswordHash && await bcrypt.compare(password, envPasswordHash))
+    : false;
 
   console.log('[Auth] loginAdmin attempt', {
     email,
     isEnvAdmin,
     envEmailSet: !!envEmail,
-    envPasswordSet: !!envPassword,
+    adminPasswordHashSet: !!envPasswordHash,
     supabaseUrlSet: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
     supabaseAnonKeySet: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     serviceRoleKeySet: !!process.env.SUPABASE_SERVICE_ROLE_KEY,

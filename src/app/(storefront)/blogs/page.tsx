@@ -39,7 +39,7 @@ const breadcrumbSchema = {
 };
 
 export default async function BlogsPage() {
-  const blogs = await getPublicBlogs();
+  const blogs = await getPublicBlogs().catch(() => []);
 
   return (
       <>

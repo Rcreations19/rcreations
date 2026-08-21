@@ -5,6 +5,8 @@ compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
 [vars]
 NODE_ENV = "production"
+NEXT_PUBLIC_SUPABASE_URL = "https://mgdfzyilinleeylbzqoo.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nZGZ6eWlsaW5sZWV5bGJ6cW9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNTQ3MDgsImV4cCI6MjEwMTgzMDcwOH0.ew_kSgLG2PcuYK5KMwteCo2Nhox9PpNIfCbq9JURwtI"
 
 [observability]
 enabled = true

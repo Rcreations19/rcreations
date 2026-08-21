@@ -40,8 +40,8 @@ const breadcrumbSchema = {
 
 export default async function ProductsPage() {
   const [products, categories] = await Promise.all([
-    getPublicProducts(),
-    getPublicCategories()
+    getPublicProducts().catch(() => []),
+    getPublicCategories().catch(() => [])
   ]);
 
   return (
