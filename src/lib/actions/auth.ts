@@ -1,10 +1,10 @@
 'use server';
 
 import { createClient, getServiceRoleClient } from '../supabase/server';
-import { createServerClient } from '@supabase/ssr';
 import { rateLimit } from '../rate-limit';
 import { z } from 'zod';
 import { Resend } from 'resend';
+import { createClient as createStatelessClient } from '@supabase/supabase-js';
 
 
 const loginSchema = z.object({
@@ -41,17 +41,10 @@ export async function loginAdmin(formData: FormData) {
     serviceRoleKeySet: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
   });
 
-  // Workers-compatible client (no navigator.locks)
-  const statelessSupabase = createServerClient(
+  const statelessSupabase = createStatelessClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return []; },
-        setAll() {},
-      },
-      auth: { persistSession: false },
-    }
+    { auth: { persistSession: false } }
   );
 
   let { data, error: signInError } = await statelessSupabase.auth.signInWithPassword({ email, password });
@@ -168,16 +161,10 @@ export async function verifyAdminOtp(formData: FormData) {
   }
 
   // Re-authenticate with password to derive a fresh session (no stored tokens)
-  const statelessSupabase = createServerClient(
+  const statelessSupabase = createStatelessClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return []; },
-        setAll() {},
-      },
-      auth: { persistSession: false },
-    }
+    { auth: { persistSession: false } }
   );
 
   const { data: freshSession, error: signInError } = await statelessSupabase.auth.signInWithPassword({
