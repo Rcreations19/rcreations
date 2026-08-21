@@ -24,13 +24,7 @@ jobs:
       - name: Push secrets to Cloudflare Worker
         run: |
           set -e
-          # Delete existing secrets first (ignore errors if not found)
-          npx wrangler secret delete SUPABASE_SERVICE_ROLE_KEY || true
-          npx wrangler secret delete ADMIN_EMAIL || true
-          npx wrangler secret delete ADMIN_PASSWORD_HASH || true
-          npx wrangler secret delete RESEND_API_KEY || true
-          npx wrangler secret delete GOOGLE_PLACES_API_KEY || true
-          # Now put the new secrets
+          # wrangler secret put is idempotent — creates if missing, updates if present
           echo "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" | npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
           echo "${{ secrets.ADMIN_EMAIL }}" | npx wrangler secret put ADMIN_EMAIL
           echo "${{ secrets.ADMIN_PASSWORD_HASH }}" | npx wrangler secret put ADMIN_PASSWORD_HASH
