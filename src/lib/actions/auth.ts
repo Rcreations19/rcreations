@@ -27,9 +27,21 @@ export async function loginAdmin(formData: FormData) {
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   
   const { email, password } = parsed.data;
-  const isEnvAdmin = email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD;
 
-  // Stateless client to test password WITHOUT setting Next.js cookies
+  const envEmail = process.env.ADMIN_EMAIL?.trim();
+  const envPassword = process.env.ADMIN_PASSWORD;
+  const isEnvAdmin = email.trim() === envEmail && password === envPassword;
+
+  console.log('[Auth] loginAdmin attempt', {
+    email,
+    isEnvAdmin,
+    envEmailSet: !!envEmail,
+    envPasswordSet: !!envPassword,
+    supabaseUrlSet: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    supabaseAnonKeySet: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    serviceRoleKeySet: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+  });
+
   const statelessSupabase = createStatelessClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -38,22 +50,43 @@ export async function loginAdmin(formData: FormData) {
 
   let { data, error: signInError } = await statelessSupabase.auth.signInWithPassword({ email, password });
 
+  if (signInError) {
+    console.error('[Auth] signInWithPassword failed', { code: signInError.code, message: signInError.message });
+  }
+
   if (signInError && isEnvAdmin) {
+    console.log('[Auth] Attempting auto-provisioning...');
     const adminSupabase = await getServiceRoleClient();
     const { data: newUser, error: createError } = await adminSupabase.auth.admin.createUser({
       email, password, email_confirm: true
     });
-    if (!createError && newUser.user) {
+
+    if (createError) {
+      console.error('[Auth] createUser failed', { code: createError.code, message: createError.message });
+    } else {
+      console.log('[Auth] createUser succeeded', { userId: newUser.user?.id });
       await adminSupabase.from('profiles').upsert({
-        id: newUser.user.id, email, full_name: 'System Admin', role: 'admin', is_active: true,
+        id: newUser.user!.id, email, full_name: 'System Admin', role: 'admin', is_active: true,
       });
     }
+
     const retry = await statelessSupabase.auth.signInWithPassword({ email, password });
     data = retry.data;
     signInError = retry.error;
+
+    if (signInError) {
+      console.error('[Auth] Retry signInWithPassword failed', { code: signInError.code, message: signInError.message });
+    } else {
+      console.log('[Auth] Retry signInWithPassword succeeded');
+    }
   }
 
   if (signInError || !data.session) {
+    console.error('[Auth] Login failed — returning error to client', {
+      signInError: signInError?.message,
+      hasSession: !!data?.session,
+      isEnvAdmin,
+    });
     return { error: 'Invalid login credentials.' };
   }
 
@@ -79,7 +112,7 @@ export async function loginAdmin(formData: FormData) {
   });
 
   if (insertError) {
-    console.error('Failed to store OTP', { code: insertError.code });
+    console.error('[Auth] Failed to store OTP', { code: insertError.code, message: insertError.message });
     return { error: 'Failed to generate security code.' };
   }
 
@@ -92,8 +125,8 @@ export async function loginAdmin(formData: FormData) {
       subject: 'Your Admin Login Code',
       html: `<p>Your R Creation Admin Login code is: <strong>${code}</strong></p><p>This code expires in 10 minutes.</p>`
     });
-  } catch {
-    console.error('Failed to send OTP email');
+  } catch (err) {
+    console.error('[Auth] Failed to send OTP email', { message: (err as Error).message });
     return { error: 'Failed to send security code.' };
   }
 
@@ -141,9 +174,11 @@ export async function verifyAdminOtp(formData: FormData) {
   });
 
   if (signInError || !freshSession.session) {
-    console.error('Failed to re-authenticate after OTP');
+    console.error('[Auth] OTP verify — re-auth failed', { code: signInError?.code, message: signInError?.message });
     return { error: 'Failed to authenticate session.' };
   }
+
+  console.log('[Auth] OTP verify — re-auth succeeded, setting session...');
 
   // Set the fresh session using the cookie-aware client
   const supabase = await createClient();
@@ -153,9 +188,11 @@ export async function verifyAdminOtp(formData: FormData) {
   });
 
   if (sessionError) {
-    console.error('Failed to set session');
+    console.error('[Auth] OTP verify — setSession failed', { code: sessionError.code, message: sessionError.message });
     return { error: 'Failed to authenticate session.' };
   }
+
+  console.log('[Auth] OTP verify — session set successfully');
 
   // Cleanup used OTP
   await adminSupabase.from('admin_otps').delete().eq('id', data.id);
