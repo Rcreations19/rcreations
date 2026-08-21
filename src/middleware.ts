@@ -7,16 +7,15 @@ export async function middleware(request: NextRequest) {
   // Auth check — wrapped in try/catch so the site never crashes from middleware
   let user: { id: string } | null = null;
   let supabase: ReturnType<typeof createServerClient> | null = null;
+  let authInitFailed = false;
 
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseAnonKey) {
-      console.error('[Middleware] Missing env vars', {
-        hasUrl: !!supabaseUrl,
-        hasKey: !!supabaseAnonKey,
-      });
+      console.error('[Middleware] CRITICAL: Supabase env vars missing at runtime');
+      authInitFailed = true;
     } else {
       supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
         cookies: {
@@ -39,10 +38,11 @@ export async function middleware(request: NextRequest) {
       user = data.user;
     }
   } catch (err) {
-    console.error('[Middleware] Auth init failed', {
+    console.error('[Middleware] CRITICAL: Auth init threw', {
       error: err instanceof Error ? err.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
     });
+    authInitFailed = true;
   }
 
   const pathname = request.nextUrl.pathname;
@@ -51,6 +51,14 @@ export async function middleware(request: NextRequest) {
   const isAccountRoute = pathname.startsWith('/account');
   const isCheckoutRoute = pathname.startsWith('/checkout');
   const isAuthRoute = pathname.startsWith('/auth');
+
+  // FAIL-CLOSED: If auth couldn't initialize, block all admin routes except login
+  if (authInitFailed && isAdminRoute && !isLoginPage) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/admin/login';
+    url.searchParams.set('error', 'auth_unavailable');
+    return NextResponse.redirect(url);
+  }
 
   // Protect admin routes (only if auth succeeded)
   if (supabase && isAdminRoute && !isLoginPage) {
