@@ -2,91 +2,115 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  // 1. Initialize Supabase Response
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
+  let supabaseResponse = NextResponse.next({ request });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
+  // Auth check — wrapped in try/catch so the site never crashes from middleware
+  let user: { id: string } | null = null;
+  let supabase: ReturnType<typeof createServerClient> | null = null;
 
-  // 2. Auth checks
-  const { data: { user } } = await supabase.auth.getUser();
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
-  const isLoginPage = request.nextUrl.pathname === '/admin/login';
-  const isAccountRoute = request.nextUrl.pathname.startsWith('/account');
-  const isCheckoutRoute = request.nextUrl.pathname.startsWith('/checkout');
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/auth');
-
-  // Protect admin routes
-  if (isAdminRoute && !isLoginPage) {
-    if (!user) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/admin/login';
-      url.searchParams.set('redirectTo', request.nextUrl.pathname);
-      supabaseResponse = NextResponse.redirect(url);
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.error('[Middleware] Missing env vars', {
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseAnonKey,
+      });
     } else {
-      // Check admin role
+      supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+            cookiesToSet.forEach(({ name, value }) =>
+              request.cookies.set(name, value)
+            );
+            supabaseResponse = NextResponse.next({ request });
+            cookiesToSet.forEach(({ name, value, options }) =>
+              supabaseResponse.cookies.set(name, value, options)
+            );
+          },
+        },
+      });
+
+      const { data } = await supabase.auth.getUser();
+      user = data.user;
+    }
+  } catch (err) {
+    console.error('[Middleware] Auth init failed', {
+      error: err instanceof Error ? err.message : String(err),
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+  }
+
+  const pathname = request.nextUrl.pathname;
+  const isAdminRoute = pathname.startsWith('/admin');
+  const isLoginPage = pathname === '/admin/login';
+  const isAccountRoute = pathname.startsWith('/account');
+  const isCheckoutRoute = pathname.startsWith('/checkout');
+  const isAuthRoute = pathname.startsWith('/auth');
+
+  // Protect admin routes (only if auth succeeded)
+  if (supabase && isAdminRoute && !isLoginPage) {
+    try {
+      if (!user) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/admin/login';
+        url.searchParams.set('redirectTo', pathname);
+        supabaseResponse = NextResponse.redirect(url);
+      } else {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role, is_active')
+          .eq('id', user.id)
+          .single();
+
+        if (!profile || profile.role !== 'admin' || !profile.is_active) {
+          const url = request.nextUrl.clone();
+          url.pathname = '/admin/login';
+          url.searchParams.set('error', 'unauthorized');
+          supabaseResponse = NextResponse.redirect(url);
+        }
+      }
+    } catch (err) {
+      console.error('[Middleware] Admin auth check failed', {
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+
+  // Redirect logged-in admin from login page to dashboard
+  if (supabase && isLoginPage && user && !supabaseResponse.headers.has('Location')) {
+    try {
       const { data: profile } = await supabase
         .from('profiles')
         .select('role, is_active')
         .eq('id', user.id)
         .single();
 
-      if (!profile || profile.role !== 'admin' || !profile.is_active) {
+      if (profile?.role === 'admin' && profile?.is_active) {
         const url = request.nextUrl.clone();
-        url.pathname = '/admin/login';
-        url.searchParams.set('error', 'unauthorized');
+        url.pathname = '/admin';
         supabaseResponse = NextResponse.redirect(url);
       }
+    } catch (err) {
+      console.error('[Middleware] Login redirect check failed', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }
 
-  // Redirect logged-in admin from login page to dashboard
-  if (isLoginPage && user && !supabaseResponse.headers.has('Location')) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role, is_active')
-      .eq('id', user.id)
-      .single();
-
-    if (profile?.role === 'admin' && profile?.is_active) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/admin';
-      supabaseResponse = NextResponse.redirect(url);
-    }
-  }
-
-  // Protect /account routes
+  // Protect /account routes (only if auth succeeded)
   if (isAccountRoute && !user && !supabaseResponse.headers.has('Location')) {
     const url = request.nextUrl.clone();
     url.pathname = '/auth/login';
-    url.searchParams.set('redirect', request.nextUrl.pathname);
+    url.searchParams.set('redirect', pathname);
     supabaseResponse = NextResponse.redirect(url);
   }
 
-  // 3. Apply CSP and Security Headers
+  // Security headers — always applied regardless of auth status
   const isDev = process.env.NODE_ENV !== 'production';
   const cspHeader = `
     default-src 'self';
