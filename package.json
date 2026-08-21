@@ -6,7 +6,7 @@
     "test": "jest",
     "dev": "next dev --turbo",
     "build": "next build",
-    "deploy": "npx @opennextjs/cloudflare build && npx @opennextjs/cloudflare deploy",
+    "deploy": "npx @opennextjs/cloudflare build && npx @opennextjs/cloudflare deploy -- --keep-vars",
     "start": "next start",
     "lint": "eslint"
   },
