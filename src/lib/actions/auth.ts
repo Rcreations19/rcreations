@@ -30,15 +30,29 @@ export async function loginAdmin(formData: FormData) {
 
   const envEmail = process.env.ADMIN_EMAIL?.trim();
   const envPasswordHash = process.env.ADMIN_PASSWORD_HASH;
-  const isEnvAdmin = envEmail
-    ? email.trim() === envEmail && !!(envPasswordHash && await bcrypt.compare(password, envPasswordHash))
-    : false;
+  
+  // Detailed debug for each check
+  const emailMatch = envEmail ? email.trim().toLowerCase() === envEmail.toLowerCase() : false;
+  let bcryptMatch = false;
+  if (envPasswordHash) {
+    try {
+      bcryptMatch = await bcrypt.compare(password, envPasswordHash);
+    } catch (e) {
+      console.error('[Auth] bcrypt.compare threw', { error: e });
+    }
+  }
+  const isEnvAdmin = envEmail ? emailMatch && bcryptMatch : false;
 
   console.log('[Auth] loginAdmin attempt', {
     email,
+    enteredEmail: email.trim(),
+    envEmail,
+    emailMatch,
+    bcryptMatch,
     isEnvAdmin,
     envEmailSet: !!envEmail,
     adminPasswordHashSet: !!envPasswordHash,
+    envPasswordHashPrefix: envPasswordHash?.substring(0, 10) || null,
     supabaseUrlSet: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
     supabaseAnonKeySet: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     serviceRoleKeySet: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -65,6 +79,10 @@ export async function loginAdmin(formData: FormData) {
 
     if (createError) {
       console.error('[Auth] createUser failed', { code: createError.code, message: createError.message });
+      // If user already exists, still retry sign-in with the provided password
+      if (createError.code !== 'email_exists') {
+        // For other errors, don't retry
+      }
     } else {
       console.log('[Auth] createUser succeeded', { userId: newUser.user?.id });
       await adminSupabase.from('profiles').upsert({
@@ -72,6 +90,7 @@ export async function loginAdmin(formData: FormData) {
       });
     }
 
+    // Always retry sign-in after auto-provisioning attempt (whether create succeeded or user already existed)
     const retry = await statelessSupabase.auth.signInWithPassword({ email, password });
     data = retry.data;
     signInError = retry.error;

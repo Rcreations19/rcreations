@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
@@ -28,6 +28,16 @@ export default function ProductCatalogClient({
   initialProducts: any[], 
   categories: any[] 
 }) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return <div className="h-96 flex items-center justify-center">Loading catalog...</div>;
+  }
+
   const searchParams = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
@@ -39,7 +49,7 @@ export default function ProductCatalogClient({
   const { addPreset } = useCart();
 
   // Lock body scroll when mobile filters are open
-  React.useEffect(() => {
+  useEffect(() => {
     if (showMobileFilters) {
       document.body.classList.add('scroll-locked');
     } else {
