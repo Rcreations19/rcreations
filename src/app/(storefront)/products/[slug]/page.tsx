@@ -7,33 +7,37 @@ import type { Metadata } from 'next';
 export const revalidate = 3600; // 1 hour ISR
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
-  const product = await getPublicProductBySlug(slug);
+  try {
+    const { slug } = await params;
+    const product = await getPublicProductBySlug(slug);
 
-  if (!product) {
-    return {
-      title: 'Product Not Found',
-    };
-  }
-
-  return {
-    title: product.title,
-    description: product.description || product.subtitle,
-    alternates: {
-      canonical: `/products/${slug}`,
-    },
-    openGraph: {
-      title: product.title,
-      description: product.description || product.subtitle,
-      images: product.image_url ? [product.image_url] : [],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: product.title,
-      description: product.description || product.subtitle,
-      images: product.image_url ? [product.image_url] : [],
+    if (!product) {
+      return {
+        title: 'Product Not Found',
+      };
     }
-  };
+
+    return {
+      title: product.title,
+      description: product.description || product.subtitle,
+      alternates: {
+        canonical: `/products/${slug}`,
+      },
+      openGraph: {
+        title: product.title,
+        description: product.description || product.subtitle,
+        images: product.image_url ? [product.image_url] : [],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: product.title,
+        description: product.description || product.subtitle,
+        images: product.image_url ? [product.image_url] : [],
+      }
+    };
+  } catch {
+    return { title: 'Product' };
+  }
 }
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {

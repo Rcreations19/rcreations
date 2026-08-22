@@ -4,7 +4,7 @@ import { getPublicBlogs } from '@/lib/actions/blogs';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [products, blogs] = await Promise.all([
-    getPublicProducts() || [],
+    getPublicProducts().catch(() => []),
     getPublicBlogs().catch(() => []),
   ]);
 
