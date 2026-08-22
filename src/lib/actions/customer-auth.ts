@@ -76,7 +76,7 @@ export async function registerCustomer(formData: FormData): Promise<AuthResult> 
   try {
     const resend = new Resend(process.env.RESEND_API_KEY || '');
     await resend.emails.send({
-      from: 'R Creation <onboarding@resend.dev>', // Update this when domain is verified
+      from: 'R Creation <noreply@rcreationframes.com>',
       to: email,
       subject: 'Verify your R Creation Account',
       html: `<p>Hi ${fullName},</p><p>Your verification code is: <strong>${code}</strong></p><p>This code expires in 10 minutes.</p>`

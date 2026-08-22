@@ -5,7 +5,6 @@ import { rateLimit } from '../rate-limit';
 import { z } from 'zod';
 import { Resend } from 'resend';
 import { createClient as createStatelessClient } from '@supabase/supabase-js';
-import bcrypt from 'bcryptjs';
 
 
 const loginSchema = z.object({
@@ -28,36 +27,6 @@ export async function loginAdmin(formData: FormData) {
   
   const { email, password } = parsed.data;
 
-  const envEmail = process.env.ADMIN_EMAIL?.trim();
-  const envPasswordHash = process.env.ADMIN_PASSWORD_HASH;
-  
-  // Detailed debug for each check
-  const emailMatch = envEmail ? email.trim().toLowerCase() === envEmail.toLowerCase() : false;
-  let bcryptMatch = false;
-  if (envPasswordHash) {
-    try {
-      bcryptMatch = await bcrypt.compare(password, envPasswordHash);
-    } catch (e) {
-      console.error('[Auth] bcrypt.compare threw', { error: e });
-    }
-  }
-  const isEnvAdmin = envEmail ? emailMatch && bcryptMatch : false;
-
-  console.log('[Auth] loginAdmin attempt', {
-    email,
-    enteredEmail: email.trim(),
-    envEmail,
-    emailMatch,
-    bcryptMatch,
-    isEnvAdmin,
-    envEmailSet: !!envEmail,
-    adminPasswordHashSet: !!envPasswordHash,
-    envPasswordHashPrefix: envPasswordHash?.substring(0, 10) || null,
-    supabaseUrlSet: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-    supabaseAnonKeySet: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    serviceRoleKeySet: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-  });
-
   const statelessSupabase = createStatelessClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -66,47 +35,10 @@ export async function loginAdmin(formData: FormData) {
 
   let { data, error: signInError } = await statelessSupabase.auth.signInWithPassword({ email, password });
 
-  if (signInError) {
-    console.error('[Auth] signInWithPassword failed', { code: signInError.code, message: signInError.message });
-  }
-
-  if (signInError && isEnvAdmin) {
-    console.log('[Auth] Attempting auto-provisioning...');
-    const adminSupabase = await getServiceRoleClient();
-    const { data: newUser, error: createError } = await adminSupabase.auth.admin.createUser({
-      email, password, email_confirm: true
-    });
-
-    if (createError) {
-      console.error('[Auth] createUser failed', { code: createError.code, message: createError.message });
-      // If user already exists, still retry sign-in with the provided password
-      if (createError.code !== 'email_exists') {
-        // For other errors, don't retry
-      }
-    } else {
-      console.log('[Auth] createUser succeeded', { userId: newUser.user?.id });
-      await adminSupabase.from('profiles').upsert({
-        id: newUser.user!.id, email, full_name: 'System Admin', role: 'admin', is_active: true,
-      });
-    }
-
-    // Always retry sign-in after auto-provisioning attempt (whether create succeeded or user already existed)
-    const retry = await statelessSupabase.auth.signInWithPassword({ email, password });
-    data = retry.data;
-    signInError = retry.error;
-
-    if (signInError) {
-      console.error('[Auth] Retry signInWithPassword failed', { code: signInError.code, message: signInError.message });
-    } else {
-      console.log('[Auth] Retry signInWithPassword succeeded');
-    }
-  }
-
   if (signInError || !data.session) {
     console.error('[Auth] Login failed — returning error to client', {
       signInError: signInError?.message,
       hasSession: !!data?.session,
-      isEnvAdmin,
     });
     return { error: 'Invalid login credentials.' };
   }
@@ -141,7 +73,7 @@ export async function loginAdmin(formData: FormData) {
   try {
     const resend = new Resend(process.env.RESEND_API_KEY || '');
     await resend.emails.send({
-      from: 'R Creation Security <onboarding@resend.dev>', // Update this when domain is verified in Resend
+      from: 'R Creation Security <noreply@rcreationframes.com>',
       to: email,
       subject: 'Your Admin Login Code',
       html: `<p>Your R Creation Admin Login code is: <strong>${code}</strong></p><p>This code expires in 10 minutes.</p>`
