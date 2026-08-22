@@ -1,8 +1,16 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import type { Metadata } from 'next';
-import ProductCatalogClient from '@/components/storefront/ProductCatalogClient';
 import { getPublicProducts, getPublicCategories } from '@/lib/actions/storefront';
+
+const ProductCatalogClient = dynamic(
+  () => import('@/components/storefront/ProductCatalogClient'),
+  {
+    ssr: false,
+    loading: () => <div className="h-96 flex items-center justify-center">Loading catalog...</div>,
+  }
+);
 
 export const revalidate = 3600; // 1 hour ISR
 
@@ -55,12 +63,10 @@ export default async function ProductsPage() {
         </ol>
       </nav>
       <div className="bg-transparent min-h-screen pb-20">
-        <Suspense fallback={<div className="h-96 flex items-center justify-center">Loading catalog...</div>}>
-          <ProductCatalogClient 
-            initialProducts={products || []} 
-            categories={categories || []} 
-          />
-        </Suspense>
+        <ProductCatalogClient
+          initialProducts={products || []}
+          categories={categories || []}
+        />
       </div>
     </>
   );
