@@ -16,5 +16,10 @@ interface ProductCatalogClientProps {
 }
 
 export default function ProductCatalogClient({ initialProducts, categories }: { initialProducts: any[]; categories: any[] }) {
+  // Guard against server-side rendering during static HTML generation
+  if (typeof window === 'undefined') {
+    return <div className="h-96 flex items-center justify-center">Loading catalog...</div>;
+  }
+
   return <ProductCatalogClientInner initialProducts={initialProducts} categories={categories} />;
 }
