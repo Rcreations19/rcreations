@@ -7,7 +7,7 @@ const ProductCatalogClientInner = dynamic(
   () => import('@/components/storefront/ProductCatalogClient'),
   {
     ssr: false,
-    // No loading component - we handle loading state manually to avoid SSR mismatch
+    // No loading component - we handle loading state in the parent page
   }
 );
 
@@ -17,14 +17,10 @@ interface ProductCatalogClientProps {
 }
 
 export default function ProductCatalogClient({ initialProducts, categories }: { initialProducts: any[]; categories: any[] }) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return <div className="h-96 flex items-center justify-center">Loading catalog...</div>;
+  // Render nothing on server to avoid SSR mismatch with dynamic import (ssr: false)
+  // The dynamic import with ssr: false will only render on client
+  if (typeof window === 'undefined') {
+    return null;
   }
 
   return <ProductCatalogClientInner initialProducts={initialProducts} categories={categories} />;
