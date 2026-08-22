@@ -1,16 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import type { Metadata } from 'next';
+import ProductCatalogClient from '@/components/storefront/ProductCatalogClientWrapper';
 import { getPublicProducts, getPublicCategories } from '@/lib/actions/storefront';
-
-const ProductCatalogClient = dynamic(
-  () => import('@/components/storefront/ProductCatalogClient'),
-  {
-    ssr: false,
-    loading: () => <div className="h-96 flex items-center justify-center">Loading catalog...</div>,
-  }
-);
 
 export const revalidate = 3600; // 1 hour ISR
 
