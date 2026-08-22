@@ -1,12 +1,13 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
 
 const ProductCatalogClientInner = dynamic(
   () => import('@/components/storefront/ProductCatalogClient'),
   {
     ssr: false,
-    loading: () => <div className="h-96 flex items-center justify-center">Loading catalog...</div>,
+    // No loading component - we handle loading state manually to avoid SSR mismatch
   }
 );
 
@@ -16,8 +17,13 @@ interface ProductCatalogClientProps {
 }
 
 export default function ProductCatalogClient({ initialProducts, categories }: { initialProducts: any[]; categories: any[] }) {
-  // Guard against server-side rendering during static HTML generation
-  if (typeof window === 'undefined') {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
     return <div className="h-96 flex items-center justify-center">Loading catalog...</div>;
   }
 
