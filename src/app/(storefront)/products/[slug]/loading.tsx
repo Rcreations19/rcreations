@@ -2,11 +2,11 @@ import React from 'react';
 
 export default function Loading() {
   return (
-    <div className="bg-[#fcfdfd] min-h-screen py-10">
+    <div className="bg-[#fcfdfd] min-h-screen pt-4 md:pt-6 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb Skeleton */}
-        <div className="flex gap-2 mb-8 items-center">
+        <div className="flex gap-2 mb-4 md:mb-6 items-center">
           <div className="w-16 h-4 bg-neutral-200 animate-pulse rounded" />
           <div className="w-4 h-4 bg-neutral-200 animate-pulse rounded" />
           <div className="w-24 h-4 bg-neutral-200 animate-pulse rounded" />

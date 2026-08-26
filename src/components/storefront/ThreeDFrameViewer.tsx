@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useMemo, useState, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment, Lightformer, useTexture, Center } from '@react-three/drei';
 import * as THREE from 'three';
 import { Maximize, Minimize } from 'lucide-react';
@@ -43,8 +43,17 @@ interface FrameGeometryProps {
   materialParams: FrameMaterialConfig;
 }
 
-function TexturedFramePiece({ position, args, materialParams, repeatX, repeatY, rotation = [0, 0, 0] }: any) {
-  const { textureUrl, bumpScale, ...mParams } = materialParams;
+interface FramePieceProps {
+  position: [number, number, number];
+  args: [number, number, number];
+  materialParams: FrameMaterialConfig & { bumpScale?: number };
+  repeatX: number;
+  repeatY: number;
+  rotation?: [number, number, number];
+}
+
+function TexturedFramePiece({ position, args, materialParams, repeatX, repeatY, rotation = [0, 0, 0] }: FramePieceProps) {
+  const { textureUrl = '', bumpScale, ...mParams } = materialParams;
   const texture = useTexture(textureUrl) as THREE.Texture;
   
   const clonedTexture = useMemo(() => {
@@ -63,7 +72,7 @@ function TexturedFramePiece({ position, args, materialParams, repeatX, repeatY, 
   );
 }
 
-function FramePiece({ position, args, materialParams, repeatX, repeatY, rotation = [0, 0, 0] }: any) {
+function FramePiece({ position, args, materialParams, repeatX, repeatY, rotation = [0, 0, 0] }: FramePieceProps) {
   if (materialParams.textureUrl) {
     return (
       <React.Suspense fallback={
@@ -199,91 +208,10 @@ function createLenticularNormalMap() {
   return texture;
 }
 
-function GlitterStars({ widthCm, heightCm }: { widthCm: number, heightCm: number }) {
-  const w = widthCm / 10;
-  const h = heightCm / 10;
-  const pointsRef = useRef<THREE.Points>(null);
-  
-  const starTexture = useMemo(() => {
-    if (typeof document === 'undefined') return null;
-    const canvas = document.createElement('canvas');
-    canvas.width = 128;
-    canvas.height = 128;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      // 4-point diamond sparkle star
-      const cx = 64;
-      const cy = 64;
-      
-      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 60);
-      grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      grad.addColorStop(0.2, 'rgba(255, 250, 220, 0.9)');
-      grad.addColorStop(0.5, 'rgba(255, 220, 150, 0.4)');
-      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 60, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Star arms
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.moveTo(cx, 4);
-      ctx.quadraticCurveTo(cx, cy, cx + 60, cy);
-      ctx.quadraticCurveTo(cx, cy, cx, cy + 60);
-      ctx.quadraticCurveTo(cx, cy, cx - 60, cy);
-      ctx.quadraticCurveTo(cx, cy, cx, 4);
-      ctx.fill();
-    }
-    return new THREE.CanvasTexture(canvas);
-  }, []);
-
-  const count = 35;
-  const positions = useMemo(() => {
-    const pos = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * w * 0.94;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * h * 0.94;
-      pos[i * 3 + 2] = 0.035; // sitting right on top of photo
-    }
-    return pos;
-  }, [w, h]);
-
-  useFrame(({ clock }) => {
-    if (pointsRef.current) {
-      const time = clock.getElapsedTime();
-      const mat = pointsRef.current.material as THREE.PointsMaterial;
-      if (mat) {
-        // Dynamic sparkle twinkle
-        mat.opacity = 0.65 + Math.sin(time * 3.5) * 0.25;
-      }
-    }
-  });
-
-  if (!starTexture) return null;
-
-  return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={count} array={positions} itemSize={3} args={[positions, 3]} />
-      </bufferGeometry>
-      <pointsMaterial 
-        size={0.22} 
-        map={starTexture} 
-        transparent={true} 
-        opacity={0.85} 
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
-  );
-}
-
 function PhotoCanvasFallback({ widthCm, heightCm, finish }: { widthCm: number; heightCm: number; finish?: string }) {
   const w = widthCm / 10;
   const h = heightCm / 10;
-  const pParams: any = { roughness: 0.85, metalness: 0.0, clearcoat: 0 };
+  const pParams: THREE.MeshPhysicalMaterialParameters = { roughness: 0.85, metalness: 0.0, clearcoat: 0 };
   
   if (finish === 'Matte') {
     pParams.roughness = 0.85;
@@ -322,14 +250,19 @@ function PhotoCanvasStandard({ photoUrl, widthCm, heightCm, finish }: { photoUrl
   const h = heightCm / 10;
   
   const texture = useTexture(photoUrl) as THREE.Texture;
-  texture.colorSpace = THREE.SRGBColorSpace;
+  
+  useEffect(() => {
+    if (texture) {
+      texture.colorSpace = THREE.SRGBColorSpace;
+    }
+  }, [texture]);
 
   const glitterBumpMap = useMemo(() => {
     if (finish === 'Glitter') return createGlitterTexture();
     return null;
   }, [finish]);
 
-  const pParams: any = { roughness: 0.85, metalness: 0.0, clearcoat: 0 };
+  const pParams: THREE.MeshPhysicalMaterialParameters = { roughness: 0.85, metalness: 0.0, clearcoat: 0 };
 
   if (finish === 'Matte') {
     pParams.roughness = 0.85;
@@ -353,23 +286,20 @@ function PhotoCanvasStandard({ photoUrl, widthCm, heightCm, finish }: { photoUrl
   }
 
   return (
-    <>
-      <mesh receiveShadow position={[0, 0, 0.03]}>
-        <planeGeometry args={[w * 0.98, h * 0.98]} />
-        <meshPhysicalMaterial 
-          map={texture} 
-          side={THREE.DoubleSide} 
-          clearcoatNormalMap={glitterBumpMap || null}
-          clearcoatNormalScale={glitterBumpMap ? new THREE.Vector2(2.5, 2.5) : new THREE.Vector2(1, 1)}
-          {...pParams} 
-        />
-      </mesh>
-      {finish === 'Glitter' && <GlitterStars widthCm={widthCm} heightCm={heightCm} />}
-    </>
+    <mesh receiveShadow position={[0, 0, 0.03]}>
+      <planeGeometry args={[w * 0.98, h * 0.98]} />
+      <meshPhysicalMaterial 
+        map={texture} 
+        side={THREE.DoubleSide} 
+        clearcoatNormalMap={glitterBumpMap || null}
+        clearcoatNormalScale={glitterBumpMap ? new THREE.Vector2(2.5, 2.5) : new THREE.Vector2(1, 1)}
+        {...pParams} 
+      />
+    </mesh>
   );
 }
 
-function PhotoCanvasLenticular({ photoUrl, photoUrl2, widthCm, heightCm, finish }: { photoUrl: string; photoUrl2: string; widthCm: number; heightCm: number; finish?: string }) {
+function PhotoCanvasLenticular({ photoUrl, photoUrl2, widthCm, heightCm }: { photoUrl: string; photoUrl2: string; widthCm: number; heightCm: number }) {
   const w = widthCm / 10;
   const h = heightCm / 10;
   
@@ -377,12 +307,14 @@ function PhotoCanvasLenticular({ photoUrl, photoUrl2, widthCm, heightCm, finish 
   const texture = textures[0];
   const texture2 = textures[1];
   
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture2.colorSpace = THREE.SRGBColorSpace;
+  useEffect(() => {
+    if (texture) texture.colorSpace = THREE.SRGBColorSpace;
+    if (texture2) texture2.colorSpace = THREE.SRGBColorSpace;
+  }, [texture, texture2]);
 
   const lenticularNormalMap = useMemo(() => createLenticularNormalMap(), []);
 
-  const pParams: any = {
+  const pParams: THREE.MeshPhysicalMaterialParameters = {
     roughness: 0.10,
     metalness: 0.0,
     clearcoat: 1.0,
@@ -442,7 +374,7 @@ function PhotoCanvas({ photoUrl, photoUrl2, widthCm, heightCm, finish }: { photo
   return (
     <React.Suspense fallback={<PhotoCanvasFallback widthCm={widthCm} heightCm={heightCm} finish={finish} />}>
       {finish === '3D+' && photoUrl2 ? (
-        <PhotoCanvasLenticular photoUrl={photoUrl} photoUrl2={photoUrl2} widthCm={widthCm} heightCm={heightCm} finish={finish} />
+        <PhotoCanvasLenticular photoUrl={photoUrl} photoUrl2={photoUrl2} widthCm={widthCm} heightCm={heightCm} />
       ) : (
         <PhotoCanvasStandard photoUrl={photoUrl} widthCm={widthCm} heightCm={heightCm} finish={finish} />
       )}

@@ -141,9 +141,9 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (
-    <div className="pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="pt-4 md:pt-6 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Breadcrumb */}
-      <nav className="mb-8 flex items-center gap-2 text-xs text-neutral-500">
+      <nav className="mb-4 md:mb-6 flex items-center gap-2 text-xs text-neutral-500">
         <Link href="/" className="hover:text-[#10164A] transition-colors">Home</Link>
         <span>/</span>
         <Link href="/products" className="hover:text-[#10164A] transition-colors">Catalog</Link>

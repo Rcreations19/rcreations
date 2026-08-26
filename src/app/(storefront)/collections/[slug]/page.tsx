@@ -107,7 +107,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c') }} />
-      <nav aria-label="Breadcrumb" className="bg-transparent max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-12 text-sm text-[#595959]">
+      <nav aria-label="Breadcrumb" className="bg-transparent max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 text-sm text-[#595959]">
         <ol className="flex items-center gap-1.5">
           <li><Link href="/" className="hover:text-primary transition-colors">Home</Link></li>
           <li aria-hidden="true">/</li>
@@ -118,15 +118,15 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
       </nav>
 
       {seo && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 md:pt-3">
            <div className="mb-4 text-center">
-             <h1 className="text-3xl md:text-5xl font-bold text-primary mb-4">{seo.name}</h1>
-             <p className="text-[#595959] max-w-2xl mx-auto text-lg">{seo.description}</p>
+             <h1 className="text-3xl md:text-5xl font-bold text-primary mb-3">{seo.name}</h1>
+             <p className="text-[#595959] max-w-2xl mx-auto text-base md:text-lg">{seo.description}</p>
            </div>
         </div>
       )}
 
-      <div className="bg-transparent min-h-screen pb-20 pt-4">
+      <div className="bg-transparent min-h-screen pb-20 pt-2 md:pt-3">
         <React.Suspense fallback={<div className="h-96 flex items-center justify-center">Loading collection...</div>}>
           <ProductCatalogClient
             initialProducts={products || []}

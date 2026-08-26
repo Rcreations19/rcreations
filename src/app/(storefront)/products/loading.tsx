@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-28 pb-20">
+    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-6 pb-16">
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         {/* Filter sidebar skeleton */}
         <div className="hidden xl:block xl:col-span-3">
