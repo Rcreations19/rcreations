@@ -6,6 +6,7 @@ import { getProduct, getCategoriesForSelect, saveProduct, deleteProducts } from 
 import { ChevronRight, Save, Trash2, Plus, GripVertical, Check } from 'lucide-react';
 import { MultiImageUploader } from '@/components/admin/MultiImageUploader';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 export default function ProductChangePage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -41,6 +42,7 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
     is_active: true,
     rating: '5.0',
     review_count: '0',
+    inventory_count: '',
     stock_urgency_remaining: '',
     urgency_timer_title: '',
     urgency_timer_subtitle: '',
@@ -76,6 +78,7 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
               is_active: Boolean(prod.is_active),
               rating: String(prod.rating ?? '5.0'),
               review_count: String(prod.review_count ?? '0'),
+              inventory_count: prod.inventory_count != null ? String(prod.inventory_count) : '',
               stock_urgency_remaining: prod.stock_urgency_remaining != null ? String(prod.stock_urgency_remaining) : '',
               urgency_timer_title: String(prod.urgency_timer_title || ''),
               urgency_timer_subtitle: String(prod.urgency_timer_subtitle || ''),
@@ -118,12 +121,12 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
     setSaving(true);
     setError(null);
     const res = await deleteProducts([resolvedParams.id]);
-    if (res?.error) {
-      setError(res.error);
-      setSaving(false);
-    } else {
-      router.push('/admin/products');
+    if (!res.success) {
+      toast.error(res.error);
+      return;
     }
+    toast.success('Product deleted successfully');
+    router.push('/admin/products');
   };
 
   const [success, setSuccess] = useState(false);
@@ -154,17 +157,13 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
 
       const res = await saveProduct(formData);
       
-      if (res && 'error' in res) {
-        if (res.details && res.details.fieldErrors) {
-          const fieldErrors = Object.entries(res.details.fieldErrors)
-            .map(([field, errors]) => `${field}: ${(errors as string[]).join(', ')}`)
-            .join(' | ');
-          throw new Error(`${res.error} - ${fieldErrors}`);
-        }
-        throw new Error(res.error);
+      if (!res.success) {
+        toast.error(res.error);
+        setSaving(false);
+        return;
       }
 
-      setSuccess(true);
+      toast.success('Product saved successfully');
       
       // Delay redirect slightly so user sees the success message
       setTimeout(() => {
@@ -172,7 +171,7 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
       }, 800);
       
     } catch (err: unknown) {
-      setError((err as Error).message);
+      toast.error('An unexpected error occurred.');
       setSaving(false);
     }
   };
@@ -389,7 +388,7 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
             <h2 className="text-sm font-bold text-white uppercase tracking-wider">Marketing & Reviews</h2>
           </div>
           <div className="p-6 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Rating (0-5)</label>
                 <input type="number" step="0.1" min="0" max="5" name="rating" value={form.rating} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
@@ -397,6 +396,11 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
               <div>
                 <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Review Count</label>
                 <input type="number" min="0" name="review_count" value={form.review_count} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Inventory Count</label>
+                <input type="number" min="0" name="inventory_count" value={form.inventory_count} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+                <p className="text-[10px] text-neutral-500 mt-1">Leave blank for unlimited</p>
               </div>
             </div>
             
@@ -407,7 +411,7 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
                 <div>
                   <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Stock Urgency Remaining (Leave blank to hide)</label>
                   <input type="number" min="1" name="stock_urgency_remaining" value={form.stock_urgency_remaining} onChange={handleTextChange} placeholder="e.g., 17" className="w-full md:w-1/2 px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
-                  <p className="text-[10px] text-neutral-500 mt-1">Displays "High Demand! Only X units remaining at this factory price."</p>
+                  <p className="text-[10px] text-neutral-500 mt-1">Displays &quot;High Demand! Only X units remaining at this factory price.&quot;</p>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">

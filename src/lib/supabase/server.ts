@@ -8,7 +8,7 @@ import type { Database } from './types';
  * Does NOT use cookies — safe for server components in OpenNext/Cloudflare Workers.
  */
 export function createPublicClient() {
-  return createSupabaseClient<any>(
+  return createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
@@ -17,7 +17,7 @@ export function createPublicClient() {
 export async function createClient() {
   const cookieStore = await cookies();
 
-  return createServerClient<any>(
+  return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -25,9 +25,9 @@ export async function createClient() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet: any[]) {
+        setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
           try {
-            cookiesToSet.forEach(({ name, value, options }: any) =>
+            cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             );
           } catch {
@@ -48,7 +48,7 @@ export async function createClient() {
  * NEVER expose this to the client.
  */
 export async function getServiceRoleClient() {
-  return createServerClient<any>(
+  return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!, // Use the service role key
     {
@@ -56,7 +56,7 @@ export async function getServiceRoleClient() {
         getAll() {
           return []; // Do NOT read user cookies, or it will downgrade to user privileges
         },
-        setAll(cookiesToSet: any[]) {
+        setAll(cookiesToSet: { name: string; value: string; options: any }[]) {
           // Ignored
         },
       },

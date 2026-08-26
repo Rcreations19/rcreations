@@ -27,7 +27,7 @@ export default function AddFrameOptionPage() {
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/admin/frame-options" className="p-2 bg-white border border-[#eaeaea] rounded-lg text-[#595959] hover:text-[#111111] hover:bg-[#fcfcfc] transition-colors shadow-sm">
+          <Link href="/admin/frame-options" className="p-2 bg-white border border-border rounded-lg text-[#595959] hover:text-[#111111] hover:bg-surface transition-colors shadow-sm">
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
@@ -44,7 +44,7 @@ export default function AddFrameOptionPage() {
           </div>
         )}
 
-        <div className="bg-white rounded-xl border border-[#eaeaea] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
           <div className="p-6 space-y-6">
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -156,7 +156,7 @@ export default function AddFrameOptionPage() {
               />
             </div>
 
-            <div className="pt-4 border-t border-[#eaeaea]">
+            <div className="pt-4 border-t border-border">
               <label className="flex items-center gap-3 cursor-pointer group">
                 <div className="relative">
                   <input type="checkbox" name="isActive" defaultChecked className="sr-only peer" />
@@ -171,7 +171,7 @@ export default function AddFrameOptionPage() {
 
           </div>
           
-          <div className="px-6 py-4 bg-[#fcfcfc] border-t border-[#eaeaea] flex items-center justify-end gap-3">
+          <div className="px-6 py-4 bg-surface border-t border-border flex items-center justify-end gap-3">
             <Link href="/admin/frame-options" className="px-4 py-2 text-sm font-bold text-[#595959] hover:text-[#111111] transition-colors">
               Cancel
             </Link>

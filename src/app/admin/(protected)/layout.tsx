@@ -8,6 +8,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  let profileData = null;
   try {
     const cookieStore = await cookies();
     const supabase = createServerClient(
@@ -34,12 +35,19 @@ export default async function AdminLayout({
       .eq('id', user.id)
       .single();
 
-    return (
-      <AdminShell profile={profile}>
-        {children}
-      </AdminShell>
-    );
+    profileData = profile;
   } catch {
     return null;
   }
+
+  return (
+    <>
+      <style>{`
+        html { background-image: none !important; }
+      `}</style>
+      <AdminShell profile={profileData}>
+        {children}
+      </AdminShell>
+    </>
+  );
 }

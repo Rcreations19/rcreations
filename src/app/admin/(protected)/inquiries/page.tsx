@@ -31,10 +31,10 @@ export default async function InquiriesPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#eaeaea] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-[#fcfcfc] border-b border-[#eaeaea]">
+            <thead className="bg-surface border-b border-border">
               <tr>
                 <th className="px-6 py-4 font-bold text-[#595959] text-xs uppercase tracking-wider">Contact</th>
                 <th className="px-6 py-4 font-bold text-[#595959] text-xs uppercase tracking-wider">Type</th>
@@ -46,7 +46,7 @@ export default async function InquiriesPage() {
             <tbody className="divide-y divide-[#eaeaea]">
               {inquiries && inquiries.length > 0 ? (
                 inquiries.map((inq) => (
-                  <tr key={inq.id} className="hover:bg-[#fcfcfc] transition-colors group">
+                  <tr key={inq.id} className="hover:bg-surface transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="font-semibold text-[#111111]">{inq.name}</span>
@@ -76,7 +76,7 @@ export default async function InquiriesPage() {
                     <td className="px-6 py-4 text-right">
                       <Link 
                         href={`/admin/inquiries/${inq.id}`} 
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-[#111111] bg-white border border-[#eaeaea] rounded-lg hover:bg-[#f5f5f5] transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-[#111111] bg-white border border-border rounded-lg hover:bg-[#f5f5f5] transition-colors"
                       >
                         Review <ArrowRight className="w-3 h-3" />
                       </Link>

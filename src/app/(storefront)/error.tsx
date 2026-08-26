@@ -21,8 +21,8 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
       >
         <div className="noise-overlay" aria-hidden />
         <div className="relative z-10">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#2aabb0]/10">
-            <AlertTriangle className="h-8 w-8 text-[#2aabb0]" />
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10">
+            <AlertTriangle className="h-8 w-8 text-accent" />
           </div>
           <h2 className="text-2xl font-extrabold text-primary tracking-tight mb-2">
             Something went wrong
@@ -34,7 +34,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
           <div className="flex flex-col sm:flex-row items-stretch justify-center gap-3">
             <button
               onClick={reset}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#2aabb0] hover:bg-[#38C8CC] text-primary text-xs font-bold uppercase tracking-wider rounded-lg transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-accent hover:bg-[#38C8CC] text-primary text-xs font-bold uppercase tracking-wider rounded-lg transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <RefreshCw className="w-4 h-4" /> Try again
             </button>

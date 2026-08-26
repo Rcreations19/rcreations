@@ -14,41 +14,49 @@ const categorySchema = z.object({
   isActive: z.boolean().default(false),
 });
 
-export async function createCategory(formData: FormData) {
-  try { await verifyAdmin(); } catch (e) { return { error: 'Unauthorized' }; }
-  const supabase = await createClient();
+import { ActionResponse, getSafeErrorMessage } from '../utils/action-response';
+
+export async function createCategory(formData: FormData): Promise<ActionResponse | void> {
+  try { 
+    await verifyAdmin();
+  } catch (e) { 
+    return { success: false, error: 'Unauthorized' }; 
+  }
   
-  const parsed = categorySchema.safeParse({
-    name: formData.get('name'),
-    slug: formData.get('slug'),
-    description: formData.get('description') || undefined,
-    imageUrl: formData.get('imageUrl') || undefined,
-    displayOrder: formData.get('displayOrder') || '0',
-    isActive: formData.get('isActive') === 'on',
-  });
+  try {
+    const supabase = await createClient();
+    
+    const parsed = categorySchema.parse({
+      name: formData.get('name'),
+      slug: formData.get('slug'),
+      description: formData.get('description') || undefined,
+      imageUrl: formData.get('imageUrl') || undefined,
+      displayOrder: formData.get('displayOrder') || '0',
+      isActive: formData.get('isActive') === 'on',
+    });
 
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0].message };
-  }
+    const { name, slug, description, imageUrl, displayOrder, isActive } = parsed;
 
-  const { name, slug, description, imageUrl, displayOrder, isActive } = parsed.data;
+    const { error } = await supabase.from('categories').insert({
+      name,
+      slug,
+      description,
+      image_url: imageUrl,
+      display_order: displayOrder,
+      is_active: isActive,
+    });
 
-  const { error } = await supabase.from('categories').insert({
-    name,
-    slug,
-    description,
-    image_url: imageUrl,
-    display_order: displayOrder,
-    is_active: isActive,
-  });
-
-  if (error) {
-    if (error.code === '23505') {
-      return { error: 'A category with this slug already exists.' };
+    if (error) {
+      if (error.code === '23505') {
+        throw new Error('A category with this slug already exists.');
+      }
+      throw new Error('Failed to create category.');
     }
-    return { error: 'Failed to create category.' };
-  }
 
-  revalidatePath('/admin/categories');
+    revalidatePath('/admin/categories');
+  } catch (error) {
+    return { success: false, error: getSafeErrorMessage(error) };
+  }
+  
   redirect('/admin/categories');
 }

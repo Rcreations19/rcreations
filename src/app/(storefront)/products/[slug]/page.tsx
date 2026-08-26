@@ -49,10 +49,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     return notFound();
   }
 
-  const relatedProducts = await getPublicRelatedProducts(product.category_id, product.id).catch(() => []);
+  const relatedProducts = await getPublicRelatedProducts(product).catch(() => []);
 
-    // Schema generation
-    const productSchema = {
+    const productSchema: any = {
       "@context": "https://schema.org/",
       "@type": "Product",
       "name": product.title,
@@ -68,15 +67,21 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         "url": `https://rcreationframes.com/products/${product.slug}`,
         "priceCurrency": "INR",
         "price": product.price,
-        "availability": product.stock_quantity > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        "availability": ((product as any).inventory_count ?? 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         "itemCondition": "https://schema.org/NewCondition"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": product.rating || "5.0",
-        "reviewCount": product.review_count || 0
       }
     };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const p = product as any;
+    if (p.review_count && p.review_count > 0) {
+      productSchema.aggregateRating = {
+        "@type": "AggregateRating",
+        "ratingValue": p.rating || "5.0",
+        "reviewCount": p.review_count
+      };
+    }
 
     const breadcrumbSchema = {
       "@context": "https://schema.org",

@@ -31,7 +31,7 @@ export default function WholesalePage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <div className="bg-white min-h-screen selection:bg-[#2aabb0]/20">
+    <div className="bg-white min-h-screen selection:bg-accent/20">
 
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}
       <section className="bg-slate-50 border-b border-slate-100">
@@ -45,14 +45,14 @@ export default function WholesalePage() {
               transition={{ duration: 0.7, ease: 'easeOut' }}
               className="space-y-8"
             >
-              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#2aabb0]/40 bg-[#2aabb0]/8 text-[#2aabb0] text-[10px] font-extrabold uppercase tracking-widest font-mono">
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-accent/40 bg-accent/8 text-accent text-[10px] font-extrabold uppercase tracking-widest font-mono">
                 <Building2 className="w-3.5 h-3.5" />
                 Premium B2B Partner Programme
               </span>
 
               <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-black text-[#10164A] leading-[1.08] tracking-tight">
                 Wholesale Sourcing,{' '}
-                <span className="text-[#2aabb0]">Elevated.</span>
+                <span className="text-accent">Elevated.</span>
               </h1>
 
               <p className="text-base sm:text-lg text-slate-500 leading-relaxed max-w-xl font-medium">
@@ -62,7 +62,7 @@ export default function WholesalePage() {
               <ul className="space-y-3">
                 {['Factory-direct prices — no middlemen', 'MOQ as low as 10 units', 'Full GST B2B invoicing included'].map((pt) => (
                   <li key={pt} className="flex items-center gap-2.5 text-sm text-slate-600 font-medium">
-                    <CheckCircle2 className="w-4 h-4 text-[#2aabb0] shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
                     {pt}
                   </li>
                 ))}
@@ -71,7 +71,7 @@ export default function WholesalePage() {
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Link
                   href="/contact"
-                  className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-[#2aabb0] hover:bg-[#10164A] text-white rounded-lg text-xs font-extrabold uppercase tracking-widest transition-all duration-300 shadow-[0_4px_20px_rgba(42,171,176,0.35)] hover:shadow-[0_4px_20px_rgba(16,22,74,0.35)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2"
+                  className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-accent hover:bg-[#10164A] text-white rounded-lg text-xs font-extrabold uppercase tracking-widest transition-all duration-300 shadow-[0_4px_20px_rgba(42,171,176,0.35)] hover:shadow-[0_4px_20px_rgba(16,22,74,0.35)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
                 >
                   <PhoneCall className="w-4 h-4" />
                   Request Rate Card
@@ -79,7 +79,7 @@ export default function WholesalePage() {
                 </Link>
                 <Link
                   href="/products"
-                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border-2 border-[#10164A]/20 hover:border-[#10164A] text-[#10164A] rounded-lg text-xs font-extrabold uppercase tracking-widest transition-all duration-300 hover:bg-[#10164A]/5 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2"
+                  className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border-2 border-[#10164A]/20 hover:border-[#10164A] text-[#10164A] rounded-lg text-xs font-extrabold uppercase tracking-widest transition-all duration-300 hover:bg-[#10164A]/5 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
                 >
                   View Bulk Catalogue
                 </Link>
@@ -106,8 +106,8 @@ export default function WholesalePage() {
 
               {/* Floating stat badge */}
               <div className="absolute bottom-5 left-5 bg-white/90 backdrop-blur-md rounded-xl px-4 py-3 shadow-lg border border-white/50 flex items-center gap-3">
-                <div className="w-9 h-9 bg-[#2aabb0]/10 rounded-lg flex items-center justify-center">
-                  <Percent className="w-5 h-5 text-[#2aabb0]" />
+                <div className="w-9 h-9 bg-accent/10 rounded-lg flex items-center justify-center">
+                  <Percent className="w-5 h-5 text-accent" />
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Volume Discount</p>
@@ -123,7 +123,7 @@ export default function WholesalePage() {
       <section className="bg-white py-24 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-            <p className="text-[10px] font-extrabold uppercase tracking-widest text-[#2aabb0] font-mono">Our Advantages</p>
+            <p className="text-[10px] font-extrabold uppercase tracking-widest text-accent font-mono">Our Advantages</p>
             <h2 className="text-3xl sm:text-4xl font-black text-[#10164A] tracking-tight">Why Source from R Creation?</h2>
             <p className="text-slate-500 text-base leading-relaxed">Built for photo studios, gift boutiques, and large-scale corporate procurement.</p>
           </div>
@@ -140,16 +140,16 @@ export default function WholesalePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className={`group relative overflow-hidden bg-white border border-slate-100 hover:border-[#2aabb0]/40 rounded-2xl p-7 shadow-sm hover:shadow-md transition-all duration-300 focus-within:ring-2 focus-within:ring-[#2aabb0]/60 ${
+                  className={`group relative overflow-hidden bg-white border border-slate-100 hover:border-accent/40 rounded-2xl p-7 shadow-sm hover:shadow-md transition-all duration-300 focus-within:ring-2 focus-within:ring-accent/60 ${
                     featured ? 'lg:col-span-3' : 'lg:col-span-3'
                   }`}
                 >
                   {featured && (
-                    <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#2aabb0]/8 blur-3xl" />
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-accent/8 blur-3xl" />
                   )}
                   <div className="relative flex items-start gap-5">
-                    <div className="w-12 h-12 bg-[#2aabb0]/10 rounded-xl flex items-center justify-center group-hover:bg-[#2aabb0] transition-colors duration-300 shrink-0 group-focus-visible:scale-110">
-                      <b.icon className="w-6 h-6 text-[#2aabb0] group-hover:text-white transition-colors duration-300" />
+                    <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center group-hover:bg-accent transition-colors duration-300 shrink-0 group-focus-visible:scale-110">
+                      <b.icon className="w-6 h-6 text-accent group-hover:text-white transition-colors duration-300" />
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-sm font-extrabold text-[#10164A] mb-2">{b.title}</h3>
@@ -170,7 +170,7 @@ export default function WholesalePage() {
 
             {/* Process */}
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-[#2aabb0] font-mono mb-3">How It Works</p>
+              <p className="text-[10px] font-extrabold uppercase tracking-widest text-accent font-mono mb-3">How It Works</p>
               <h2 className="text-2xl sm:text-3xl font-black text-[#10164A] mb-12 tracking-tight">Wholesale Order Process</h2>
 
               <div className="relative">
@@ -188,13 +188,13 @@ export default function WholesalePage() {
                       className="flex gap-6 relative group"
                     >
                       {/* Node */}
-                      <div className="relative z-10 w-10 h-10 rounded-full bg-white border-2 border-slate-200 group-hover:border-[#2aabb0] group-hover:bg-[#2aabb0] flex items-center justify-center shrink-0 transition-all duration-300 shadow-sm">
+                      <div className="relative z-10 w-10 h-10 rounded-full bg-white border-2 border-slate-200 group-hover:border-accent group-hover:bg-accent flex items-center justify-center shrink-0 transition-all duration-300 shadow-sm">
                         <span className="text-[10px] font-extrabold text-slate-400 group-hover:text-white font-mono transition-colors">{s.n}</span>
                       </div>
 
                       {/* Content */}
                       <div className="pb-2 pt-1">
-                        <h3 className="text-sm font-extrabold text-[#10164A] mb-1.5 group-hover:text-[#2aabb0] transition-colors">{s.title}</h3>
+                        <h3 className="text-sm font-extrabold text-[#10164A] mb-1.5 group-hover:text-accent transition-colors">{s.title}</h3>
                         <p className="text-xs text-slate-500 leading-relaxed">{s.desc}</p>
                       </div>
                     </motion.div>
@@ -210,7 +210,7 @@ export default function WholesalePage() {
                 </div>
                 <Link
                   href="/contact"
-                  className="shrink-0 inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#2aabb0] hover:bg-[#10164A] text-white rounded-lg text-xs font-extrabold uppercase tracking-wider transition-all duration-300"
+                  className="shrink-0 inline-flex items-center gap-1.5 px-5 py-2.5 bg-accent hover:bg-[#10164A] text-white rounded-lg text-xs font-extrabold uppercase tracking-wider transition-all duration-300"
                 >
                   Contact Us <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
@@ -219,7 +219,7 @@ export default function WholesalePage() {
 
             {/* FAQ */}
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-[#2aabb0] font-mono mb-3">Quick Answers</p>
+              <p className="text-[10px] font-extrabold uppercase tracking-widest text-accent font-mono mb-3">Quick Answers</p>
               <h2 className="text-2xl sm:text-3xl font-black text-[#10164A] mb-12 tracking-tight">Frequently Asked Questions</h2>
 
               <div className="divide-y divide-slate-100 border-y border-slate-100">
@@ -228,12 +228,12 @@ export default function WholesalePage() {
                     <button
                       onClick={() => setOpenFaq(openFaq === i ? null : i)}
                       aria-expanded={openFaq === i}
-                      className="w-full flex items-start justify-between gap-4 py-5 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50 rounded"
+                      className="w-full flex items-start justify-between gap-4 py-5 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50 rounded"
                     >
-                      <span className={`text-sm font-bold leading-snug transition-colors duration-200 ${openFaq === i ? 'text-[#2aabb0]' : 'text-[#10164A] group-hover:text-[#2aabb0]'}`}>
+                      <span className={`text-sm font-bold leading-snug transition-colors duration-200 ${openFaq === i ? 'text-accent' : 'text-[#10164A] group-hover:text-accent'}`}>
                         {faq.q}
                       </span>
-                      <ChevronDown className={`w-5 h-5 shrink-0 mt-0.5 transition-transform duration-300 ${openFaq === i ? 'rotate-180 text-[#2aabb0]' : 'text-slate-400'}`} />
+                      <ChevronDown className={`w-5 h-5 shrink-0 mt-0.5 transition-transform duration-300 ${openFaq === i ? 'rotate-180 text-accent' : 'text-slate-400'}`} />
                     </button>
 
                     <AnimatePresence initial={false}>
@@ -263,7 +263,7 @@ export default function WholesalePage() {
                 <Link
                   href="/contact"
                   aria-label="Contact wholesale team"
-                  className="relative z-10 shrink-0 w-11 h-11 rounded-full bg-[#2aabb0] hover:bg-white flex items-center justify-center text-[#10164A] active:scale-95 shadow-[0_0_16px_rgba(42,171,176,0.5)] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2 focus-visible:ring-offset-[#10164A]"
+                  className="relative z-10 shrink-0 w-11 h-11 rounded-full bg-accent hover:bg-white flex items-center justify-center text-[#10164A] active:scale-95 shadow-[0_0_16px_rgba(42,171,176,0.5)] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-[#10164A]"
                 >
                   <ArrowRight className="w-5 h-5" />
                 </Link>

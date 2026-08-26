@@ -2,6 +2,7 @@
 
 import { createClient } from '../supabase/server';
 import { z } from 'zod';
+import { rateLimit } from '../rate-limit';
 
 const profileUpdateSchema = z.object({
   fullName: z.string().min(1, 'Name is required').max(200),
@@ -71,6 +72,9 @@ export async function getCustomerSession(): Promise<CustomerProfile | null> {
  * Update the customer's profile and default shipping info.
  */
 export async function updateCustomerProfile(formData: FormData) {
+  const rl = await rateLimit(20, 60000); // 20 updates per min max
+  if (!rl.success) return { error: rl.error };
+
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();

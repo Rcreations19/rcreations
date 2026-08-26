@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     formData.append('password', password);
 
     const result = await loginCustomer(formData);
-    if (result.error) return { error: result.error };
+    if (!result.success) return { error: result.error };
 
     await refreshUser();
     router.refresh();
@@ -62,9 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     formData.append('phone', data.phone);
 
     const result = await registerCustomer(formData);
-    if (result.error) return { error: result.error };
+    if (!result.success) return { error: result.error };
 
-    if (result.step === 'otp') {
+    if (result.data?.step === 'otp') {
       return { step: 'otp' };
     }
 

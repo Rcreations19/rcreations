@@ -9,7 +9,7 @@ interface CartContextType {
   totalCount: number;
   openCart: () => void;
   closeCart: () => void;
-  addPreset: (product: { id: string; title: string; price: number; image: string; subtitle: string; moq: number }, qty?: number, customText?: string) => void;
+  addPreset: (product: { id: string; title: string; price: number; wholesale_price?: number; image: string; subtitle: string; moq: number }, qty?: number, customText?: string) => void;
   addCustom: (config: CustomFrameConfig, price: number) => void;
   updateQuantity: (id: string, delta: number) => void;
   removeItem: (id: string) => void;
@@ -64,7 +64,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const closeCart = useCallback(() => setIsOpen(false), []);
 
   const addPreset = useCallback((
-    product: { id: string; title: string; price: number; image: string; subtitle: string; moq: number },
+    product: { id: string; title: string; price: number; wholesale_price?: number; image: string; subtitle: string; moq: number },
     qty = 1,
     customText?: string
   ) => {
@@ -77,6 +77,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         id: product.id,
         title: product.title,
         price: product.price,
+        wholesale_price: product.wholesale_price,
         image: product.image,
         type: 'catalog' as const,
         quantity: qty,

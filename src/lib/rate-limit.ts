@@ -9,7 +9,8 @@ export async function rateLimit(limit: number = 5, windowMs: number = 60000) {
     const supabase = await getServiceRoleClient();
     
     // Call the atomic rate limiting RPC
-    const { data: allowed, error } = await supabase.rpc('check_rate_limit', {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: allowed, error } = await (supabase.rpc as any)('check_rate_limit', {
       p_ip: ip,
       p_limit: limit,
       p_window_ms: windowMs

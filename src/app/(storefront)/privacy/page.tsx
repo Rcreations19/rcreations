@@ -39,17 +39,17 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="text-lg font-bold text-secondary">4. Cookies &amp; Analytics</h2>
-          <p>We use Google Analytics cookies to understand how visitors interact with our website. These cookies collect anonymized usage data. You can opt out of Google Analytics by installing the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className="text-[#2aabb0] hover:underline">Google Analytics Opt-out Browser Add-on</a>.</p>
+          <p>We use Google Analytics cookies to understand how visitors interact with our website. These cookies collect anonymized usage data. You can opt out of Google Analytics by installing the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Google Analytics Opt-out Browser Add-on</a>.</p>
         </section>
 
         <section>
           <h2 className="text-lg font-bold text-secondary">5. Third-Party Services</h2>
-          <p>We use WhatsApp Business for customer communication. When you click a WhatsApp link on our site, your interaction is governed by <a href="https://www.whatsapp.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[#2aabb0] hover:underline">WhatsApp&rsquo;s Privacy Policy</a>. We do not control how WhatsApp handles your data.</p>
+          <p>We use WhatsApp Business for customer communication. When you click a WhatsApp link on our site, your interaction is governed by <a href="https://www.whatsapp.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">WhatsApp&rsquo;s Privacy Policy</a>. We do not control how WhatsApp handles your data.</p>
         </section>
 
         <section>
           <h2 className="text-lg font-bold text-secondary">6. Your Rights</h2>
-          <p>You have the right to access, correct, or delete your personal data. To exercise these rights, contact us at <a href="mailto:rcreationsstudio@gmail.com" className="text-[#2aabb0] hover:underline">rcreationsstudio@gmail.com</a>. We will respond to your request within 30 days.</p>
+          <p>You have the right to access, correct, or delete your personal data. To exercise these rights, contact us at <a href="mailto:rcreationsstudio@gmail.com" className="text-accent hover:underline">rcreationsstudio@gmail.com</a>. We will respond to your request within 30 days.</p>
         </section>
 
         <section>

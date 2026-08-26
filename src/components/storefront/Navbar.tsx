@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, ShoppingBag, ArrowRight, User, LogOut, ChevronDown } from 'lucide-react';
+import { Search, ShoppingBag, ArrowRight, User, LogOut, ChevronDown, Menu, X } from 'lucide-react';
 import { useCart } from './CartContext';
 import { useAuth } from './AuthContext';
 import { RCreationLogo } from '../shared/Logo';
@@ -54,11 +54,12 @@ export default function Navbar() {
   // Calculate total items (quantities included)
   const cartItemCount = totalCount || 0;
 
-  // Close mobile menu on route change
-  useEffect(() => {
+  const [prevPath, setPrevPath] = useState(pathname);
+  if (pathname !== prevPath) {
+    setPrevPath(pathname);
     setMobileMenuOpen(false);
     setUserMenuOpen(false);
-  }, [pathname]);
+  }
 
   // Close user menu on outside click
   useEffect(() => {
@@ -123,7 +124,7 @@ export default function Navbar() {
         }}
         animate={isHidden ? "hidden" : "visible"}
         transition={{ duration: 0.35, ease: "easeInOut" }}
-        className={`sticky top-0 left-0 right-0 z-50 transition-shadow duration-500 border-b bg-transparent md:bg-[#050714] md:backdrop-blur-none text-white ${isScrolled
+        className={`sticky top-0 left-0 right-0 z-50 transition-shadow duration-500 border-b bg-transparent md:bg-primary md:backdrop-blur-none text-white ${isScrolled
             ? 'border-white/10 md:shadow-[0_4px_30px_rgba(0,0,0,0.1)]'
             : 'border-transparent'
           }`}
@@ -140,15 +141,22 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile Search Bar (Only visible on mobile) */}
-          <div className="flex w-full md:hidden items-center mt-1">
-            <form action="/products" method="GET" className="w-full relative">
+          {/* Mobile Search Bar & Menu (Only visible on mobile) */}
+          <div className="flex w-full md:hidden items-center mt-1 gap-2">
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-3 bg-white border border-neutral-200 rounded-xl text-neutral-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-accent active:scale-95 transition-all"
+              aria-label="Open menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <form action="/products" method="GET" className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black z-10 pointer-events-none" />
               <input 
                 type="text" 
                 name="search" 
                 placeholder="Search products..." 
-                className="w-full pl-12 pr-5 py-3.5 bg-white border border-neutral-200 shadow-[0_4px_16px_rgba(0,0,0,0.04)] rounded-2xl text-neutral-900 text-base placeholder:text-neutral-500 focus:outline-none focus:border-[#2aabb0] focus:ring-1 focus:ring-[#2aabb0] transition-all"
+                className="w-full pl-11 pr-4 py-3.5 bg-white border border-neutral-200 shadow-[0_4px_16px_rgba(0,0,0,0.04)] rounded-xl text-neutral-900 text-base placeholder:text-neutral-500 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
               />
             </form>
           </div>
@@ -162,11 +170,11 @@ export default function Navbar() {
                   key={link.name}
                   href={link.href}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`text-xs font-bold tracking-widest uppercase transition-all duration-300 relative py-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-[#050714] group ${isActive ? 'text-[#2aabb0]' : 'text-neutral-300 hover:text-white'
+                  className={`text-xs font-bold tracking-widest uppercase transition-all duration-300 relative py-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-primary group ${isActive ? 'text-accent' : 'text-neutral-300 hover:text-white'
                     }`}
                 >
                   {link.name}
-                  <span className={`absolute bottom-0 left-0 h-0.5 bg-[#2aabb0] transition-all duration-300 ${isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                  <span className={`absolute bottom-0 left-0 h-0.5 bg-accent transition-all duration-300 ${isActive ? 'w-full' : 'w-0 group-hover:w-full'
                     }`} />
                 </Link>
               );
@@ -175,7 +183,7 @@ export default function Navbar() {
 
           {/* Action Buttons */}
           <div className="hidden md:flex flex-1 lg:flex-none items-center justify-end gap-3">
-            <Link href="/products" className="hidden sm:flex text-neutral-300 hover:text-[#2aabb0] transition-colors p-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Search products">
+            <Link href="/products" className="hidden sm:flex text-neutral-300 hover:text-accent transition-colors p-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Search products">
               <Search className="w-5 h-5" />
             </Link>
 
@@ -186,10 +194,10 @@ export default function Navbar() {
                   <>
                     <button
                       onClick={() => setUserMenuOpen(!userMenuOpen)}
-                      className="flex items-center gap-1.5 p-1.5 text-white hover:text-[#2aabb0] transition-colors group"
+                      className="flex items-center gap-1.5 p-1.5 text-white hover:text-accent transition-colors group"
                       aria-label="Account menu"
                     >
-                      <div className="w-7 h-7 rounded-full bg-[#2aabb0] flex items-center justify-center text-[#0a0e27] text-xs font-black group-hover:scale-110 transition-transform">
+                      <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center text-primary text-xs font-black group-hover:scale-110 transition-transform">
                         {userInitial}
                       </div>
                       <ChevronDown className={`w-3 h-3 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
@@ -227,7 +235,7 @@ export default function Navbar() {
                 ) : (
                   <Link
                     href="/auth/login"
-                    className="flex items-center gap-1.5 p-2 text-neutral-300 hover:text-[#2aabb0] transition-colors group"
+                    className="flex items-center gap-1.5 p-2 text-neutral-300 hover:text-accent transition-colors group"
                     aria-label="Sign in"
                   >
                     <User className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -238,7 +246,7 @@ export default function Navbar() {
 
             <button
               onClick={openCart}
-              className="relative p-3 -m-1 text-white hover:text-[#2aabb0] transition-colors group hidden md:block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="relative p-3 -m-1 text-white hover:text-accent transition-colors group hidden md:block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={`Shopping cart, ${cartItemCount} items`}
             >
               <ShoppingBag className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -248,7 +256,7 @@ export default function Navbar() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
-                    className="absolute -top-1 -right-1 bg-[#2aabb0] text-[#10164A] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center"
+                    className="absolute -top-1 -right-1 bg-accent text-[#10164A] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center"
                   >
                     {cartItemCount}
                   </motion.span>
@@ -259,7 +267,7 @@ export default function Navbar() {
             {/* B2B CTA - Von Restorff Effect */}
             <Link
               href="/contact"
-              className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-[#2aabb0] text-primary text-xs font-bold uppercase tracking-wider rounded overflow-hidden relative group active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-accent text-primary text-xs font-bold uppercase tracking-wider rounded overflow-hidden relative group active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <div className="absolute inset-0 w-0 bg-white transition-all duration-[250ms] ease-out group-hover:w-full opacity-20"></div>
               <span className="relative">Inquire</span>
@@ -282,9 +290,16 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[70] bg-[#0a0e27]/95 backdrop-blur-md pt-24 pb-8 px-6 lg:hidden flex flex-col"
+            className="fixed inset-0 z-[70] bg-primary/95 backdrop-blur-md pt-24 pb-8 px-6 lg:hidden flex flex-col"
           >
-            <nav className="flex flex-col space-y-2 flex-1">
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="absolute top-6 right-6 p-2 text-white/70 hover:text-white transition-colors"
+              aria-label="Close menu"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <nav className="flex flex-col space-y-2 flex-1 mt-4">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
                 return (
@@ -292,7 +307,7 @@ export default function Navbar() {
                     key={link.name}
                     href={link.href}
                     aria-current={isActive ? 'page' : undefined}
-                    className={`text-2xl font-extrabold tracking-tight py-3 min-h-[44px] flex items-center ${isActive ? 'text-[#2aabb0]' : 'text-white'
+                    className={`text-2xl font-extrabold tracking-tight py-3 min-h-[44px] flex items-center ${isActive ? 'text-accent' : 'text-white'
                       }`}
                   >
                     {link.name}
@@ -317,7 +332,7 @@ export default function Navbar() {
               )}
               <Link
                 href="/contact"
-                className="w-full py-4 bg-[#2aabb0] text-[#0a0e27] text-center font-bold uppercase tracking-widest rounded shadow-[0_0_20px_rgba(56,200,204,0.3)] block"
+                className="w-full py-4 bg-accent text-primary text-center font-bold uppercase tracking-widest rounded shadow-[0_0_20px_rgba(56,200,204,0.3)] block"
               >
                 Contact Sales
               </Link>

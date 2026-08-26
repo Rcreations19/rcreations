@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { DataTable } from '@/components/admin/DataTable';
 import { getProducts, deleteProducts } from '@/lib/actions/products';
 import { Check, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ProductsListPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -32,10 +33,11 @@ export default function ProductsListPage() {
   const handleDelete = async (ids: string[]) => {
     if (confirm(`Are you sure you want to delete ${ids.length} products?`)) {
       const res = await deleteProducts(ids);
-      if (res && 'error' in res) {
-        alert(res.error);
+      if (!res.success) {
+        toast.error(res.error);
         return;
       }
+      toast.success(`${ids.length} product(s) deleted successfully`);
       await fetchProducts();
     }
   };
@@ -44,7 +46,7 @@ export default function ProductsListPage() {
     {
       header: 'Title',
       cell: (item: any) => (
-        <Link href={`/admin/products/${item.id}`} className="font-bold text-[#10164A] hover:text-[#2aabb0] transition-colors">
+        <Link href={`/admin/products/${item.id}`} className="font-bold text-[#10164A] hover:text-accent transition-colors">
           {item.title}
         </Link>
       )
@@ -115,17 +117,17 @@ export default function ProductsListPage() {
               <div>
                 <h4 className="text-xs font-bold text-neutral-500 mb-2">By Active</h4>
                 <ul className="text-sm space-y-1 text-[#10164A]">
-                  <li><button className="font-bold hover:text-[#2aabb0]">All</button></li>
-                  <li><button className="hover:text-[#2aabb0]">Yes</button></li>
-                  <li><button className="hover:text-[#2aabb0]">No</button></li>
+                  <li><button className="font-bold hover:text-accent">All</button></li>
+                  <li><button className="hover:text-accent">Yes</button></li>
+                  <li><button className="hover:text-accent">No</button></li>
                 </ul>
               </div>
               <div className="border-t border-neutral-100 pt-4">
                 <h4 className="text-xs font-bold text-neutral-500 mb-2">By Bestseller</h4>
                 <ul className="text-sm space-y-1 text-[#10164A]">
-                  <li><button className="font-bold hover:text-[#2aabb0]">All</button></li>
-                  <li><button className="hover:text-[#2aabb0]">Yes</button></li>
-                  <li><button className="hover:text-[#2aabb0]">No</button></li>
+                  <li><button className="font-bold hover:text-accent">All</button></li>
+                  <li><button className="hover:text-accent">Yes</button></li>
+                  <li><button className="hover:text-accent">No</button></li>
                 </ul>
               </div>
             </div>

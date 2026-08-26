@@ -94,8 +94,8 @@ export function AdminNotifications() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white border border-[#eaeaea] rounded-lg shadow-xl z-50 overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-[#eaeaea] bg-[#fcfcfc]">
+        <div className="absolute right-0 mt-2 w-80 bg-white border border-border rounded-lg shadow-xl z-50 overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface">
             <h3 className="font-bold text-sm text-[#111111]">Notifications</h3>
             {unreadCount > 0 && (
               <button 
@@ -118,9 +118,9 @@ export function AdminNotifications() {
                   <button
                     key={notification.id}
                     onClick={() => handleNotificationClick(notification)}
-                    className={`flex items-start gap-3 p-4 text-left transition-colors border-b border-[#eaeaea] last:border-0 hover:bg-[#f5f5f5] ${!notification.is_read ? 'bg-[#fcfcfc]' : 'bg-white'}`}
+                    className={`flex items-start gap-3 p-4 text-left transition-colors border-b border-border last:border-0 hover:bg-[#f5f5f5] ${!notification.is_read ? 'bg-surface' : 'bg-white'}`}
                   >
-                    <div className="mt-1 flex-shrink-0 bg-white border border-[#eaeaea] p-1.5 rounded-md shadow-sm">
+                    <div className="mt-1 flex-shrink-0 bg-white border border-border p-1.5 rounded-md shadow-sm">
                       {getIconForType(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">

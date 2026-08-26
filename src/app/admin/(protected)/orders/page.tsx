@@ -27,21 +27,21 @@ export default async function AdminOrdersPage() {
         </div>
       </div>
 
-      <div className="bg-white border border-[#eaeaea] rounded-xl shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-[#eaeaea] flex items-center justify-between bg-[#fcfcfc]">
+      <div className="bg-white border border-border rounded-xl shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-border flex items-center justify-between bg-surface">
           <div className="relative w-full max-w-xs">
             <Search className="w-4 h-4 text-[#595959] absolute left-3 top-1/2 -translate-y-1/2" />
             <input 
               type="text" 
               placeholder="Search orders..." 
-              className="w-full pl-9 pr-3 py-2 bg-white border border-[#eaeaea] rounded-md text-sm focus:ring-1 focus:ring-[#0070f3] focus:border-[#0070f3] outline-none"
+              className="w-full pl-9 pr-3 py-2 bg-white border border-border rounded-md text-sm focus:ring-1 focus:ring-[#0070f3] focus:border-[#0070f3] outline-none"
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left admin-table-striped">
-            <thead className="text-xs text-[#595959] uppercase bg-[#f5f5f5] border-b border-[#eaeaea]">
+            <thead className="text-xs text-[#595959] uppercase bg-[#f5f5f5] border-b border-border">
               <tr>
                 <th className="px-6 py-4 font-bold tracking-wider">Order ID</th>
                 <th className="px-6 py-4 font-bold tracking-wider">Date</th>

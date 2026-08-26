@@ -24,7 +24,7 @@ export default function MobileBottomNav() {
   ];
 
   return (
-    <div className="md:hidden fixed bottom-4 left-4 right-4 z-[60] bg-white border border-neutral-200 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
+    <div className="md:hidden fixed left-4 right-4 z-[60] bg-white border border-neutral-200 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.08)] mb-[max(1rem,env(safe-area-inset-bottom))] bottom-0">
       <div className="flex items-center justify-around px-2 h-14">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -37,13 +37,13 @@ export default function MobileBottomNav() {
               onClick={handleVibrate}
               aria-current={isActive ? 'page' : undefined}
               className={`relative flex flex-col items-center justify-center w-full h-full space-y-0.5 transition-all duration-300 rounded-lg active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                isActive ? 'text-[#2aabb0]' : 'text-[#0a0e27]'
+                isActive ? 'text-accent' : 'text-primary'
               }`}
             >
               {isActive && (
-                <div className="absolute -bottom-1 w-1 h-1 bg-[#2aabb0] rounded-full" />
+                <div className="absolute -bottom-1 w-1 h-1 bg-accent rounded-full" />
               )}
-              <Icon className={`w-5 h-5 ${isActive ? 'fill-[#2aabb0]/10 stroke-2' : 'stroke-[1.5]'}`} />
+              <Icon className={`w-5 h-5 ${isActive ? 'fill-accent/10 stroke-2' : 'stroke-[1.5]'}`} />
               <span className={`text-[10px] leading-none tracking-wide ${isActive ? 'font-bold' : 'font-medium'}`}>{item.name}</span>
             </Link>
           );
@@ -55,12 +55,12 @@ export default function MobileBottomNav() {
             openCart();
           }}
           aria-label={`Shopping cart, ${totalCount} items`}
-          className="relative flex flex-col items-center justify-center w-full h-full space-y-0.5 text-[#0a0e27] transition-all duration-300 rounded-lg active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="relative flex flex-col items-center justify-center w-full h-full space-y-0.5 text-primary transition-all duration-300 rounded-lg active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <div className="relative">
             <ShoppingCart className="w-5 h-5 stroke-[1.5]" />
             {totalCount > 0 && (
-              <span className="absolute -top-1.5 -right-2 bg-[#2aabb0] text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm border border-white">
+              <span className="absolute -top-1.5 -right-2 bg-accent text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm border border-white">
                 {totalCount > 99 ? '99+' : totalCount}
               </span>
             )}

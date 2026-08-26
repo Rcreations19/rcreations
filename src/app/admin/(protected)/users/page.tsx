@@ -38,10 +38,10 @@ export default async function UsersPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#eaeaea] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-[#fcfcfc] border-b border-[#eaeaea]">
+            <thead className="bg-surface border-b border-border">
               <tr>
                 <th className="px-6 py-4 font-bold text-[#595959] text-xs uppercase tracking-wider">User</th>
                 <th className="px-6 py-4 font-bold text-[#595959] text-xs uppercase tracking-wider">Role</th>
@@ -53,7 +53,7 @@ export default async function UsersPage() {
             <tbody className="divide-y divide-[#eaeaea]">
               {users && users.length > 0 ? (
                 users.map((user) => (
-                  <tr key={user.id} className={`transition-colors ${!user.is_active ? 'bg-neutral-50' : 'hover:bg-[#fcfcfc]'}`}>
+                  <tr key={user.id} className={`transition-colors ${!user.is_active ? 'bg-neutral-50' : 'hover:bg-surface'}`}>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-[#10164A] text-white flex items-center justify-center font-bold text-xs">

@@ -4,6 +4,7 @@ import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Mail, Lock, ArrowRight, Loader2, ShoppingBag, Eye, EyeOff } from 'lucide-react';
+import { toast } from 'sonner';
 import { useAuth } from '@/components/storefront/AuthContext';
 
 function LoginForm() {
@@ -27,6 +28,7 @@ function LoginForm() {
 
     if (result.error) {
       setError(result.error);
+      toast.error(result.error);
       setLoading(false);
       return;
     }
@@ -40,7 +42,7 @@ function LoginForm() {
         {/* Brand Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 group">
-            <ShoppingBag className="w-8 h-8 text-[#2aabb0] group-hover:scale-110 transition-transform" />
+            <ShoppingBag className="w-8 h-8 text-accent group-hover:scale-110 transition-transform" />
             <span className="text-2xl font-extrabold text-secondary tracking-tight">R Creation</span>
           </Link>
           <p className="text-sm text-neutral-500 mt-2">Welcome back! Sign in to your account.</p>
@@ -69,7 +71,7 @@ function LoginForm() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
+                    className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none transition-all"
                     placeholder="rcreationsstudio@gmail.com"
                     autoComplete="email"
                   />
@@ -87,7 +89,7 @@ function LoginForm() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-11 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
+                    className="w-full pl-10 pr-11 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none transition-all"
                     placeholder="••••••••"
                     autoComplete="current-password"
                   />
@@ -102,6 +104,16 @@ function LoginForm() {
                 </div>
               </div>
 
+              <div className="flex items-center justify-between">
+                <div />
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-xs font-semibold text-accent hover:text-[#238d91] transition-colors"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
@@ -112,7 +124,7 @@ function LoginForm() {
                 ) : (
                   <>
                     <span>Sign In</span>
-                    <ArrowRight className="w-4 h-4 text-[#2aabb0]" />
+                    <ArrowRight className="w-4 h-4 text-accent" />
                   </>
                 )}
               </button>
@@ -125,7 +137,7 @@ function LoginForm() {
               Don&apos;t have an account?{' '}
               <Link
                 href={`/auth/register${redirectTo !== '/' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`}
-                className="font-bold text-[#2aabb0] hover:text-[#238d91] transition-colors"
+                className="font-bold text-accent hover:text-[#238d91] transition-colors"
               >
                 Create one
               </Link>
@@ -148,7 +160,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-br from-[#f8f9fa] via-white to-[#f0fafb] flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-[#2aabb0]" />
+        <Loader2 className="w-6 h-6 animate-spin text-accent" />
       </div>
     }>
       <LoginForm />

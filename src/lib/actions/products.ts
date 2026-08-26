@@ -3,6 +3,7 @@
 import { getAdminClient } from '../supabase/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { rateLimit } from '../rate-limit';
 
 // -----------------------------------------------------
 // GET ACTIONS
@@ -69,16 +70,19 @@ const productSchema = z.object({
   specifications: z.any().optional(),
   rating: z.coerce.number().min(0).max(5).optional().default(5.0),
   review_count: z.coerce.number().int().min(0).optional().default(0),
+  inventory_count: z.union([z.string(), z.number(), z.null()]).optional().transform(val => (val === "" || val == null) ? null : Number(val)),
   stock_urgency_remaining: z.union([z.string(), z.number(), z.null()]).optional().transform(val => (val === "" || val == null) ? null : Number(val)),
   urgency_timer_title: z.string().nullable().optional().transform(val => val || null),
   urgency_timer_subtitle: z.string().nullable().optional().transform(val => val || null)
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ProductResult = { success: true; error?: undefined; details?: undefined } | { error: string; details?: any; success?: undefined };
+import { ActionResponse, getSafeErrorMessage } from '../utils/action-response';
 
-export async function saveProduct(formData: FormData): Promise<ProductResult> {
+export async function saveProduct(formData: FormData): Promise<ActionResponse> {
   try {
+    const rl = await rateLimit(20, 60000); // 20 updates per minute max
+    if (!rl.success) throw new Error(rl.error || 'Rate limit exceeded');
+
     const supabase = await getAdminClient();
     const id = formData.get('id') as string;
     const isNew = !id || id === 'new';
@@ -114,25 +118,21 @@ export async function saveProduct(formData: FormData): Promise<ProductResult> {
       specifications: specifications,
       rating: formData.get('rating'),
       review_count: formData.get('review_count'),
+      inventory_count: formData.get('inventory_count'),
       stock_urgency_remaining: formData.get('stock_urgency_remaining'),
       urgency_timer_title: formData.get('urgency_timer_title'),
       urgency_timer_subtitle: formData.get('urgency_timer_subtitle'),
     };
 
-    const validatedData = productSchema.safeParse(rawData);
-
-    if (!validatedData.success) {
-      return { error: "Validation failed", details: validatedData.error.flatten() };
-    }
-
-    const productData = validatedData.data;
+    const validatedData = productSchema.parse(rawData);
+    const productData = validatedData;
 
     if (isNew) {
       const { error } = await supabase.from('products').insert(productData as never);
-      if (error) return { error: 'Failed to create product.' };
+      if (error) throw new Error('Failed to create product.');
     } else {
       const { error } = await supabase.from('products').update(productData as never).eq('id', id);
-      if (error) return { error: 'Failed to update product.' };
+      if (error) throw new Error('Failed to update product.');
     }
 
     // Log activity
@@ -152,13 +152,16 @@ export async function saveProduct(formData: FormData): Promise<ProductResult> {
     revalidatePath('/');         // Revalidate homepage (TopSellers section)
     
     return { success: true };
-  } catch {
-    return { error: 'An unexpected error occurred.' };
+  } catch (error) {
+    return { success: false, error: getSafeErrorMessage(error, 'An unexpected error occurred while saving the product.') };
   }
 }
 
-export async function deleteProducts(ids: string[]): Promise<ProductResult> {
+export async function deleteProducts(ids: string[]): Promise<ActionResponse> {
   try {
+    const rl = await rateLimit(10, 60000); // 10 deletes per minute max
+    if (!rl.success) throw new Error(rl.error || 'Rate limit exceeded');
+
     const supabase = await getAdminClient();
     
     const { error } = await supabase
@@ -166,7 +169,7 @@ export async function deleteProducts(ids: string[]): Promise<ProductResult> {
       .delete()
       .in('id', ids);
 
-    if (error) return { error: 'Failed to delete products.' };
+    if (error) throw new Error('Failed to delete products.');
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
@@ -183,7 +186,7 @@ export async function deleteProducts(ids: string[]): Promise<ProductResult> {
     revalidatePath('/'); // Revalidate homepage (TopSellers section)
     
     return { success: true };
-  } catch {
-    return { error: 'An unexpected error occurred.' };
+  } catch (error) {
+    return { success: false, error: getSafeErrorMessage(error, 'An unexpected error occurred while deleting products.') };
   }
 }

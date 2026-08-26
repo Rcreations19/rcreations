@@ -1,15 +1,18 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useCart } from '@/components/storefront/CartContext';
 import { useAuth } from '@/components/storefront/AuthContext';
 import { submitOrder } from '@/lib/actions/checkout';
+import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, ArrowRight, ShoppingBag, CheckCircle, ShieldCheck, User, Phone, Mail, MapPin, Building, Map, LogIn } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ShoppingBag, CheckCircle, ShieldCheck, User, Phone, Mail, MapPin, Building, LogIn, Check, Lock } from 'lucide-react';
+import { StateAutocomplete } from '@/components/storefront/StateAutocomplete';
 
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
+import { toast } from 'sonner';
 
 const checkoutSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -31,15 +34,39 @@ export default function CheckoutPage() {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [idempotencyKey, setIdempotencyKey] = useState('');
+  const [settings, setSettings] = useState({
+    delivery_charge: 500,
+    free_shipping_threshold: 10000,
+  });
+
+  useEffect(() => {
+    async function fetchSettings() {
+      const supabase = createClient();
+      const { data } = await supabase.from('site_settings').select('*');
+      if (data) {
+        setSettings(prev => {
+          const newSettings = { ...prev };
+          data.forEach(item => {
+            if (item.key === 'delivery_charge') newSettings.delivery_charge = Number((item.value as { text?: string })?.text) || 500;
+            if (item.key === 'free_shipping_threshold') newSettings.free_shipping_threshold = Number((item.value as { text?: string })?.text) || 10000;
+          });
+          return newSettings;
+        });
+      }
+    }
+    fetchSettings();
+  }, []);
 
   const handleBlur = (field: string, value: string) => {
     try {
       const fieldSchema = checkoutSchema.shape[field as keyof typeof checkoutSchema.shape];
       fieldSchema.parse(value);
       setFieldErrors(prev => ({ ...prev, [field]: '' }));
+      setValidFields(prev => ({ ...prev, [field]: true }));
     } catch (err: unknown) {
       if (err instanceof z.ZodError) {
         setFieldErrors(prev => ({ ...prev, [field]: err.issues[0]?.message || 'Invalid field' }));
+        setValidFields(prev => ({ ...prev, [field]: false }));
       }
     }
   };
@@ -57,6 +84,34 @@ export default function CheckoutPage() {
     state: user?.default_state || 'Tamil Nadu',
     pincode: user?.default_pincode || '',
   });
+
+  const [isFocused, setIsFocused] = useState(false);
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+  const [validFields, setValidFields] = useState<Record<string, boolean>>({});
+
+  // Auto-fill city + state from pincode using India Post API
+  const lookupPincode = useCallback(async (pin: string) => {
+    if (pin.length !== 6) return;
+    setPincodeLoading(true);
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+      const data = await res.json();
+      if (data?.[0]?.Status === 'Success' && data[0].PostOffice?.length > 0) {
+        const po = data[0].PostOffice[0];
+        setForm(prev => ({
+          ...prev,
+          city: po.District || po.Name || prev.city,
+          state: po.State || prev.state,
+        }));
+        setValidFields(prev => ({ ...prev, city: true, state: true, pincode: true }));
+        toast.success(`📍 ${po.District || po.Name}, ${po.State}`);
+      }
+    } catch {
+      // silently fail — user can still type manually
+    } finally {
+      setPincodeLoading(false);
+    }
+  }, []);
 
   // Auto-fill from customer profile
   useEffect(() => {
@@ -81,9 +136,13 @@ export default function CheckoutPage() {
     }
   }, [user]);
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const getItemPrice = (item: { moq?: number; quantity: number; wholesale_price?: number; price: number }) => {
+    return (item.moq && item.quantity >= item.moq && item.wholesale_price) ? item.wholesale_price : item.price;
+  };
+
+  const subtotal = items.reduce((sum, item) => sum + getItemPrice(item) * item.quantity, 0);
   const taxAmount = subtotal * 0.18;
-  const shippingCost = subtotal > 10000 ? 0 : 500;
+  const shippingCost = (settings.free_shipping_threshold > 0 && subtotal >= settings.free_shipping_threshold) ? 0 : settings.delivery_charge;
   const total = subtotal + taxAmount + shippingCost;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,26 +168,33 @@ export default function CheckoutPage() {
     }
 
     try {
-      const cartPayload = items.map(i => ({ id: i.id, quantity: i.quantity }));
-      const result = await submitOrder(form, cartPayload, idempotencyKey) as { success?: boolean; orderId?: string; error?: string };
+      const cartPayload = items.map(i => ({ 
+        id: i.id, 
+        quantity: i.quantity,
+        type: i.type,
+        price: i.price,
+        title: i.title,
+        details: i.details,
+        custom_config: i.customConfig
+      }));
+      const result = await submitOrder(form, cartPayload as Parameters<typeof submitOrder>[1], idempotencyKey);
 
-      if (result?.error === 'auth_required') {
-        // Redirect to login with return URL
-        router.push(`/auth/login?redirect=${encodeURIComponent('/checkout')}`);
+      if (!result.success) {
+        if (result.error === 'auth_required') {
+          // Redirect to login with return URL
+          router.push(`/auth/login?redirect=${encodeURIComponent('/checkout')}`);
+          return;
+        }
+        toast.error(result.error);
+        setIsSubmitting(false);
         return;
       }
       
-      if (result?.success) {
-        setOrderId(result.orderId ?? null);
-        setSuccess(true);
-        clearCart();
-      }
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Failed to place order. Please try again.');
-      }
+      setOrderId(result.data?.orderId ?? null);
+      setSuccess(true);
+      clearCart();
+    } catch {
+      toast.error('An unexpected error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -142,7 +208,7 @@ export default function CheckoutPage() {
         <p className="text-neutral-600 mb-2">Thank you for shopping with R Creation.</p>
         <p className="text-neutral-600 font-mono mb-8">Your Order ID is: <strong>{orderId}</strong></p>
         {user && (
-          <p className="text-sm text-neutral-500 mb-4">You can track this order in <Link href="/account" className="text-[#2aabb0] font-bold hover:underline">My Account</Link>.</p>
+          <p className="text-sm text-neutral-500 mb-4">You can track this order in <Link href="/account" className="text-accent font-bold hover:underline">My Account</Link>.</p>
         )}
         <Link href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-secondary text-white font-bold rounded-xl hover:bg-secondary-hover transition-colors">
           <ArrowLeft className="w-4 h-4" /> Return to Store
@@ -164,29 +230,32 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="pt-8 md:pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="pt-8 md:pt-28 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      {/* HIG: Depth-of-Field Blurring */}
+      <div className={`fixed inset-0 pointer-events-none transition-all duration-700 z-10 ${isFocused ? 'backdrop-blur-sm bg-neutral-900/10' : 'backdrop-blur-none bg-transparent'}`} />
+      
+      <div className="relative z-20">
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-secondary">Secure Checkout</h1>
         <p className="text-sm text-neutral-600">Please provide your shipping and contact details below.</p>
       </div>
 
-      {/* Step Indicator */}
-      <div className="mb-8 flex items-center justify-center gap-2 max-w-md mx-auto">
-        {[
-          { num: 1, label: 'Contact' },
-          { num: 2, label: 'Shipping' },
-          { num: 3, label: 'Payment' },
-        ].map((step, i) => (
-          <React.Fragment key={step.num}>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold">
-                {step.num}
-              </div>
-              <span className="text-xs font-bold text-secondary hidden sm:block">{step.label}</span>
-            </div>
-            {i < 2 && <div className="w-8 sm:w-12 h-0.5 bg-neutral-200 mx-1" />}
-          </React.Fragment>
-        ))}
+      {/* Trust bar — replaces misleading step indicator */}
+      <div className="mb-8 flex items-center justify-center gap-6 flex-wrap">
+        <div className="flex items-center gap-2 text-xs text-neutral-500 font-medium">
+          <Lock className="w-3.5 h-3.5 text-emerald-500" />
+          <span>Secure Checkout</span>
+        </div>
+        <div className="hidden sm:block w-px h-4 bg-neutral-200" />
+        <div className="flex items-center gap-2 text-xs text-neutral-500 font-medium">
+          <ShoppingBag className="w-3.5 h-3.5 text-blue-400" />
+          <span>COD Available</span>
+        </div>
+        <div className="hidden sm:block w-px h-4 bg-neutral-200" />
+        <div className="flex items-center gap-2 text-xs text-neutral-500 font-medium">
+          <Check className="w-3.5 h-3.5 text-emerald-500" />
+          <span>No Hidden Fees</span>
+        </div>
       </div>
 
       {/* Auth Status Banner */}
@@ -225,111 +294,184 @@ export default function CheckoutPage() {
         
         {/* Checkout Form */}
         <div className="lg:col-span-7">
-          <form id="checkout-form" onSubmit={handleSubmit} className="space-y-8 bg-white p-6 sm:p-8 rounded-2xl border border-neutral-200 shadow-sm">
+          <form 
+            id="checkout-form" 
+            onSubmit={handleSubmit} 
+            onFocusCapture={() => setIsFocused(true)}
+            onBlurCapture={(e) => { 
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsFocused(false); 
+            }}
+            className="space-y-8 bg-white p-6 sm:p-8 rounded-2xl border border-neutral-200 shadow-sm relative z-30"
+          >
             
-            {/* Contact Info */}
             <fieldset className="border-0 p-0 m-0">
               <legend className="text-lg font-bold text-secondary mb-4 border-b border-neutral-100 pb-2 w-full">1. Contact Information</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Full Name */}
                 <div className="relative">
                   <label htmlFor="checkout-name" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Full Name *</label>
                   <div className="relative">
                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-name" type="text" autoComplete="name" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} onBlur={e => handleBlur('name', e.target.value)}
+                    <input id="checkout-name" type="text" autoComplete="name" required value={form.name}
+                      onChange={e => setForm({...form, name: e.target.value})}
+                      onBlur={e => handleBlur('name', e.target.value)}
                       aria-describedby={fieldErrors.name ? 'checkout-name-error' : undefined}
                       aria-invalid={!!fieldErrors.name || undefined}
-                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.name ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
+                      className={`w-full pl-10 pr-9 py-2.5 bg-neutral-50 border rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all ${
+                        fieldErrors.name ? 'border-red-500 ring-1 ring-red-500' : validFields.name ? 'border-emerald-400' : 'border-neutral-300'
+                      }`} />
+                    {validFields.name && !fieldErrors.name && <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
                   </div>
                   {fieldErrors.name && <p id="checkout-name-error" className="text-red-500 text-xs mt-1">{fieldErrors.name}</p>}
                 </div>
+
+                {/* Phone with +91 prefix */}
                 <div className="relative">
                   <label htmlFor="checkout-phone" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Mobile Number *</label>
-                  <div className="relative">
-                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-phone" type="tel" inputMode="tel" autoComplete="tel" required value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} onBlur={e => handleBlur('phone', e.target.value)}
-                      aria-describedby={fieldErrors.phone ? 'checkout-phone-error' : undefined}
-                      aria-invalid={!!fieldErrors.phone || undefined}
-                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.phone ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
+                  <div className="flex">
+                    <span className="flex items-center px-3 bg-neutral-100 border border-r-0 border-neutral-300 rounded-l-xl text-sm font-bold text-neutral-600 shrink-0">+91</span>
+                    <div className="relative flex-1">
+                      <input id="checkout-phone" type="tel" inputMode="numeric" autoComplete="tel" required
+                        value={form.phone.replace(/^\+91\s?/, '')}
+                        onChange={e => {
+                          const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          setForm({...form, phone: digits});
+                        }}
+                        onBlur={e => handleBlur('phone', e.target.value)}
+                        placeholder="98765 43210"
+                        aria-describedby={fieldErrors.phone ? 'checkout-phone-error' : undefined}
+                        aria-invalid={!!fieldErrors.phone || undefined}
+                        className={`w-full pl-3.5 pr-9 py-2.5 bg-neutral-50 border rounded-r-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all ${
+                          fieldErrors.phone ? 'border-red-500 ring-1 ring-red-500' : validFields.phone ? 'border-emerald-400' : 'border-neutral-300'
+                        }`} />
+                      {validFields.phone && !fieldErrors.phone && <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
+                    </div>
                   </div>
                   {fieldErrors.phone && <p id="checkout-phone-error" className="text-red-500 text-xs mt-1">{fieldErrors.phone}</p>}
                 </div>
+
+                {/* Email */}
                 <div className="sm:col-span-2 relative">
                   <label htmlFor="checkout-email" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Email Address *</label>
                   <div className="relative">
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-email" type="email" autoComplete="email" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} onBlur={e => handleBlur('email', e.target.value)}
+                    <input id="checkout-email" type="email" autoComplete="email" required value={form.email}
+                      onChange={e => setForm({...form, email: e.target.value})}
+                      onBlur={e => handleBlur('email', e.target.value)}
                       aria-describedby={fieldErrors.email ? 'checkout-email-error' : undefined}
                       aria-invalid={!!fieldErrors.email || undefined}
-                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
+                      className={`w-full pl-10 pr-9 py-2.5 bg-neutral-50 border rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all ${
+                        fieldErrors.email ? 'border-red-500 ring-1 ring-red-500' : validFields.email ? 'border-emerald-400' : 'border-neutral-300'
+                      }`} />
+                    {validFields.email && !fieldErrors.email && <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
                   </div>
                   {fieldErrors.email && <p id="checkout-email-error" className="text-red-500 text-xs mt-1">{fieldErrors.email}</p>}
                 </div>
               </div>
             </fieldset>
 
-            {/* Shipping Info */}
             <fieldset className="border-0 p-0 m-0">
               <legend className="text-lg font-bold text-secondary mb-4 border-b border-neutral-100 pb-2 w-full">2. Shipping Address</legend>
               <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-sm mb-6">
                 <span className="font-bold">Delivery Notice:</span> We currently only deliver to Vellore, Gudiyattam, and surrounding areas within a 40km radius.
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="sm:col-span-2 relative">
-                  <label htmlFor="checkout-address" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">Address *</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-address" type="text" autoComplete="street-address" required value={form.address} onChange={e => setForm({...form, address: e.target.value})} onBlur={e => handleBlur('address', e.target.value)}
-                      aria-describedby={fieldErrors.address ? 'checkout-address-error' : undefined}
-                      aria-invalid={!!fieldErrors.address || undefined}
-                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.address ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
-                  </div>
-                  {fieldErrors.address && <p id="checkout-address-error" className="text-red-500 text-xs mt-1">{fieldErrors.address}</p>}
-                </div>
+
+                {/* Pincode FIRST — triggers auto-fill */}
                 <div className="relative">
-                  <label htmlFor="checkout-city" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">City *</label>
+                  <label htmlFor="checkout-pincode" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">
+                    PIN Code *
+                    {pincodeLoading && <span className="ml-2 text-[10px] text-neutral-400 font-normal">Looking up…</span>}
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                    <input id="checkout-pincode" type="text" inputMode="numeric" autoComplete="postal-code" required
+                      maxLength={6}
+                      value={form.pincode}
+                      onChange={e => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                        setForm({...form, pincode: val});
+                        if (val.length === 6) lookupPincode(val);
+                      }}
+                      onBlur={e => handleBlur('pincode', e.target.value)}
+                      placeholder="e.g. 635802"
+                      aria-describedby={fieldErrors.pincode ? 'checkout-pincode-error' : undefined}
+                      aria-invalid={!!fieldErrors.pincode || undefined}
+                      className={`w-full pl-10 pr-9 py-2.5 bg-neutral-50 border rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all ${
+                        fieldErrors.pincode ? 'border-red-500 ring-1 ring-red-500' : validFields.pincode ? 'border-emerald-400' : 'border-neutral-300'
+                      }`} />
+                    {validFields.pincode && !fieldErrors.pincode && <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
+                  </div>
+                  {fieldErrors.pincode && <p id="checkout-pincode-error" className="text-red-500 text-xs mt-1">{fieldErrors.pincode}</p>}
+                </div>
+
+                {/* City — auto-filled by pincode */}
+                <div className="relative">
+                  <label htmlFor="checkout-city" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">City / District *</label>
                   <div className="relative">
                     <Building className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-city" type="text" autoComplete="address-level2" required value={form.city} onChange={e => setForm({...form, city: e.target.value})} onBlur={e => handleBlur('city', e.target.value)}
+                    <input id="checkout-city" type="text" autoComplete="address-level2" required value={form.city}
+                      onChange={e => setForm({...form, city: e.target.value})}
+                      onBlur={e => handleBlur('city', e.target.value)}
+                      placeholder="Auto-filled from PIN"
                       aria-describedby={fieldErrors.city ? 'checkout-city-error' : undefined}
                       aria-invalid={!!fieldErrors.city || undefined}
-                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.city ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
+                      className={`w-full pl-10 pr-9 py-2.5 bg-neutral-50 border rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all ${
+                        fieldErrors.city ? 'border-red-500 ring-1 ring-red-500' : validFields.city ? 'border-emerald-400' : 'border-neutral-300'
+                      }`} />
+                    {validFields.city && !fieldErrors.city && <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
                   </div>
                   {fieldErrors.city && <p id="checkout-city-error" className="text-red-500 text-xs mt-1">{fieldErrors.city}</p>}
                 </div>
-                <div className="relative">
-                  <label htmlFor="checkout-state" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">State *</label>
+
+                {/* Delivery address — full width */}
+                <div className="sm:col-span-2 relative">
+                  <label htmlFor="checkout-address" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">House / Flat No. &amp; Street *</label>
                   <div className="relative">
-                    <Map className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <input id="checkout-state" type="text" autoComplete="address-level1" required value={form.state} onChange={e => setForm({...form, state: e.target.value})} onBlur={e => handleBlur('state', e.target.value)}
-                      aria-describedby={fieldErrors.state ? 'checkout-state-error' : undefined}
-                      aria-invalid={!!fieldErrors.state || undefined}
-                      className={`w-full pl-10 pr-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.state ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
+                    <MapPin className="absolute left-3.5 top-3 w-4 h-4 text-neutral-400" />
+                    <input id="checkout-address" type="text" autoComplete="street-address" required value={form.address}
+                      onChange={e => setForm({...form, address: e.target.value})}
+                      onBlur={e => handleBlur('address', e.target.value)}
+                      placeholder="e.g. 12B, Gandhi Nagar, Near Bus Stand"
+                      aria-describedby={fieldErrors.address ? 'checkout-address-error' : undefined}
+                      aria-invalid={!!fieldErrors.address || undefined}
+                      className={`w-full pl-10 pr-9 py-2.5 bg-neutral-50 border rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all ${
+                        fieldErrors.address ? 'border-red-500 ring-1 ring-red-500' : validFields.address ? 'border-emerald-400' : 'border-neutral-300'
+                      }`} />
+                    {validFields.address && !fieldErrors.address && <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
                   </div>
+                  {fieldErrors.address && <p id="checkout-address-error" className="text-red-500 text-xs mt-1">{fieldErrors.address}</p>}
+                </div>
+
+                {/* State — searchable autocomplete */}
+                <div className="sm:col-span-2 relative">
+                  <label htmlFor="state-autocomplete" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">State *</label>
+                  <StateAutocomplete
+                    id="state-autocomplete"
+                    value={form.state}
+                    onChange={val => setForm({...form, state: val})}
+                    onBlur={() => handleBlur('state', form.state)}
+                    hasError={!!fieldErrors.state}
+                    ariaDescribedBy={fieldErrors.state ? 'checkout-state-error' : undefined}
+                  />
                   {fieldErrors.state && <p id="checkout-state-error" className="text-red-500 text-xs mt-1">{fieldErrors.state}</p>}
                 </div>
-                <div className="relative">
-                  <label htmlFor="checkout-pincode" className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">PIN Code *</label>
-                  <input id="checkout-pincode" type="text" inputMode="numeric" autoComplete="postal-code" required value={form.pincode} onChange={e => setForm({...form, pincode: e.target.value})} onBlur={e => handleBlur('pincode', e.target.value)}
-                    aria-describedby={fieldErrors.pincode ? 'checkout-pincode-error' : undefined}
-                    aria-invalid={!!fieldErrors.pincode || undefined}
-                    className={`w-full px-3.5 py-2.5 bg-neutral-50 border ${fieldErrors.pincode ? 'border-red-500 ring-1 ring-red-500' : 'border-neutral-300'} rounded-xl text-base sm:text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-all`} />
-                  {fieldErrors.pincode && <p id="checkout-pincode-error" className="text-red-500 text-xs mt-1">{fieldErrors.pincode}</p>}
-                </div>
+
               </div>
             </fieldset>
 
             {/* Payment Info placeholder */}
             <fieldset className="border-0 p-0 m-0">
               <legend className="text-lg font-bold text-secondary mb-4 border-b border-neutral-100 pb-2 w-full">3. Payment</legend>
-              <label className="cursor-pointer group flex items-start gap-4 p-4 border-2 border-[#2aabb0] bg-[#2aabb0]/5 rounded-xl transition-all shadow-[0_0_15px_rgba(42,171,176,0.1)]">
+              <label className="cursor-pointer group flex items-start gap-4 p-4 border-2 border-accent bg-accent/5 rounded-xl transition-all shadow-[0_0_15px_rgba(42,171,176,0.1)]">
                 <div className="mt-0.5">
-                  <div className="w-5 h-5 rounded-full border-2 border-[#2aabb0] flex items-center justify-center">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#2aabb0]"></div>
+                  <div className="w-5 h-5 rounded-full border-2 border-accent flex items-center justify-center">
+                    <div className="w-2.5 h-2.5 rounded-full bg-accent"></div>
                   </div>
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <ShieldCheck className="w-4 h-4 text-[#2aabb0]" />
+                    <ShieldCheck className="w-4 h-4 text-accent" />
                     <h3 className="text-sm font-bold text-secondary">Cash on Delivery (COD)</h3>
                   </div>
                   <p className="text-xs text-neutral-600 leading-relaxed">
@@ -349,7 +491,7 @@ export default function CheckoutPage() {
 
         {/* Order Summary */}
         <div className="lg:col-span-5">
-          <div className="bg-[#f8f9fa] p-6 rounded-2xl border border-neutral-200 sticky top-24">
+          <div className="bg-surface-muted p-6 rounded-2xl border border-neutral-200 sticky top-24">
             <h2 className="text-lg font-bold text-secondary mb-6">Order Summary</h2>
             
             <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2">
@@ -361,9 +503,19 @@ export default function CheckoutPage() {
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs font-bold text-secondary line-clamp-2">{item.title}</h4>
                     <p className="text-[10px] text-neutral-500 mt-1">Qty: {item.quantity}</p>
+                    {item.moq && item.quantity >= item.moq && item.wholesale_price && (
+                      <p className="text-[10px] text-emerald-600 font-bold mt-0.5 animate-in fade-in slide-in-from-top-1">
+                        Wholesale Discount Applied
+                      </p>
+                    )}
                   </div>
-                  <div className="text-sm font-bold font-mono text-secondary">
-                    ₹{item.price * item.quantity}
+                  <div className="flex flex-col items-end text-sm font-bold font-mono text-secondary">
+                    {item.moq && item.quantity >= item.moq && item.wholesale_price && (
+                      <span className="text-[10px] line-through text-neutral-400">₹{(item.price * item.quantity).toLocaleString()}</span>
+                    )}
+                    <span className={item.moq && item.quantity >= item.moq && item.wholesale_price ? 'text-emerald-600' : ''}>
+                      ₹{(getItemPrice(item) * item.quantity).toLocaleString()}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -384,7 +536,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between text-lg pt-3 border-t border-neutral-200">
                 <span className="font-extrabold text-secondary">Total</span>
-                <span className="font-black font-mono text-[#2aabb0] tabular">₹{total}</span>
+                <span className="font-black font-mono text-accent tabular">₹{total}</span>
               </div>
             </div>
 
@@ -399,7 +551,7 @@ export default function CheckoutPage() {
             </button>
           </div>
         </div>
-
+      </div>
       </div>
     </div>
   );

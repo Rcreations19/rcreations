@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useMemo, useState, useEffect } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, Lightformer, useTexture, Center } from '@react-three/drei';
 import * as THREE from 'three';
 import { Maximize, Minimize } from 'lucide-react';
@@ -12,9 +12,9 @@ export interface FrameMaterialConfig extends THREE.MeshPhysicalMaterialParameter
 }
 
 // The 10 specific Indian market frame materials plus 10 textured ones
-export const FRAME_MATERIALS: Record<string, FrameMaterialConfig> = {
+export const FRAME_MATERIALS: Record<string, FrameMaterialConfig & { bumpScale?: number }> = {
   'f1': { color: '#5C4033', roughness: 0.9, metalness: 0.0 }, // Classic Teak Wood
-  'f2': { color: '#D4AF37', roughness: 0.3, metalness: 0.8 }, // Ornate Antique Gold
+  'f2': { color: '#D4AF37', roughness: 0.3, metalness: 0.8, textureUrl: '/textures/frame_pattern_gold.png', bumpScale: 0.6 }, // Ornate Antique Gold
   'f3': { color: '#1a1a1a', roughness: 0.8, metalness: 0.1 }, // Minimalist Matte Black
   'f4': { color: '#3B1E16', roughness: 0.4, metalness: 0.1 }, // Dark Rosewood / Mahogany
   'f5': { color: '#4a3020', roughness: 0.8, metalness: 0.0 }, // Textured Faux Leather
@@ -44,7 +44,7 @@ interface FrameGeometryProps {
 }
 
 function TexturedFramePiece({ position, args, materialParams, repeatX, repeatY, rotation = [0, 0, 0] }: any) {
-  const { textureUrl, ...mParams } = materialParams;
+  const { textureUrl, bumpScale, ...mParams } = materialParams;
   const texture = useTexture(textureUrl) as THREE.Texture;
   
   const clonedTexture = useMemo(() => {
@@ -56,9 +56,9 @@ function TexturedFramePiece({ position, args, materialParams, repeatX, repeatY, 
   }, [texture, repeatX, repeatY]);
 
   return (
-    <mesh position={position} rotation={rotation}>
+    <mesh position={position} rotation={rotation} castShadow receiveShadow>
       <boxGeometry args={args} />
-      <meshPhysicalMaterial {...mParams} map={clonedTexture} bumpMap={clonedTexture} bumpScale={0.15} />
+      <meshPhysicalMaterial {...mParams} color="#ffffff" map={clonedTexture} bumpMap={clonedTexture} bumpScale={bumpScale !== undefined ? bumpScale : 0.4} />
     </mesh>
   );
 }
@@ -67,7 +67,7 @@ function FramePiece({ position, args, materialParams, repeatX, repeatY, rotation
   if (materialParams.textureUrl) {
     return (
       <React.Suspense fallback={
-        <mesh position={position} rotation={rotation}>
+        <mesh position={position} rotation={rotation} castShadow receiveShadow>
            <boxGeometry args={args} />
            <meshPhysicalMaterial {...materialParams} />
         </mesh>
@@ -78,7 +78,7 @@ function FramePiece({ position, args, materialParams, repeatX, repeatY, rotation
   }
   
   return (
-    <mesh position={position} rotation={rotation}>
+    <mesh position={position} rotation={rotation} castShadow receiveShadow>
       <boxGeometry args={args} />
       <meshPhysicalMaterial {...materialParams} />
     </mesh>
@@ -108,7 +108,7 @@ function FrameMesh({ widthCm, heightCm, thickness, depth, materialParams, materi
       {/* Right */}
       <FramePiece position={[w / 2 + t / 2, 0, d / 2]} rotation={[0, 0, Math.PI / 2]} args={[h, t, d]} materialParams={materialParams} repeatX={repeatU_vert} repeatY={repeatV} />
       {/* Backing Board */}
-      <mesh position={[0, 0, 0]}>
+      <mesh position={[0, 0, 0]} castShadow receiveShadow>
         <boxGeometry args={[w, h, 0.05]} />
         <meshStandardMaterial color="#1a1a1a" roughness={1} />
       </mesh>
@@ -116,26 +116,337 @@ function FrameMesh({ widthCm, heightCm, thickness, depth, materialParams, materi
   );
 }
 
-function PhotoCanvas({ photoUrl, widthCm, heightCm }: { photoUrl: string; widthCm: number; heightCm: number }) {
+function createGlitterTexture() {
+  if (typeof document === 'undefined') return null;
+  const size = 512;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  
+  // Base normal map color for flat surface: rgb(128, 128, 255)
+  ctx.fillStyle = 'rgb(128, 128, 255)';
+  ctx.fillRect(0, 0, size, size);
+  
+  const imgData = ctx.getImageData(0, 0, size, size);
+  const data = imgData.data;
+  
+  // Fine, powdered sparkle micro-facets (40% density of tiny glitter powder granules)
+  for (let i = 0; i < data.length; i += 4) {
+    const isFlake = Math.random() > 0.60;
+    if (isFlake) {
+      // Tilt normal vectors randomly in 3D hemisphere to catch sharp specular sparkles
+      const angle = Math.random() * Math.PI * 2;
+      const tilt = Math.random() * 0.9;
+      const nx = Math.cos(angle) * tilt;
+      const ny = Math.sin(angle) * tilt;
+      const nz = Math.sqrt(Math.max(0, 1 - (nx * nx + ny * ny)));
+      
+      data[i] = Math.floor(((nx + 1) / 2) * 255);     // Red -> X
+      data[i + 1] = Math.floor(((ny + 1) / 2) * 255); // Green -> Y
+      data[i + 2] = Math.floor(((nz + 1) / 2) * 255); // Blue -> Z
+    }
+    data[i + 3] = 255;
+  }
+  ctx.putImageData(imgData, 0, 0);
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(16, 16);
+  return texture;
+}
+
+function createLenticularNormalMap() {
+  if (typeof document === 'undefined') return null;
+  const width = 256;
+  const height = 16;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  
+  const imgData = ctx.createImageData(width, height);
+  const data = imgData.data;
+  
+  // Create vertical cylindrical lenticular lens ridges
+  const period = 8; // width of each lens strip in pixels
+  for (let x = 0; x < width; x++) {
+    const phase = (x % period) / period; // 0 to 1 across lens
+    // Normalized surface tangent: from -1 (left flank) to +1 (right flank)
+    const nx = (phase - 0.5) * 1.6;
+    const nz = Math.sqrt(Math.max(0.1, 1 - nx * nx));
+    const r = Math.floor(((nx + 1) / 2) * 255);
+    const g = 128; // flat in Y
+    const b = Math.floor(((nz + 1) / 2) * 255);
+    
+    for (let y = 0; y < height; y++) {
+      const idx = (y * width + x) * 4;
+      data[idx] = r;
+      data[idx + 1] = g;
+      data[idx + 2] = b;
+      data[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(30, 1);
+  return texture;
+}
+
+function GlitterStars({ widthCm, heightCm }: { widthCm: number, heightCm: number }) {
   const w = widthCm / 10;
   const h = heightCm / 10;
+  const pointsRef = useRef<THREE.Points>(null);
   
-  // Conditionally load texture. If no URL, use a placeholder color.
-  const texture = useMemo(() => {
-    if (!photoUrl) return null;
-    const loader = new THREE.TextureLoader();
-    return loader.load(photoUrl);
-  }, [photoUrl]);
+  const starTexture = useMemo(() => {
+    if (typeof document === 'undefined') return null;
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      // 4-point diamond sparkle star
+      const cx = 64;
+      const cy = 64;
+      
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 60);
+      grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      grad.addColorStop(0.2, 'rgba(255, 250, 220, 0.9)');
+      grad.addColorStop(0.5, 'rgba(255, 220, 150, 0.4)');
+      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 60, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Star arms
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(cx, 4);
+      ctx.quadraticCurveTo(cx, cy, cx + 60, cy);
+      ctx.quadraticCurveTo(cx, cy, cx, cy + 60);
+      ctx.quadraticCurveTo(cx, cy, cx - 60, cy);
+      ctx.quadraticCurveTo(cx, cy, cx, 4);
+      ctx.fill();
+    }
+    return new THREE.CanvasTexture(canvas);
+  }, []);
+
+  const count = 35;
+  const positions = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * w * 0.94;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * h * 0.94;
+      pos[i * 3 + 2] = 0.035; // sitting right on top of photo
+    }
+    return pos;
+  }, [w, h]);
+
+  useFrame(({ clock }) => {
+    if (pointsRef.current) {
+      const time = clock.getElapsedTime();
+      const mat = pointsRef.current.material as THREE.PointsMaterial;
+      if (mat) {
+        // Dynamic sparkle twinkle
+        mat.opacity = 0.65 + Math.sin(time * 3.5) * 0.25;
+      }
+    }
+  });
+
+  if (!starTexture) return null;
+
+  return (
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" count={count} array={positions} itemSize={3} args={[positions, 3]} />
+      </bufferGeometry>
+      <pointsMaterial 
+        size={0.22} 
+        map={starTexture} 
+        transparent={true} 
+        opacity={0.85} 
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+}
+
+function PhotoCanvasFallback({ widthCm, heightCm, finish }: { widthCm: number; heightCm: number; finish?: string }) {
+  const w = widthCm / 10;
+  const h = heightCm / 10;
+  const pParams: any = { roughness: 0.85, metalness: 0.0, clearcoat: 0 };
+  
+  if (finish === 'Matte') {
+    pParams.roughness = 0.85;
+    pParams.clearcoat = 0.0;
+  } else if (finish === 'Glossy') {
+    pParams.roughness = 0.05;
+    pParams.metalness = 0.05;
+    pParams.clearcoat = 1.0;
+    pParams.clearcoatRoughness = 0.02;
+  } else if (finish === '3D+') {
+    pParams.roughness = 0.10;
+    pParams.metalness = 0.0;
+    pParams.clearcoat = 1.0;
+    pParams.clearcoatRoughness = 0.05;
+  } else if (finish === 'Glitter') {
+    pParams.roughness = 0.45;
+    pParams.metalness = 0.2;
+    pParams.clearcoat = 1.0;
+    pParams.clearcoatRoughness = 0.15;
+  } else if (finish === 'Back Light') {
+    pParams.roughness = 0.35;
+    pParams.emissive = new THREE.Color(0xffffff);
+    pParams.emissiveIntensity = 4.8;
+  }
 
   return (
     <mesh position={[0, 0, 0.03]}>
       <planeGeometry args={[w * 0.98, h * 0.98]} />
-      {texture ? (
-        <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
-      ) : (
-        <meshStandardMaterial color="#2aabb0" roughness={0.5} />
-      )}
+      <meshPhysicalMaterial color="#2aabb0" {...pParams} />
     </mesh>
+  );
+}
+
+function PhotoCanvasStandard({ photoUrl, widthCm, heightCm, finish }: { photoUrl: string; widthCm: number; heightCm: number; finish?: string }) {
+  const w = widthCm / 10;
+  const h = heightCm / 10;
+  
+  const texture = useTexture(photoUrl) as THREE.Texture;
+  texture.colorSpace = THREE.SRGBColorSpace;
+
+  const glitterBumpMap = useMemo(() => {
+    if (finish === 'Glitter') return createGlitterTexture();
+    return null;
+  }, [finish]);
+
+  const pParams: any = { roughness: 0.85, metalness: 0.0, clearcoat: 0 };
+
+  if (finish === 'Matte') {
+    pParams.roughness = 0.85;
+    pParams.metalness = 0.0;
+    pParams.clearcoat = 0.0;
+  } else if (finish === 'Glossy') {
+    pParams.roughness = 0.05;
+    pParams.metalness = 0.05;
+    pParams.clearcoat = 1.0;
+    pParams.clearcoatRoughness = 0.02;
+  } else if (finish === 'Glitter') {
+    pParams.roughness = 0.45;
+    pParams.metalness = 0.25;
+    pParams.clearcoat = 1.0;
+    pParams.clearcoatRoughness = 0.15;
+  } else if (finish === 'Back Light') {
+    pParams.roughness = 0.30;
+    pParams.emissive = new THREE.Color(0xffffff);
+    pParams.emissiveMap = texture;
+    pParams.emissiveIntensity = 4.8; // 4X illumination intensity
+  }
+
+  return (
+    <>
+      <mesh receiveShadow position={[0, 0, 0.03]}>
+        <planeGeometry args={[w * 0.98, h * 0.98]} />
+        <meshPhysicalMaterial 
+          map={texture} 
+          side={THREE.DoubleSide} 
+          clearcoatNormalMap={glitterBumpMap || null}
+          clearcoatNormalScale={glitterBumpMap ? new THREE.Vector2(2.5, 2.5) : new THREE.Vector2(1, 1)}
+          {...pParams} 
+        />
+      </mesh>
+      {finish === 'Glitter' && <GlitterStars widthCm={widthCm} heightCm={heightCm} />}
+    </>
+  );
+}
+
+function PhotoCanvasLenticular({ photoUrl, photoUrl2, widthCm, heightCm, finish }: { photoUrl: string; photoUrl2: string; widthCm: number; heightCm: number; finish?: string }) {
+  const w = widthCm / 10;
+  const h = heightCm / 10;
+  
+  const textures = useTexture([photoUrl, photoUrl2]) as THREE.Texture[];
+  const texture = textures[0];
+  const texture2 = textures[1];
+  
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture2.colorSpace = THREE.SRGBColorSpace;
+
+  const lenticularNormalMap = useMemo(() => createLenticularNormalMap(), []);
+
+  const pParams: any = {
+    roughness: 0.10,
+    metalness: 0.0,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.04,
+  };
+
+  return (
+    <mesh receiveShadow position={[0, 0, 0.03]}>
+      <planeGeometry args={[w * 0.98, h * 0.98]} />
+      <meshPhysicalMaterial 
+        map={texture} 
+        side={THREE.DoubleSide} 
+        clearcoatNormalMap={lenticularNormalMap || null}
+        clearcoatNormalScale={new THREE.Vector2(0.8, 0.8)}
+        {...pParams} 
+        onBeforeCompile={(shader) => {
+          shader.uniforms.tex2 = { value: texture2 };
+          shader.vertexShader = shader.vertexShader.replace(
+            '#include <common>',
+            `#include <common>\n varying vec3 vWorldPositionForFlip;`
+          );
+          shader.vertexShader = shader.vertexShader.replace(
+            '#include <worldpos_vertex>',
+            `#include <worldpos_vertex>\n vWorldPositionForFlip = (modelMatrix * vec4(transformed, 1.0)).xyz;`
+          );
+          shader.fragmentShader = shader.fragmentShader.replace(
+            '#include <common>',
+            `#include <common>\n uniform sampler2D tex2;\n varying vec3 vWorldPositionForFlip;`
+          );
+          shader.fragmentShader = shader.fragmentShader.replace(
+            '#include <map_fragment>',
+            `
+            #ifdef USE_MAP
+              vec4 texelColor1 = texture2D( map, vMapUv );
+              vec4 texelColor2 = texture2D( tex2, vMapUv );
+              
+              vec3 viewDir = normalize(cameraPosition - vWorldPositionForFlip);
+              // Optical lenticular switching: viewing left shows photo 1, viewing right shows photo 2
+              float factor = smoothstep(-0.15, 0.15, viewDir.x);
+              
+              vec4 texelColor = mix(texelColor1, texelColor2, factor);
+              diffuseColor *= texelColor;
+            #endif
+            `
+          );
+        }}
+      />
+    </mesh>
+  );
+}
+
+function PhotoCanvas({ photoUrl, photoUrl2, widthCm, heightCm, finish }: { photoUrl: string; photoUrl2?: string | null; widthCm: number; heightCm: number; finish?: string }) {
+  if (!photoUrl) {
+    return <PhotoCanvasFallback widthCm={widthCm} heightCm={heightCm} finish={finish} />;
+  }
+
+  return (
+    <React.Suspense fallback={<PhotoCanvasFallback widthCm={widthCm} heightCm={heightCm} finish={finish} />}>
+      {finish === '3D+' && photoUrl2 ? (
+        <PhotoCanvasLenticular photoUrl={photoUrl} photoUrl2={photoUrl2} widthCm={widthCm} heightCm={heightCm} finish={finish} />
+      ) : (
+        <PhotoCanvasStandard photoUrl={photoUrl} widthCm={widthCm} heightCm={heightCm} finish={finish} />
+      )}
+    </React.Suspense>
   );
 }
 
@@ -152,10 +463,11 @@ function GlassPane({ widthCm, heightCm, glassType }: { widthCm: number; heightCm
     <mesh position={[0, 0, 0.15]}>
       <planeGeometry args={[w, h]} />
       <meshPhysicalMaterial 
-        transparent 
-        opacity={0.3} 
+        transparent={true} 
+        opacity={1.0} 
         roughness={roughness} 
         transmission={transmission} 
+        ior={1.5}
         thickness={0.1}
         clearcoat={glassType === 'clear-glass' ? 1 : 0}
       />
@@ -169,11 +481,15 @@ interface ThreeDFrameViewerProps {
   heightCm: number;
   thicknessCm?: number; // Optional to not break other imports if any
   photoUrl: string | null;
+  photoUrl2?: string | null;
   glassType: GlassType;
+  finish?: string;
+  productType?: 'frames' | 'backlit';
 }
 
-export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thicknessCm = 3, photoUrl, glassType }: ThreeDFrameViewerProps) {
+export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thicknessCm = 3, photoUrl, photoUrl2, glassType, finish, productType = 'frames' }: ThreeDFrameViewerProps) {
   const materialParams = FRAME_MATERIALS[materialId] || FRAME_MATERIALS['f1'];
+
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -188,14 +504,14 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen().catch(err => console.log(err));
+      containerRef.current?.requestFullscreen().catch(() => {});
     } else {
       document.exitFullscreen();
     }
   };
 
   return (
-    <div ref={containerRef} className={`w-full h-full min-h-[500px] ${isFullscreen ? 'bg-[#f8f9fa]' : 'bg-transparent'} rounded-3xl overflow-hidden relative cursor-grab active:cursor-grabbing group`}>
+    <div ref={containerRef} className={`w-full h-full min-h-[500px] ${isFullscreen ? 'bg-surface-muted' : 'bg-transparent'} rounded-3xl overflow-hidden relative cursor-grab active:cursor-grabbing group`}>
       
       {/* Fullscreen Toggle */}
       <button 
@@ -207,25 +523,40 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
       </button>
 
       <Canvas frameloop="demand" shadows camera={{ position: [0, 0, Math.max(widthCm, heightCm) / 6.5], fov: 40 }}>
-        {/* Lighting */}
-        <ambientLight intensity={2.0} />
-        <spotLight position={[10, 20, 10]} angle={0.4} penumbra={1} intensity={3.5} castShadow />
-        <directionalLight position={[-10, 5, 10]} intensity={2.5} />
-        <directionalLight position={[10, -5, -10]} intensity={1.5} />
-        <directionalLight position={[0, 10, 5]} intensity={2.0} />
+        {/* Soft Physical Lighting - Maintain contrast and cast soft shadows */}
+        <ambientLight intensity={0.4} />
+        {/* Main light from front to illuminate diffuse maps and cast soft shadow */}
+        <directionalLight castShadow position={[0, 10, 20]} intensity={1.5} shadow-mapSize={[1024, 1024]} shadow-bias={-0.001} />
+        {/* Fill lights */}
+        <directionalLight position={[5, 10, 15]} intensity={0.5} />
+        <directionalLight position={[-5, -5, -10]} intensity={0.2} />
         
-        {/* Environment for reflections (Local Synthetic - No External Fetch) */}
+        {/* Environment for reflections - Crucial for metallic frames */}
         <Environment resolution={256} background={false}>
-          <group rotation={[-Math.PI / 4, -0.3, 0]}>
-            <Lightformer intensity={4} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
-            <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, -1]} scale={[10, 2, 1]} />
-            <Lightformer intensity={2} rotation-y={-Math.PI / 2} position={[10, 1, 0]} scale={[20, 2, 1]} />
+          <group rotation={[0, 0, 0]}>
+            {/* Front reflections (Behind camera) - Prevents front of frame from being black */}
+            <Lightformer intensity={1.5} rotation-x={0} position={[0, 0, 10]} scale={[20, 20, 1]} />
+            <Lightformer intensity={1} rotation-x={-Math.PI / 4} position={[0, 10, 10]} scale={[20, 5, 1]} />
+            
+            {/* Top / Back reflections */}
+            <Lightformer intensity={1.5} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
+            
+            {/* Side reflections */}
+            <Lightformer intensity={0.5} rotation-y={Math.PI / 2} position={[-10, 0, 0]} scale={[20, 5, 1]} />
+            <Lightformer intensity={0.5} rotation-y={-Math.PI / 2} position={[10, 0, 0]} scale={[20, 5, 1]} />
           </group>
         </Environment>
 
         {/* The Frame Assembly */}
         <Center>
           <group rotation={[0, 0, 0]}>
+            {productType === 'backlit' && (
+              <mesh position={[0, 0, -0.1]}>
+                <planeGeometry args={[widthCm / 10 + 0.5, heightCm / 10 + 0.5]} />
+                <meshBasicMaterial color="#ffffff" transparent opacity={0.3} />
+                <pointLight position={[0, 0, -0.5]} intensity={5.0} distance={10} color="#ffffff" />
+              </mesh>
+            )}
             <FrameMesh 
               materialId={materialId}
               widthCm={widthCm} 
@@ -234,8 +565,10 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
               depth={2} // 2cm depth
               materialParams={materialParams} 
             />
-            <PhotoCanvas photoUrl={photoUrl || ''} widthCm={widthCm} heightCm={heightCm} />
-            <GlassPane widthCm={widthCm} heightCm={heightCm} glassType={glassType} />
+            <PhotoCanvas photoUrl={photoUrl || ''} photoUrl2={photoUrl2} widthCm={widthCm} heightCm={heightCm} finish={finish} />
+            {finish !== 'Glitter' && (
+              <GlassPane widthCm={widthCm} heightCm={heightCm} glassType={glassType} />
+            )}
           </group>
         </Center>
 

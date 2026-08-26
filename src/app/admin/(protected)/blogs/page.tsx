@@ -41,7 +41,7 @@ export default function BlogsListPage() {
     {
       header: 'Title',
       cell: (item: any) => (
-        <Link href={`/admin/blogs/edit/${item.id}`} className="font-bold text-[#10164A] hover:text-[#2aabb0] transition-colors">
+        <Link href={`/admin/blogs/edit/${item.id}`} className="font-bold text-[#10164A] hover:text-accent transition-colors">
           {item.title}
         </Link>
       )
@@ -86,14 +86,14 @@ export default function BlogsListPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-[#eaeaea] overflow-hidden">
-        <div className="p-4 border-b border-[#eaeaea] bg-[#fafafa]">
+      <div className="bg-white rounded-lg shadow-sm border border-border overflow-hidden">
+        <div className="p-4 border-b border-border bg-[#fafafa]">
           <input
             type="text"
             placeholder="Search blogs..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full max-w-sm px-3 py-1.5 border border-[#eaeaea] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
+            className="w-full max-w-sm px-3 py-1.5 border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
           />
         </div>
         

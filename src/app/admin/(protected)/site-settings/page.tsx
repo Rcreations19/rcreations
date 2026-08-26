@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Settings, Save, Loader2, Globe, Mail, Phone, MapPin } from 'lucide-react';
+import { Settings, Save, Loader2, Globe, Mail, Phone, MapPin, ShoppingBag, FileSpreadsheet, Upload } from 'lucide-react';
 import { updateSiteSettings } from '@/lib/actions/settings';
+import { uploadPricingData } from '@/lib/actions/pricing';
 import { createClient } from '@/lib/supabase/client';
 
 export default function SiteSettingsPage() {
@@ -10,11 +11,19 @@ export default function SiteSettingsPage() {
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  
+  const [pricingLoading, setPricingLoading] = useState(false);
+  const [pricingError, setPricingError] = useState<string | null>(null);
+  const [pricingSuccess, setPricingSuccess] = useState(false);
+
   const [settings, setSettings] = useState<Record<string, string>>({
     contact_email: '',
     contact_phone: '',
     store_address: '',
     announcement_banner: '',
+    delivery_charge: '500',
+    free_shipping_threshold: '10000',
+    gift_packing_charge: '250',
   });
 
   const supabase = createClient();
@@ -53,6 +62,24 @@ export default function SiteSettingsPage() {
     setLoading(false);
   };
 
+  const handlePricingUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPricingLoading(true);
+    setPricingError(null);
+    setPricingSuccess(false);
+
+    const formData = new FormData(e.currentTarget);
+    const result = await uploadPricingData(formData);
+
+    if (result?.error) {
+      setPricingError(result.error);
+    } else {
+      setPricingSuccess(true);
+      (e.target as HTMLFormElement).reset();
+    }
+    setPricingLoading(false);
+  };
+
   if (fetching) {
     return <div className="flex items-center justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-[#888888]" /></div>;
   }
@@ -78,11 +105,11 @@ export default function SiteSettingsPage() {
           </div>
         )}
 
-        <div className="bg-white rounded-xl border border-[#eaeaea] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
           <div className="p-6 space-y-6">
             
             <div className="space-y-4">
-              <h2 className="text-sm font-bold text-[#111111] border-b border-[#eaeaea] pb-2 flex items-center gap-2">
+              <h2 className="text-sm font-bold text-[#111111] border-b border-border pb-2 flex items-center gap-2">
                 <Globe className="w-4 h-4 text-[#595959]" /> Global Storefront
               </h2>
               
@@ -100,7 +127,43 @@ export default function SiteSettingsPage() {
             </div>
 
             <div className="space-y-4 pt-4">
-              <h2 className="text-sm font-bold text-[#111111] border-b border-[#eaeaea] pb-2 flex items-center gap-2">
+              <h2 className="text-sm font-bold text-[#111111] border-b border-border pb-2 flex items-center gap-2">
+                <ShoppingBag className="w-4 h-4 text-[#595959]" /> Cart & Pricing
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#595959]">Base Delivery Charge (₹)</label>
+                  <input 
+                    type="number" 
+                    name="delivery_charge" 
+                    defaultValue={settings.delivery_charge}
+                    className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-shadow"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#595959]">Free Shipping Threshold (₹)</label>
+                  <input 
+                    type="number" 
+                    name="free_shipping_threshold" 
+                    defaultValue={settings.free_shipping_threshold}
+                    className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-shadow"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#595959]">Gift Box Charge (₹)</label>
+                  <input 
+                    type="number" 
+                    name="gift_packing_charge" 
+                    defaultValue={settings.gift_packing_charge}
+                    className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-shadow"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4 pt-4">
+              <h2 className="text-sm font-bold text-[#111111] border-b border-border pb-2 flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#595959]" /> Contact Information
               </h2>
               
@@ -151,7 +214,7 @@ export default function SiteSettingsPage() {
 
           </div>
           
-          <div className="px-6 py-4 bg-[#fcfcfc] border-t border-[#eaeaea] flex items-center justify-end gap-3">
+          <div className="px-6 py-4 bg-surface border-t border-border flex items-center justify-end gap-3">
             <button 
               type="submit" 
               disabled={loading}
@@ -160,6 +223,52 @@ export default function SiteSettingsPage() {
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               {loading ? 'Saving...' : 'Save Settings'}
             </button>
+          </div>
+        </div>
+      </form>
+
+      {/* Pricing Upload Section */}
+      <form onSubmit={handlePricingUpload} className="space-y-6">
+        {pricingError && (
+          <div className="p-4 bg-red-50 border border-red-200 text-red-600 text-sm font-medium rounded-xl">
+            {pricingError}
+          </div>
+        )}
+        {pricingSuccess && (
+          <div className="p-4 bg-green-50 border border-green-200 text-green-700 text-sm font-medium rounded-xl">
+            Pricing data updated successfully! The configurator will now use these new prices.
+          </div>
+        )}
+        <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+          <div className="p-6 space-y-4">
+            <h2 className="text-sm font-bold text-[#111111] border-b border-border pb-2 flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4 text-[#595959]" /> Rate Card Upload
+            </h2>
+            <p className="text-sm text-[#595959]">
+              Upload the <strong>R_Creation_Rate_Card.xlsx</strong> file to update all prices across the storefront configurator.
+            </p>
+            <div className="flex items-center gap-4">
+              <input
+                type="file"
+                name="file"
+                accept=".xlsx"
+                required
+                className="block w-full text-sm text-neutral-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-[#10164A] file:text-white
+                  hover:file:bg-[#1c246e] transition-colors cursor-pointer"
+              />
+              <button 
+                type="submit" 
+                disabled={pricingLoading}
+                className="bg-[#10164A] text-white px-6 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-[#1c246e] transition-colors shadow-sm disabled:opacity-70 whitespace-nowrap"
+              >
+                {pricingLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                {pricingLoading ? 'Uploading...' : 'Upload Data'}
+              </button>
+            </div>
           </div>
         </div>
       </form>

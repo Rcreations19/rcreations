@@ -8,7 +8,7 @@ export async function updateSiteSettings(formData: FormData) {
   const supabase = await createClient();
   
   // Update multiple keys at once
-  const keys = ['contact_email', 'contact_phone', 'store_address', 'announcement_banner'];
+  const keys = ['contact_email', 'contact_phone', 'store_address', 'announcement_banner', 'delivery_charge', 'free_shipping_threshold', 'gift_packing_charge'];
   
   for (const key of keys) {
     const valueStr = formData.get(key) as string;

@@ -126,7 +126,7 @@ export async function middleware(request: NextRequest) {
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
     img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.google.com;
-    connect-src 'self' https://*.supabase.co https://places.googleapis.com https://maps.googleapis.com;
+    connect-src 'self' https://*.supabase.co https://places.googleapis.com https://maps.googleapis.com https://api.postalpincode.in;
     frame-src 'self' https://maps.google.com https://www.google.com https://*.google.com;
     frame-ancestors 'none';
     form-action 'self';

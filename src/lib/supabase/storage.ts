@@ -34,7 +34,7 @@ export async function uploadProductImage(file: File, context: UploadContext = 'p
   const { data, error } = await supabase.storage
     .from(bucket)
     .upload(filePath, compressedFile, {
-      cacheControl: '3600',
+      cacheControl: '31536000',
       upsert: false
     });
 

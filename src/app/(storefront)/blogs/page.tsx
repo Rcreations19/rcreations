@@ -45,31 +45,31 @@ export default async function BlogsPage() {
       <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogListSchema).replace(/</g, '\\u003c') }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c') }} />
-      <div className="bg-[#fcfcfc] min-h-screen pt-8 md:pt-28 pb-20">
+      <div className="bg-surface min-h-screen pt-8 md:pt-28 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav aria-label="Breadcrumb" className="mb-8 text-sm text-[#595959] animate-fade-in">
             <ol className="flex items-center gap-1.5">
-              <li><Link href="/" className="hover:text-[#0a0e27] transition-colors">Home</Link></li>
+              <li><Link href="/" className="hover:text-primary transition-colors">Home</Link></li>
               <li aria-hidden="true">/</li>
-              <li aria-current="page" className="text-[#0a0e27] font-medium">Blog</li>
+              <li aria-current="page" className="text-primary font-medium">Blog</li>
             </ol>
           </nav>
 
           <div className="text-center mb-16 animate-fade-in">
-            <h1 className="text-4xl md:text-5xl font-bold text-[#0a0e27] mb-4">Our Blog</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">Our Blog</h1>
             <p className="text-[#595959] max-w-2xl mx-auto text-lg">
               Insights, tips, and updates from the world of custom framing and corporate gifting.
             </p>
           </div>
 
           {blogs.length === 0 ? (
-            <div className="text-center py-20 text-[#595959] bg-white rounded-xl shadow-sm border border-[#eaeaea]">
+            <div className="text-center py-20 text-[#595959] bg-white rounded-xl shadow-sm border border-border">
               <p className="text-lg">No blogs published yet. Check back soon!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {blogs.map((blog, idx) => (
-                <Link href={`/blogs/${blog.slug}`} key={blog.id} className={`group block bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-[#eaeaea] overflow-hidden animate-fade-in`} style={{ animationDelay: `${idx * 100}ms` }}>
+                <Link href={`/blogs/${blog.slug}`} key={blog.id} className={`group block bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-border overflow-hidden animate-fade-in`} style={{ animationDelay: `${idx * 100}ms` }}>
                   {blog.cover_image_url ? (
                     <div className="aspect-[16/9] w-full overflow-hidden">
                       <Image 
@@ -91,13 +91,13 @@ export default async function BlogsPage() {
                       <Calendar className="w-3.5 h-3.5 mr-1.5" />
                       {new Date(blog.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </div>
-                    <h2 className="text-xl font-bold text-[#0a0e27] mb-2 group-hover:text-[#2aabb0] transition-colors line-clamp-2">
+                    <h2 className="text-xl font-bold text-primary mb-2 group-hover:text-accent transition-colors line-clamp-2">
                       {blog.title}
                     </h2>
                     <p className="text-[#595959] text-sm mb-4 line-clamp-3">
                       {blog.summary}
                     </p>
-                    <div className="flex items-center text-[#2aabb0] text-sm font-medium">
+                    <div className="flex items-center text-accent text-sm font-medium">
                       Read Article <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>

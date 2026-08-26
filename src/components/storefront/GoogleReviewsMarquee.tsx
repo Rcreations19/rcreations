@@ -111,7 +111,7 @@ export function GoogleReviewsMarquee({ reviews }: { reviews: Review[] }) {
               initial="enter"
               animate="center"
               exit="exit"
-              className="absolute inset-0 flex h-full w-full flex-col justify-between overflow-hidden rounded-3xl border-2 border-[#2aabb0]/55 bg-white p-7 shadow-[0_24px_60px_-20px_rgba(10,14,39,0.25),0_0_30px_rgba(42,171,176,0.25)] sm:p-9"
+              className="absolute inset-0 flex h-full w-full flex-col justify-between overflow-hidden rounded-3xl border-2 border-accent/55 bg-white p-7 shadow-[0_24px_60px_-20px_rgba(1,6,59,0.25),0_0_30px_rgba(42,171,176,0.25)] sm:p-9"
             >
               {/* glow ring */}
               <div
@@ -119,7 +119,7 @@ export function GoogleReviewsMarquee({ reviews }: { reviews: Review[] }) {
                 style={{ boxShadow: '0 0 0 1px rgba(42,171,176,0.45) inset' }}
                 aria-hidden
               />
-              <Quote className="absolute -top-2 right-5 h-16 w-16 text-[#2aabb0]/10" aria-hidden />
+              <Quote className="absolute -top-2 right-5 h-16 w-16 text-accent/10" aria-hidden />
               <ReviewBody review={r} active />
             </motion.article>
           </AnimatePresence>
@@ -139,7 +139,7 @@ export function GoogleReviewsMarquee({ reviews }: { reviews: Review[] }) {
             <span
               className={`block h-2 rounded-full transition-all duration-500 ${
                 i === active
-                  ? 'w-8 bg-[#2aabb0] shadow-[0_0_10px_rgba(42,171,176,0.7)]'
+                  ? 'w-8 bg-accent shadow-[0_0_10px_rgba(42,171,176,0.7)]'
                   : 'w-2 bg-neutral-300 group-hover:bg-neutral-400'
               }`}
             />
@@ -181,7 +181,7 @@ function ReviewBody({
 
       <div className={`mt-6 flex items-center justify-between border-t border-neutral-100 pt-4 ${flip ? 'flex-row-reverse' : ''}`}>
         <div className={flip ? 'text-right' : ''}>
-          <h4 className="truncate text-sm font-bold text-[#0a0e27]">{review.author}</h4>
+          <h4 className="truncate text-sm font-bold text-primary">{review.author}</h4>
           <p className="truncate text-xs text-neutral-500">{review.role}</p>
         </div>
         {review.verified && (

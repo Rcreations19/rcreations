@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Mail, Lock, User, Phone, ArrowRight, Loader2, ShoppingBag, Eye, EyeOff, CheckCircle2, KeyRound, ShieldAlert } from 'lucide-react';
+import { Mail, Lock, User, Phone, ArrowRight, Loader2, ShoppingBag, Eye, EyeOff, CheckCircle2, KeyRound } from 'lucide-react';
 import { useAuth } from '@/components/storefront/AuthContext';
 import { verifyCustomerRegistrationOtp } from '@/lib/actions/customer-auth';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,9 +19,10 @@ function RegisterForm() {
   const [step, setStep] = useState<'register' | 'otp'>('register');
   const [otp, setOtp] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { register, refreshUser } = useAuth();
+  const { register, refreshUser, login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
@@ -81,6 +82,7 @@ function RegisterForm() {
     router.push(redirectTo);
   };
 
+
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -94,19 +96,33 @@ function RegisterForm() {
 
       const result = await verifyCustomerRegistrationOtp(formData);
 
-      if (result?.error) {
+      if (!result?.success) {
         throw new Error(result.error);
       }
 
-      // Successful verification creates session, but we should call AuthContext to refresh state
-      await refreshUser();
+      // Explicitly sign in after OTP verification so the session cookie is
+      // properly set via signInWithPassword (signUp alone doesn't reliably
+      // write the SSR cookie in Next.js server actions).
+      const loginResult = await login(form.email, form.password);
+      if (loginResult.error) {
+        // If auto-login fails, still redirect — user can manually log in
+        console.warn('[Register] Auto-login after OTP failed:', loginResult.error);
+        await refreshUser();
+      }
+
       router.push(redirectTo);
-    } catch (err: any) {
-      setError(err.message || 'Invalid security code');
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Invalid security code');
+      }
     } finally {
       setLoading(false);
     }
   };
+
+
 
   const update = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
 
@@ -116,7 +132,7 @@ function RegisterForm() {
         {/* Brand Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 group">
-            <ShoppingBag className="w-8 h-8 text-[#2aabb0] group-hover:scale-110 transition-transform" />
+            <ShoppingBag className="w-8 h-8 text-accent group-hover:scale-110 transition-transform" />
             <span className="text-2xl font-extrabold text-[#10164A] tracking-tight">R Creation</span>
           </Link>
           <p className="text-sm text-neutral-500 mt-2">Create your account to get started.</p>
@@ -157,7 +173,7 @@ function RegisterForm() {
                         required
                         value={form.fullName}
                         onChange={(e) => update('fullName', e.target.value)}
-                        className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
+                        className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none transition-all"
                         placeholder="Your full name"
                         autoComplete="name"
                       />
@@ -176,17 +192,17 @@ function RegisterForm() {
                         required
                         value={form.email}
                         onChange={(e) => update('email', e.target.value)}
-                        className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
+                        className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none transition-all"
                         placeholder="you@example.com"
                         autoComplete="email"
                       />
                     </div>
                   </div>
 
-                  {/* Phone */}
+                  {/* Phone — optional */}
                   <div>
                     <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 block mb-1.5">
-                      Mobile Number
+                      Mobile Number <span className="font-normal text-neutral-400 normal-case tracking-normal">(optional)</span>
                     </label>
                     <div className="relative">
                       <Phone className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -195,7 +211,7 @@ function RegisterForm() {
                         inputMode="tel"
                         value={form.phone}
                         onChange={(e) => update('phone', e.target.value)}
-                        className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
+                        className="w-full pl-10 pr-3.5 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none transition-all"
                         placeholder="+91 87549 40610"
                         autoComplete="tel"
                       />
@@ -214,7 +230,7 @@ function RegisterForm() {
                         required
                         value={form.password}
                         onChange={(e) => update('password', e.target.value)}
-                        className="w-full pl-10 pr-11 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:border-[#2aabb0] focus:outline-none transition-all"
+                        className="w-full pl-10 pr-11 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-base md:text-sm focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none transition-all"
                         placeholder="Min. 6 characters"
                         autoComplete="new-password"
                       />
@@ -252,24 +268,40 @@ function RegisterForm() {
                     <div className="relative">
                       <Lock className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                       <input
-                        type={showPassword ? 'text' : 'password'}
+                        type={showConfirmPassword ? 'text' : 'password'}
                         required
                         value={form.confirmPassword}
                         onChange={(e) => update('confirmPassword', e.target.value)}
-                        className={`w-full pl-10 pr-10 py-3 bg-neutral-50 border rounded-xl text-base md:text-sm focus:ring-2 focus:ring-[#2aabb0] focus:outline-none transition-all ${
+                        className={`w-full pl-10 pr-11 py-3 bg-neutral-50 border rounded-xl text-base md:text-sm focus:ring-2 focus:ring-accent focus:outline-none transition-all ${
                           form.confirmPassword.length > 0 && form.password !== form.confirmPassword
-                            ? 'border-red-300 focus:border-red-400'
+                            ? 'border-red-300 focus:border-red-400 focus:ring-red-300'
                             : form.confirmPassword.length > 0 && form.password === form.confirmPassword
-                            ? 'border-emerald-300 focus:border-emerald-400'
-                            : 'border-neutral-200 focus:border-[#2aabb0]'
+                            ? 'border-emerald-300 focus:border-emerald-400 focus:ring-emerald-300'
+                            : 'border-neutral-200 focus:border-accent'
                         }`}
                         placeholder="Re-enter your password"
                         autoComplete="new-password"
                       />
-                      {form.confirmPassword.length > 0 && form.password === form.confirmPassword && (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500 absolute right-3.5 top-1/2 -translate-y-1/2" />
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
                     </div>
+                    {/* Real-time match indicator */}
+                    {form.confirmPassword.length > 0 && (
+                      <p className={`text-[11px] mt-1.5 font-medium flex items-center gap-1 ${
+                        form.password === form.confirmPassword ? 'text-emerald-600' : 'text-red-500'
+                      }`}>
+                        {form.password === form.confirmPassword ? (
+                          <><CheckCircle2 className="w-3 h-3" /> Passwords match</>
+                        ) : (
+                          <><span className="w-3 h-3 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[8px] font-black">✕</span> Passwords don&apos;t match</>
+                        )}
+                      </p>
+                    )}
                   </div>
 
                   <button
@@ -282,7 +314,7 @@ function RegisterForm() {
                     ) : (
                       <>
                         <span>Create Account</span>
-                        <ArrowRight className="w-4 h-4 text-[#2aabb0]" />
+                        <ArrowRight className="w-4 h-4 text-accent" />
                       </>
                     )}
                   </button>
@@ -297,11 +329,11 @@ function RegisterForm() {
                   className="space-y-6"
                 >
                   <div className="text-center mb-6">
-                    <div className="w-12 h-12 bg-[#2aabb0]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <KeyRound className="w-6 h-6 text-[#2aabb0]" />
+                    <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <KeyRound className="w-6 h-6 text-accent" />
                     </div>
                     <p className="text-sm text-neutral-600">
-                      We've sent a 6-digit security code to<br />
+                      We&apos;ve sent a 6-digit security code to<br />
                       <strong className="text-[#10164A]">{form.email}</strong>
                     </p>
                   </div>
@@ -324,7 +356,7 @@ function RegisterForm() {
                       maxLength={6}
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                      className="w-full px-4 py-4 bg-neutral-50 border border-neutral-200 rounded-xl text-2xl text-center font-bold text-[#10164A] tracking-[0.5em] focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 focus:outline-none transition-all"
+                      className="w-full px-4 py-4 bg-neutral-50 border border-neutral-200 rounded-xl text-2xl text-center font-bold text-[#10164A] tracking-[0.5em] focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 focus:outline-none transition-all"
                       placeholder="------"
                     />
                   </div>
@@ -360,7 +392,7 @@ function RegisterForm() {
                 Already have an account?{' '}
                 <Link
                   href={`/auth/login${redirectTo !== '/' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`}
-                  className="font-bold text-[#2aabb0] hover:text-[#238d91] transition-colors"
+                  className="font-bold text-accent hover:text-[#238d91] transition-colors"
                 >
                   Sign in
                 </Link>
@@ -384,7 +416,7 @@ export default function RegisterPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-br from-[#f8f9fa] via-white to-[#f0fafb] flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-[#2aabb0]" />
+        <Loader2 className="w-6 h-6 animate-spin text-accent" />
       </div>
     }>
       <RegisterForm />

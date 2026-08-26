@@ -72,7 +72,11 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f7f6] flex items-center justify-center p-4 selection:bg-[#2aabb0] selection:text-white relative overflow-hidden font-sans">
+    <>
+      <style>{`
+        html { background-image: none !important; }
+      `}</style>
+      <div className="min-h-screen bg-[#f4f7f6] flex items-center justify-center p-4 selection:bg-accent selection:text-white relative overflow-hidden font-sans">
       
       {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-80 bg-[#10164A] rounded-b-[100px] shadow-lg pointer-events-none"></div>
@@ -127,13 +131,13 @@ export default function AdminLoginPage() {
                         Admin Email Address
                       </label>
                       <div className="relative group">
-                        <Mail className="w-5 h-5 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-[#2aabb0] transition-colors" />
+                        <Mail className="w-5 h-5 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-accent transition-colors" />
                         <input
                           type="email"
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full pl-12 pr-4 py-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-[#10164A] placeholder-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 focus:outline-none transition-all"
+                          className="w-full pl-12 pr-4 py-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-[#10164A] placeholder-neutral-400 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 focus:outline-none transition-all"
                         />
                       </div>
                     </div>
@@ -143,23 +147,32 @@ export default function AdminLoginPage() {
                         Password
                       </label>
                       <div className="relative group">
-                        <Lock className="w-5 h-5 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-[#2aabb0] transition-colors" />
+                        <Lock className="w-5 h-5 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-accent transition-colors" />
                         <input
                           type="password"
                           required
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full pl-12 pr-4 py-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-[#10164A] placeholder-neutral-400 focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 focus:outline-none transition-all tracking-widest font-mono"
+                          className="w-full pl-12 pr-4 py-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm text-[#10164A] placeholder-neutral-400 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 focus:outline-none transition-all tracking-widest font-mono"
                           placeholder="••••••••"
                         />
                       </div>
                     </div>
                   </div>
 
+                  <div className="flex items-center justify-end">
+                    <a
+                      href="/auth/forgot-password"
+                      className="text-xs font-semibold text-accent hover:text-[#238d91] transition-colors"
+                    >
+                      Forgot password?
+                    </a>
+                  </div>
+
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-4 bg-[#2aabb0] text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-[#239095] hover:shadow-lg hover:shadow-[#2aabb0]/30 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed group mt-4"
+                    className="w-full py-4 bg-accent text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-[#239095] hover:shadow-lg hover:shadow-[#2aabb0]/30 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed group mt-4"
                   >
                     {loading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -181,11 +194,11 @@ export default function AdminLoginPage() {
                   className="space-y-6"
                 >
                   <div className="text-center mb-6">
-                    <div className="w-12 h-12 bg-[#2aabb0]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <KeyRound className="w-6 h-6 text-[#2aabb0]" />
+                    <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <KeyRound className="w-6 h-6 text-accent" />
                     </div>
                     <p className="text-sm text-neutral-600">
-                      We've sent a 6-digit security code to<br />
+                      We&apos;ve sent a 6-digit security code to<br />
                       <strong className="text-[#10164A]">{email}</strong>
                     </p>
                   </div>
@@ -210,7 +223,7 @@ export default function AdminLoginPage() {
                       maxLength={6}
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                      className="w-full px-4 py-4 bg-neutral-50 border border-neutral-200 rounded-xl text-2xl text-center font-bold text-[#10164A] tracking-[0.5em] focus:bg-white focus:border-[#2aabb0] focus:ring-4 focus:ring-[#2aabb0]/10 focus:outline-none transition-all"
+                      className="w-full px-4 py-4 bg-neutral-50 border border-neutral-200 rounded-xl text-2xl text-center font-bold text-[#10164A] tracking-[0.5em] focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 focus:outline-none transition-all"
                       placeholder="------"
                     />
                   </div>
@@ -241,5 +254,6 @@ export default function AdminLoginPage() {
         </div>
       </motion.div>
     </div>
+    </>
   );
 }

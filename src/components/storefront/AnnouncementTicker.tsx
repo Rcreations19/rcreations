@@ -47,7 +47,7 @@ export function AnnouncementTicker() {
 
   return (
     <div
-      className="w-full bg-[#2aabb0] text-[#0a0e27] py-2.5 overflow-hidden"
+      className="w-full bg-accent text-primary py-2.5 overflow-hidden"
       aria-label="Announcements"
     >
       <div

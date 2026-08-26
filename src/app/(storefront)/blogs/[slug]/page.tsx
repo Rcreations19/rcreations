@@ -7,7 +7,7 @@ import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
   try {
@@ -48,7 +48,7 @@ export async function generateStaticParams() {
   }
 }
 
-export default async function BlogArticlePage({ params }: { params: { slug: string } }) {
+export default async function BlogArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug);
   let blog;
@@ -112,19 +112,19 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
       <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema).replace(/</g, '\\u003c') }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c') }} />
-      <article className="bg-[#fcfcfc] min-h-screen pt-6 md:pt-24 pb-20">
+      <article className="bg-surface min-h-screen pt-6 md:pt-24 pb-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <Link href="/blogs" className="inline-flex items-center text-sm text-[#595959] hover:text-[#0a0e27] mb-8 transition-colors animate-fade-in">
+          <Link href="/blogs" className="inline-flex items-center text-sm text-[#595959] hover:text-primary mb-8 transition-colors animate-fade-in">
             <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to all blogs
           </Link>
 
           <header className="mb-10 animate-fade-in">
-            <h1 className="text-3xl md:text-5xl font-bold text-[#0a0e27] mb-6 leading-tight">
+            <h1 className="text-3xl md:text-5xl font-bold text-primary mb-6 leading-tight">
               {blog.title}
             </h1>
             
-            <div className="flex flex-wrap items-center text-[#595959] text-sm gap-4 pb-8 border-b border-[#eaeaea]">
+            <div className="flex flex-wrap items-center text-[#595959] text-sm gap-4 pb-8 border-b border-border">
               <div className="flex items-center">
                 <User className="w-4 h-4 mr-1.5" />
                 {blog.author}
@@ -148,7 +148,7 @@ export default async function BlogArticlePage({ params }: { params: { slug: stri
             </div>
           )}
 
-          <div className="prose prose-lg prose-slate max-w-none animate-fade-in prose-headings:text-[#0a0e27] prose-a:text-[#2aabb0] hover:prose-a:text-[#1e858a]">
+          <div className="prose prose-lg prose-slate max-w-none animate-fade-in prose-headings:text-primary prose-a:text-accent hover:prose-a:text-[#1e858a]">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {blog.content}
             </ReactMarkdown>

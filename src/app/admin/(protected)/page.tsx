@@ -19,12 +19,18 @@ export default async function AdminDashboard() {
   const [
     { count: productsCount },
     { count: ordersCount },
-    { data: recentOrders }
+    { data: recentOrders },
+    { count: b2bCount },
+    { data: salesData }
   ] = await Promise.all([
     supabase.from('products').select('*', { count: 'exact', head: true }),
     supabase.from('orders').select('*', { count: 'exact', head: true }),
-    supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(10)
+    supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(10),
+    supabase.from('b2b_customers').select('*', { count: 'exact', head: true }),
+    supabase.from('orders').select('total_amount').neq('status', 'cancelled')
   ]);
+
+  const totalSales = salesData?.reduce((acc, curr) => acc + (curr.total_amount || 0), 0) || 0;
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -39,6 +45,8 @@ export default async function AdminDashboard() {
         initialProductsCount={productsCount || 0}
         initialOrdersCount={ordersCount || 0}
         initialRecentOrders={recentOrders || []}
+        initialB2bCount={b2bCount || 0}
+        initialTotalSales={totalSales}
       />
 
     </div>

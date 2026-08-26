@@ -172,7 +172,7 @@ const ShaderBackground = () => {
     resizeObserver.observe(container);
     resizeCanvas();
 
-    let startTime = Date.now();
+    const startTime = Date.now();
     let rafId: number;
     let lastFrame = 0;
     const frameInterval = isMobile ? 33.33 : 16.67;

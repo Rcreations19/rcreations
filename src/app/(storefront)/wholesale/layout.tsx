@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Wholesale B2B',
+  title: 'Wholesale Photo Frames & Trophies in Vellore',
   description:
     'Factory-direct wholesale photo frames, crystal trophies, and wooden mementos from Gudiyattam, Vellore. MOQ as low as 10 units. GST registered, bulk pricing up to 45% off retail.',
   alternates: {

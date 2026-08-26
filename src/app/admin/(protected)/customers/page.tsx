@@ -37,10 +37,10 @@ export default async function CustomersPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#eaeaea] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-[#fcfcfc] border-b border-[#eaeaea]">
+            <thead className="bg-surface border-b border-border">
               <tr>
                 <th className="px-6 py-4 font-bold text-[#595959] text-xs uppercase tracking-wider">Business</th>
                 <th className="px-6 py-4 font-bold text-[#595959] text-xs uppercase tracking-wider">Contact</th>
@@ -53,7 +53,7 @@ export default async function CustomersPage() {
             <tbody className="divide-y divide-[#eaeaea]">
               {customers && customers.length > 0 ? (
                 customers.map((customer) => (
-                  <tr key={customer.id} className="hover:bg-[#fcfcfc] transition-colors">
+                  <tr key={customer.id} className="hover:bg-surface transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <Building2 className="w-4 h-4 text-[#888888]" />

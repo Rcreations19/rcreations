@@ -11,7 +11,8 @@ export const metadata = {
   title: 'Inquiry Details | Admin Dashboard',
 };
 
-export default async function InquiryDetailsPage({ params }: { params: { id: string } }) {
+export default async function InquiryDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,7 +23,7 @@ export default async function InquiryDetailsPage({ params }: { params: { id: str
   const { data: inquiry } = await supabase
     .from('inquiries')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (!inquiry) {
@@ -33,14 +34,14 @@ export default async function InquiryDetailsPage({ params }: { params: { id: str
   const handleStatusUpdate = async (formData: FormData) => {
     'use server';
     const status = formData.get('status') as string;
-    await updateInquiryStatus(params.id, status);
+    await updateInquiryStatus(id, status);
   };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/admin/inquiries" className="p-2 bg-white border border-[#eaeaea] rounded-lg text-[#595959] hover:text-[#111111] hover:bg-[#fcfcfc] transition-colors shadow-sm">
+          <Link href="/admin/inquiries" className="p-2 bg-white border border-border rounded-lg text-[#595959] hover:text-[#111111] hover:bg-surface transition-colors shadow-sm">
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
@@ -77,8 +78,8 @@ export default async function InquiryDetailsPage({ params }: { params: { id: str
         
         {/* Contact Info Sidebar */}
         <div className="space-y-6">
-          <div className="bg-white rounded-xl border border-[#eaeaea] shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-[#eaeaea] bg-[#fcfcfc]">
+          <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-border bg-surface">
               <h2 className="text-sm font-bold text-[#111111]">Contact Information</h2>
             </div>
             <div className="p-5 space-y-4">
@@ -111,8 +112,8 @@ export default async function InquiryDetailsPage({ params }: { params: { id: str
             </div>
           </div>
           
-          <div className="bg-white rounded-xl border border-[#eaeaea] shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-[#eaeaea] bg-[#fcfcfc]">
+          <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-border bg-surface">
               <h2 className="text-sm font-bold text-[#111111]">Metadata</h2>
             </div>
             <div className="p-5 space-y-4">
@@ -145,8 +146,8 @@ export default async function InquiryDetailsPage({ params }: { params: { id: str
 
         {/* Message Content */}
         <div className="md:col-span-2">
-          <div className="bg-white rounded-xl border border-[#eaeaea] shadow-sm overflow-hidden h-full">
-            <div className="px-6 py-5 border-b border-[#eaeaea] bg-[#fcfcfc] flex items-center gap-2 text-[#595959]">
+          <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden h-full">
+            <div className="px-6 py-5 border-b border-border bg-surface flex items-center gap-2 text-[#595959]">
               <Clock className="w-4 h-4" />
               <span className="text-xs font-bold uppercase tracking-wider">Message Content</span>
             </div>

@@ -181,7 +181,7 @@ export function Hero10({
   const titleElement = title && (
     <h1
       className={cn(
-        'text-[#0a0e27] font-serif-heading font-normal tracking-tight text-balance leading-tight',
+        'text-primary font-serif-heading font-normal tracking-tight text-balance leading-tight',
         'text-4xl sm:text-5xl md:text-7xl lg:text-[4.5rem]'
       )}
     >
@@ -193,7 +193,7 @@ export function Hero10({
               {titleLine2Prefix && <span>{titleLine2Prefix} </span>}
               {titleHighlight && (
                 <span 
-                  className="text-[#2aabb0] mx-2 text-[1.3em] inline-block pt-2 drop-shadow-[0_1px_8px_rgba(42,171,176,0.2)]"
+                  className="text-accent mx-2 text-[1.3em] inline-block pt-2 drop-shadow-[0_1px_8px_rgba(42,171,176,0.2)]"
                   style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}
                 >
                   {titleHighlight}
@@ -206,7 +206,7 @@ export function Hero10({
   )
 
   const descriptionElement = description && (
-    <p className="text-[#0a0e27]/70 font-body font-normal text-base sm:text-lg md:text-xl leading-relaxed mt-4 max-w-xl text-balance">
+    <p className="text-primary/70 font-body font-normal text-base sm:text-lg md:text-xl leading-relaxed mt-4 max-w-xl text-balance">
       <span>{description}</span>
     </p>
   )
@@ -223,8 +223,8 @@ export function Hero10({
   )
 
   const socialProofElement = socialProof && (
-    <div className="inline-flex items-center rounded-full px-5 py-2 mb-2 border border-[#0a0e27]/10 bg-white/80 shadow-sm">
-      <span className="text-xs sm:text-sm font-bold text-[#2aabb0] tracking-wider uppercase">
+    <div className="inline-flex items-center rounded-full px-5 py-2 mb-2 border border-primary/10 bg-white/80 shadow-sm">
+      <span className="text-xs sm:text-sm font-bold text-accent tracking-wider uppercase">
         {socialProof}
       </span>
     </div>

@@ -16,8 +16,8 @@ import {
 // Vercel-style Model Card
 function ModelCard({ title, items, href }: { title: string, items: { name: string, addHref?: string, listHref: string }[], href?: string }) {
   return (
-    <div className="bg-white rounded-xl border border-[#eaeaea] overflow-hidden shadow-sm transition-all hover:shadow-md">
-      <div className="px-5 py-4 border-b border-[#eaeaea] bg-[#fcfcfc] flex items-center justify-between">
+    <div className="bg-white rounded-xl border border-border overflow-hidden shadow-sm transition-all hover:shadow-md">
+      <div className="px-5 py-4 border-b border-border bg-surface flex items-center justify-between">
         <h2 className="text-sm font-bold text-[#111111]">
           {href ? <Link href={href} className="hover:text-[#0070f3] transition-colors">{title}</Link> : title}
         </h2>
@@ -57,7 +57,7 @@ interface KPICardProps {
 
 function KPICard({ title, value, trend, label, icon: Icon, isUpdating = false }: KPICardProps) {
   return (
-    <div className={`bg-white p-5 rounded-xl border border-[#eaeaea] shadow-sm flex flex-col relative overflow-hidden group transition-all duration-300 ${isUpdating ? 'ring-2 ring-emerald-500 scale-[1.02]' : ''}`}>
+    <div className={`bg-white p-5 rounded-xl border border-border shadow-sm flex flex-col relative overflow-hidden group transition-all duration-300 ${isUpdating ? 'ring-2 ring-emerald-500 scale-[1.02]' : ''}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xs font-bold text-[#595959] uppercase tracking-wider">{title}</h3>
         <div className={`p-2 rounded-md transition-colors ${isUpdating ? 'bg-emerald-500 text-white' : 'bg-[#f5f5f5] text-[#444444] group-hover:bg-[#0070f3] group-hover:text-white'}`}>
@@ -81,12 +81,16 @@ interface RealtimeDashboardProps {
   initialProductsCount: number;
   initialOrdersCount: number;
   initialRecentOrders: any[];
+  initialB2bCount: number;
+  initialTotalSales: number;
 }
 
 export function RealtimeDashboard({ 
   initialProductsCount, 
   initialOrdersCount, 
-  initialRecentOrders 
+  initialRecentOrders,
+  initialB2bCount,
+  initialTotalSales
 }: RealtimeDashboardProps) {
   
   const [ordersCount, setOrdersCount] = useState(initialOrdersCount);
@@ -135,10 +139,10 @@ export function RealtimeDashboard({
     <>
       {/* KPI Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KPICard title="Total Sales" value="₹0" trend="0%" label="Trailing 30 Days" icon={DollarSign} />
+        <KPICard title="Total Sales" value={`₹${initialTotalSales.toLocaleString('en-IN')}`} trend="Live" label="All Time" icon={DollarSign} />
         <KPICard title="Active Orders" value={ordersCount} trend="Live" label="Requires Fulfillment" icon={ShoppingCart} isUpdating={isUpdating} />
-        <KPICard title="Active Products" value={initialProductsCount} trend="0%" label="In Catalog" icon={Package} />
-        <KPICard title="B2B Partners" value="0" trend="0" label="Approved Retailers" icon={Users} />
+        <KPICard title="Active Products" value={initialProductsCount} trend="Live" label="In Catalog" icon={Package} />
+        <KPICard title="B2B Partners" value={initialB2bCount} trend="Live" label="Approved Retailers" icon={Users} />
       </div>
 
       {/* Django-style Registry Grid (Re-styled) */}
@@ -171,8 +175,8 @@ export function RealtimeDashboard({
       </div>
 
       {/* Recent Activity Feed */}
-      <div className="bg-white rounded-xl border border-[#eaeaea] shadow-sm">
-        <div className="px-5 py-4 border-b border-[#eaeaea] bg-[#fcfcfc] flex items-center justify-between">
+      <div className="bg-white rounded-xl border border-border shadow-sm">
+        <div className="px-5 py-4 border-b border-border bg-surface flex items-center justify-between">
           <h2 className="text-sm font-bold text-[#111111] flex items-center gap-2">
             <Activity className="w-4 h-4 text-[#595959]" /> Recent Activity
             {isUpdating && (
@@ -199,7 +203,7 @@ export function RealtimeDashboard({
                   <p className="text-xs text-[#595959] font-mono mt-0.5">₹{order.total_amount || 0} • {order.customer_email || 'Customer'}</p>
                 </div>
                 <span className="text-[10px] uppercase font-bold text-[#595959]">
-                  {new Date(order.created_at || Date.now()).toLocaleTimeString()}
+                  {order.created_at ? new Date(order.created_at).toLocaleTimeString() : 'Just now'}
                 </span>
               </div>
             ))

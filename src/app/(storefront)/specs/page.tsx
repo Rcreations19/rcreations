@@ -15,7 +15,7 @@ export default function SpecsPage() {
   return (
     <div className="pt-8 md:pt-28 pb-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12 space-y-2">
-        <span className="text-xs font-mono font-bold uppercase text-[#2aabb0] bg-[#10164A] px-2.5 py-1 rounded inline-block">
+        <span className="text-xs font-mono font-bold uppercase text-accent bg-[#10164A] px-2.5 py-1 rounded inline-block">
           Manufacturing Standards
         </span>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-[#10164A] tracking-tight">
@@ -30,7 +30,7 @@ export default function SpecsPage() {
         {/* Synthetic Frames */}
         <section className="bg-white rounded-2xl border border-neutral-200 shadow-2xs overflow-hidden">
           <div className="bg-[#10164A] p-4 flex items-center gap-3">
-            <Ruler className="w-5 h-5 text-[#2aabb0]" />
+            <Ruler className="w-5 h-5 text-accent" />
             <h2 className="text-lg font-bold text-white">Synthetic PS Frame Moldings</h2>
           </div>
           <div className="p-6 sm:p-8 space-y-6">
@@ -61,7 +61,7 @@ export default function SpecsPage() {
         {/* Acrylic & Illumination */}
         <section className="bg-white rounded-2xl border border-neutral-200 shadow-2xs overflow-hidden">
           <div className="bg-[#10164A] p-4 flex items-center gap-3">
-            <Settings className="w-5 h-5 text-[#2aabb0]" />
+            <Settings className="w-5 h-5 text-accent" />
             <h2 className="text-lg font-bold text-white">Acrylic & LED Illumination</h2>
           </div>
           <div className="p-6 sm:p-8 space-y-6">
@@ -92,7 +92,7 @@ export default function SpecsPage() {
         {/* Engraving Specs */}
         <section className="bg-white rounded-2xl border border-neutral-200 shadow-2xs overflow-hidden">
           <div className="bg-[#10164A] p-4 flex items-center gap-3">
-            <ShieldCheck className="w-5 h-5 text-[#2aabb0]" />
+            <ShieldCheck className="w-5 h-5 text-accent" />
             <h2 className="text-lg font-bold text-white">CO2 Laser Engraving & Cutting</h2>
           </div>
           <div className="p-6 sm:p-8 space-y-6">
@@ -110,7 +110,7 @@ export default function SpecsPage() {
         </section>
 
         <div className="text-center pt-8">
-          <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-[#10164A] text-[#10164A] font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#10164A] hover:text-white active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] focus-visible:ring-offset-2">
+          <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-[#10164A] text-[#10164A] font-bold text-xs uppercase tracking-wider rounded-lg hover:bg-[#10164A] hover:text-white active:scale-[0.98] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2">
             <FileText className="w-4 h-4" />
             <span>Request Full Specification PDF</span>
             <ArrowRight className="w-4 h-4" />

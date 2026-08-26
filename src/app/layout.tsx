@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: '%s | R Creation',
     default: 'R Creation — Premium Photo Frames & Custom Gifts',
   },
-  description: 'Manufacturer & wholesaler of synthetic photo frames, crystal trophies, wooden mementos, personalized gifts, and framing accessories in Gudiyattam, Vellore, Tamil Nadu. Wholesale MOQ 10 units.',
+  description: 'Wholesale photo frames & crystal trophies in Vellore & Gudiyattam. Factory-direct pricing for studios and events. Manufacturer of synthetic frames, wooden mementos, and personalized gifts. MOQ 10 units.',
   keywords: ['R Creation', 'photo frames', 'Gudiyattam', 'Vellore', 'wholesale frames', 'crystal trophies', 'wooden mementos', 'custom gifts', 'Tamil Nadu'],
   authors: [{ name: 'R Creation' }],
   icons: {
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 import { Montserrat, Outfit, Cormorant_Garamond } from 'next/font/google';
-import { ToastProvider } from '@/components/shared/ToastContext';
+import { Toaster } from 'sonner';
 
 const montserrat = Montserrat({ 
   subsets: ['latin'],
@@ -84,7 +84,7 @@ const orgSchema = {
     "@type": "ContactPoint",
     "telephone": "+91-8754940610",
     "contactType": "customer service",
-    "areaServed": "IN",
+    "areaServed": ["Vellore", "Gudiyattam", "Ranipet", "Ambur", "Vaniyambadi"],
     "availableLanguage": ["English", "Tamil"]
   },
   "address": {
@@ -159,9 +159,8 @@ gtag('config', 'G-FJSLXW6598');`
         />
       </head>
       <body className="antialiased">
-        <ToastProvider>
-          {children}
-        </ToastProvider>
+        <Toaster richColors position="top-center" expand={true} />
+        {children}
       </body>
     </html>
   );

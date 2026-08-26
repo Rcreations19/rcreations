@@ -823,6 +823,7 @@ export interface CustomFrameConfig {
   mountBoard: MountBoard;
   customEngravingText?: string;
   quantity: number;
+  thicknessInches?: number;
 }
 
 export interface CartItem {
@@ -831,6 +832,7 @@ export interface CartItem {
   title: string;
   subtitle?: string;
   price: number;
+  wholesale_price?: number;
   quantity: number;
   image?: string;
   customConfig?: CustomFrameConfig;

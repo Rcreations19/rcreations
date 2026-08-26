@@ -7,9 +7,9 @@ import { RCreationLogo } from '../shared/Logo';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0a0e27]/90 backdrop-blur-xl text-white pt-12 pb-8 md:pt-20 md:pb-10 border-t border-white/10 relative overflow-hidden">
+    <footer className="bg-primary/90 backdrop-blur-xl text-white pt-12 pb-8 md:pt-20 md:pb-10 border-t border-white/10 relative overflow-hidden">
       {/* Decorative gradient orb - hidden on mobile for performance */}
-      <div className="hidden md:block absolute top-0 right-0 w-96 h-96 bg-[#2aabb0] rounded-full mix-blend-screen filter blur-[150px] opacity-10 pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
+      <div className="hidden md:block absolute top-0 right-0 w-96 h-96 bg-accent rounded-full mix-blend-screen filter blur-[150px] opacity-10 pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-16">
@@ -21,10 +21,10 @@ export default function Footer() {
               Vellore & Gudiyattam&rsquo;s premier manufacturer of synthetic photo frames, optic crystal trophies, and customized wooden mementos. Factory-direct pricing since 2015.
             </p>
             <div className="flex gap-4 pt-2">
-              <a href="https://instagram.com/rcreationframes" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-300 hover:bg-[#2aabb0] hover:text-[#050714] transition-all" aria-label="Instagram">
+              <a href="https://instagram.com/rcreationframes" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-300 hover:bg-accent hover:text-[#000420] transition-all" aria-label="Instagram">
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="https://facebook.com/rcreationframes" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-300 hover:bg-[#2aabb0] hover:text-[#050714] transition-all" aria-label="Facebook">
+              <a href="https://facebook.com/rcreationframes" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-300 hover:bg-accent hover:text-[#000420] transition-all" aria-label="Facebook">
                 <Facebook className="w-4 h-4" />
               </a>
             </div>
@@ -34,26 +34,26 @@ export default function Footer() {
           <div className="lg:col-span-2 border-t border-white/10 md:border-t-0 pt-4 md:pt-0">
             {/* Mobile Accordion */}
             <details className="group md:hidden">
-              <summary className="flex items-center justify-between cursor-pointer list-none text-[10px] font-bold text-[#2aabb0] uppercase tracking-widest font-mono py-2">
+              <summary className="flex items-center justify-between cursor-pointer list-none text-[10px] font-bold text-accent uppercase tracking-widest font-mono py-2">
                 Catalog
                 <ChevronDown className="w-4 h-4 transition-transform group-open:-rotate-180" />
               </summary>
               <ul className="space-y-4 pt-4 pb-2">
                 <li><Link href="/products" className="text-sm text-neutral-400 hover:text-white transition-colors">All Products</Link></li>
-                <li><Link href="/products?category=frames" className="text-sm text-neutral-400 hover:text-white transition-colors">Photo Frames</Link></li>
-                <li><Link href="/products?category=trophies" className="text-sm text-neutral-400 hover:text-white transition-colors">Crystal Trophies</Link></li>
-                <li><Link href="/products?category=gifts" className="text-sm text-neutral-400 hover:text-white transition-colors">Custom Gifts</Link></li>
+                <li><Link href="/collections/frames" className="text-sm text-neutral-400 hover:text-white transition-colors">Photo Frames</Link></li>
+                <li><Link href="/collections/trophies" className="text-sm text-neutral-400 hover:text-white transition-colors">Crystal Trophies</Link></li>
+                <li><Link href="/collections/gifts" className="text-sm text-neutral-400 hover:text-white transition-colors">Custom Gifts</Link></li>
               </ul>
             </details>
             
             {/* Desktop Block */}
             <div className="hidden md:block">
-              <h3 className="text-[10px] font-bold text-[#2aabb0] uppercase tracking-widest mb-6 font-mono">Catalog</h3>
+              <h3 className="text-[10px] font-bold text-accent uppercase tracking-widest mb-6 font-mono">Catalog</h3>
               <ul className="space-y-4">
                 <li><Link href="/products" className="text-sm text-neutral-400 hover:text-white transition-colors">All Products</Link></li>
-                <li><Link href="/products?category=frames" className="text-sm text-neutral-400 hover:text-white transition-colors">Photo Frames</Link></li>
-                <li><Link href="/products?category=trophies" className="text-sm text-neutral-400 hover:text-white transition-colors">Crystal Trophies</Link></li>
-                <li><Link href="/products?category=gifts" className="text-sm text-neutral-400 hover:text-white transition-colors">Custom Gifts</Link></li>
+                <li><Link href="/collections/frames" className="text-sm text-neutral-400 hover:text-white transition-colors">Photo Frames</Link></li>
+                <li><Link href="/collections/trophies" className="text-sm text-neutral-400 hover:text-white transition-colors">Crystal Trophies</Link></li>
+                <li><Link href="/collections/gifts" className="text-sm text-neutral-400 hover:text-white transition-colors">Custom Gifts</Link></li>
               </ul>
             </div>
           </div>
@@ -61,12 +61,13 @@ export default function Footer() {
           <div className="lg:col-span-2 border-t border-white/10 md:border-t-0 pt-4 md:pt-0">
             {/* Mobile Accordion */}
             <details className="group md:hidden">
-              <summary className="flex items-center justify-between cursor-pointer list-none text-[10px] font-bold text-[#2aabb0] uppercase tracking-widest font-mono py-2">
+              <summary className="flex items-center justify-between cursor-pointer list-none text-[10px] font-bold text-accent uppercase tracking-widest font-mono py-2">
                 Company
                 <ChevronDown className="w-4 h-4 transition-transform group-open:-rotate-180" />
               </summary>
               <ul className="space-y-4 pt-4 pb-2">
                 <li><Link href="/wholesale" className="text-sm text-neutral-400 hover:text-white transition-colors">B2B Wholesale</Link></li>
+                <li><Link href="/locations/vellore" className="text-sm text-neutral-400 hover:text-white transition-colors">Areas Served</Link></li>
                 <li><Link href="/configurator" className="text-sm text-neutral-400 hover:text-white transition-colors">Frame Builder</Link></li>
                 <li><Link href="/specs" className="text-sm text-neutral-400 hover:text-white transition-colors">Tech Specs</Link></li>
                 <li><Link href="/blogs" className="text-sm text-neutral-400 hover:text-white transition-colors">Blog</Link></li>
@@ -75,9 +76,10 @@ export default function Footer() {
             
             {/* Desktop Block */}
             <div className="hidden md:block">
-              <h3 className="text-[10px] font-bold text-[#2aabb0] uppercase tracking-widest mb-6 font-mono">Company</h3>
+              <h3 className="text-[10px] font-bold text-accent uppercase tracking-widest mb-6 font-mono">Company</h3>
               <ul className="space-y-4">
                 <li><Link href="/wholesale" className="text-sm text-neutral-400 hover:text-white transition-colors">B2B Wholesale</Link></li>
+                <li><Link href="/locations/vellore" className="text-sm text-neutral-400 hover:text-white transition-colors">Areas Served</Link></li>
                 <li><Link href="/configurator" className="text-sm text-neutral-400 hover:text-white transition-colors">Frame Builder</Link></li>
                 <li><Link href="/specs" className="text-sm text-neutral-400 hover:text-white transition-colors">Tech Specs</Link></li>
                 <li><Link href="/blogs" className="text-sm text-neutral-400 hover:text-white transition-colors">Blog</Link></li>
@@ -87,23 +89,23 @@ export default function Footer() {
 
           {/* Contact Col */}
           <div className="lg:col-span-4">
-            <h3 className="text-[10px] font-bold text-[#2aabb0] uppercase tracking-widest mb-6 font-mono">Factory Contact</h3>
+            <h3 className="text-[10px] font-bold text-accent uppercase tracking-widest mb-6 font-mono">Factory Contact</h3>
             <div className="space-y-4">
               <div className="flex items-start gap-3 text-sm text-neutral-400">
-                <MapPin className="w-4 h-4 text-[#2aabb0] shrink-0 mt-1" />
+                <MapPin className="w-4 h-4 text-accent shrink-0 mt-1" />
                 <span className="leading-relaxed">R Creation, Gudiyattam,<br />Vellore District, Tamil Nadu - 632602</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-neutral-400">
-                <Phone className="w-4 h-4 text-[#2aabb0] shrink-0" />
+                <Phone className="w-4 h-4 text-accent shrink-0" />
                 <span className="font-mono">+91 87549 40610</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-neutral-400">
-                <Mail className="w-4 h-4 text-[#2aabb0] shrink-0" />
+                <Mail className="w-4 h-4 text-accent shrink-0" />
                 <span className="font-mono">rcreationsstudio@gmail.com</span>
               </div>
             </div>
             
-            <Link href="/contact" className="inline-flex items-center gap-2 mt-8 px-5 py-2.5 border border-white/20 rounded text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-[#050714] transition-all group">
+            <Link href="/contact" className="inline-flex items-center gap-2 mt-8 px-5 py-2.5 border border-white/20 rounded text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-[#000420] transition-all group">
               <span>Send Inquiry</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>

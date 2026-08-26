@@ -1,11 +1,12 @@
 import type { MetadataRoute } from 'next';
-import { getPublicProducts } from '@/lib/actions/storefront';
+import { getPublicProducts, getPublicCategories } from '@/lib/actions/storefront';
 import { getPublicBlogs } from '@/lib/actions/blogs';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products, blogs] = await Promise.all([
+  const [products, blogs, categories] = await Promise.all([
     getPublicProducts().catch(() => []),
     getPublicBlogs().catch(() => []),
+    getPublicCategories().catch(() => []),
   ]);
 
   const productRoutes = products.map((product: any) => ({
@@ -20,6 +21,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(blog.updated_at || blog.created_at),
     changeFrequency: 'monthly' as const,
     priority: 0.6,
+  }));
+
+  const categoryRoutes = (categories || []).map((category: any) => ({
+    url: `https://rcreationframes.com/collections/${category.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.9,
   }));
 
   return [
@@ -79,5 +87,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...productRoutes,
     ...blogRoutes,
+    ...categoryRoutes,
   ];
 }

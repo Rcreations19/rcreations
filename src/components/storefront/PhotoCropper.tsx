@@ -7,18 +7,20 @@ import { X, Check } from 'lucide-react';
 
 interface PhotoCropperProps {
   imageSrc: string;
+  lockedAspect?: number;
   onCropComplete: (croppedUrl: string, newAspect: number) => void;
   onCancel: () => void;
 }
 
-function defaultCrop(mediaWidth: number, mediaHeight: number) {
+function defaultCrop(mediaWidth: number, mediaHeight: number, lockedAspect?: number) {
+  const aspect = lockedAspect || (mediaWidth / mediaHeight);
   return centerCrop(
     makeAspectCrop(
       {
         unit: '%',
         width: 90,
       },
-      mediaWidth / mediaHeight, // default to image aspect
+      aspect,
       mediaWidth,
       mediaHeight,
     ),
@@ -27,7 +29,7 @@ function defaultCrop(mediaWidth: number, mediaHeight: number) {
   );
 }
 
-export default function PhotoCropper({ imageSrc, onCropComplete, onCancel }: PhotoCropperProps) {
+export default function PhotoCropper({ imageSrc, lockedAspect, onCropComplete, onCancel }: PhotoCropperProps) {
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const imgRef = useRef<HTMLImageElement>(null);
@@ -39,7 +41,7 @@ export default function PhotoCropper({ imageSrc, onCropComplete, onCancel }: Pho
 
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
-    setCrop(defaultCrop(width, height));
+    setCrop(defaultCrop(width, height, lockedAspect));
   };
 
   const handleSave = async () => {
@@ -73,19 +75,20 @@ export default function PhotoCropper({ imageSrc, onCropComplete, onCancel }: Pho
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-[#0a0e27] rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl border border-white/10 flex flex-col">
-        <div className="p-4 border-b border-white/10 flex justify-between items-center bg-[#050714]">
+      <div className="bg-primary rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl border border-white/10 flex flex-col">
+        <div className="p-4 border-b border-white/10 flex justify-between items-center bg-[#000420]">
           <h3 className="text-white font-bold text-sm tracking-wider uppercase font-mono">Adjust Photo</h3>
           <button onClick={onCancel} className="text-neutral-400 hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
         
-        <div className="p-6 flex-1 flex items-center justify-center bg-[#0a0e27] min-h-[400px] overflow-auto">
+        <div className="p-6 flex-1 flex items-center justify-center bg-primary min-h-[400px] overflow-auto">
           <ReactCrop
             crop={crop}
             onChange={(_, percentCrop) => setCrop(percentCrop)}
             onComplete={(c) => setCompletedCrop(c)}
+            aspect={lockedAspect}
             className="max-h-[60vh]"
           >
             <img
@@ -99,11 +102,11 @@ export default function PhotoCropper({ imageSrc, onCropComplete, onCancel }: Pho
           </ReactCrop>
         </div>
 
-        <div className="p-4 border-t border-white/10 bg-[#050714] flex justify-end gap-4">
+        <div className="p-4 border-t border-white/10 bg-[#000420] flex justify-end gap-4">
           <button onClick={onCancel} className="px-6 py-3.5 sm:py-2.5 rounded-full text-sm sm:text-xs font-bold text-neutral-400 hover:text-white hover:bg-white/5 transition-all">
             Cancel
           </button>
-          <button onClick={handleSave} className="px-8 py-3.5 sm:py-2.5 bg-[#2aabb0] text-[#0a0e27] rounded-full text-sm sm:text-xs font-bold uppercase tracking-wider hover:bg-[#38C8CC] transition-all flex items-center gap-2">
+          <button onClick={handleSave} className="px-8 py-3.5 sm:py-2.5 bg-accent text-primary rounded-full text-sm sm:text-xs font-bold uppercase tracking-wider hover:bg-[#38C8CC] transition-all flex items-center gap-2">
             <Check className="w-4 h-4" /> Apply Crop
           </button>
         </div>

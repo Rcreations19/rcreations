@@ -1,15 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import ProductCatalogClient from '@/components/storefront/ProductCatalogClientWrapper';
+import ProductCatalogClient from '@/components/storefront/ProductCatalogClient';
 import { getPublicProducts, getPublicCategories } from '@/lib/actions/storefront';
 
 export const revalidate = 3600; // 1 hour ISR
 
 export const metadata: Metadata = {
-  title: 'Photo Frames, Crystal Trophies & Custom Gifts',
+  title: 'Personalized Gifts & Photo Frames Online',
   description:
-    'Browse our factory-direct catalog of synthetic photo frames, optic crystal trophies, wooden mementos, and personalized gifts from Gudiyattam, Vellore. Wholesale MOQ 10 units.',
+    'Factory-direct manufacturer of custom photo frames, crystal trophies, and personalized gifts in India. Shop wholesale and retail from Gudiyattam, Vellore.',
   alternates: {
     canonical: '/products',
   },
@@ -47,18 +47,28 @@ export default async function ProductsPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c') }} />
-      <nav aria-label="Breadcrumb" className="bg-transparent max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 md:pt-12 text-sm text-[#595959]">
-        <ol className="flex items-center gap-1.5">
-          <li><Link href="/" className="hover:text-[#0a0e27] transition-colors">Home</Link></li>
-          <li aria-hidden="true">/</li>
-          <li aria-current="page" className="text-[#0a0e27] font-medium">Products</li>
+      <nav aria-label="Breadcrumb" className="bg-transparent max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-16 text-sm text-neutral-500 font-medium">
+        <ol className="flex items-center gap-2">
+          <li><Link href="/" className="hover:text-neutral-900 transition-colors">Home</Link></li>
+          <li aria-hidden="true" className="text-neutral-300">/</li>
+          <li aria-current="page" className="text-neutral-900">Products</li>
         </ol>
       </nav>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 md:pt-12 pb-6 md:pb-10">
+        <div className="mb-8">
+          <h1 className="text-4xl md:text-6xl font-semibold tracking-tight text-neutral-900 mb-6">Personalized Gifts & Photo Frames</h1>
+          <p className="text-neutral-500 text-lg md:text-xl font-medium max-w-3xl leading-relaxed">
+            Browse our factory-direct catalog of synthetic photo frames, optic crystal trophies, wooden mementos, and custom gifts.
+          </p>
+        </div>
+      </div>
       <div className="bg-transparent min-h-screen pb-20">
-        <ProductCatalogClient
-          initialProducts={products || []}
-          categories={categories || []}
-        />
+        <React.Suspense fallback={<div className="h-96 flex items-center justify-center">Loading catalog...</div>}>
+          <ProductCatalogClient
+            initialProducts={products || []}
+            categories={categories || []}
+          />
+        </React.Suspense>
       </div>
     </>
   );

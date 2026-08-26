@@ -59,7 +59,7 @@ export default function AddBlogPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-[#eaeaea] space-y-6">
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-border space-y-6">
           
           <div className="grid grid-cols-2 gap-6">
             <div className="col-span-2 md:col-span-1">
@@ -68,7 +68,7 @@ export default function AddBlogPage() {
                 name="title" 
                 required 
                 placeholder="e.g. 5 Tips for Corporate Gifting"
-                className="w-full px-3 py-2 border border-[#eaeaea] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
+                className="w-full px-3 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
               />
             </div>
             <div className="col-span-2 md:col-span-1">
@@ -77,7 +77,7 @@ export default function AddBlogPage() {
                 name="slug" 
                 required 
                 placeholder="e.g. 5-tips-for-corporate-gifting"
-                className="w-full px-3 py-2 border border-[#eaeaea] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
+                className="w-full px-3 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
               />
             </div>
           </div>
@@ -89,14 +89,14 @@ export default function AddBlogPage() {
                 name="author" 
                 required 
                 defaultValue="Admin"
-                className="w-full px-3 py-2 border border-[#eaeaea] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
+                className="w-full px-3 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
               />
             </div>
             <div className="col-span-2 md:col-span-1">
               <label className="block text-sm font-medium text-[#111] mb-1">Status</label>
               <select 
                 name="is_published" 
-                className="w-full px-3 py-2 border border-[#eaeaea] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
+                className="w-full px-3 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
               >
                 <option value="false">Draft (Hidden)</option>
                 <option value="true">Published (Public)</option>
@@ -111,13 +111,13 @@ export default function AddBlogPage() {
               required 
               rows={2}
               placeholder="A short, catchy snippet to show on the blog catalog page."
-              className="w-full px-3 py-2 border border-[#eaeaea] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3] resize-y"
+              className="w-full px-3 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3] resize-y"
             ></textarea>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-[#111] mb-1">Cover Image</label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-[#eaeaea] border-dashed rounded-md relative hover:bg-[#fafafa] transition-colors cursor-pointer">
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-border border-dashed rounded-md relative hover:bg-[#fafafa] transition-colors cursor-pointer">
               <input
                 type="file"
                 accept="image/*"
@@ -149,7 +149,7 @@ export default function AddBlogPage() {
               required 
               rows={15}
               placeholder="# Your Main Heading&#10;&#10;Write your post here...&#10;&#10;## Subheading&#10;Use **asterisks** for bold text."
-              className="w-full px-4 py-3 border border-[#eaeaea] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3] resize-y font-mono bg-[#fafafa]"
+              className="w-full px-4 py-3 border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3] resize-y font-mono bg-[#fafafa]"
             ></textarea>
           </div>
 
@@ -158,7 +158,7 @@ export default function AddBlogPage() {
         <div className="flex justify-end gap-4">
           <Link
             href="/admin/blogs"
-            className="px-4 py-2 text-sm font-medium text-[#595959] bg-white border border-[#eaeaea] rounded-md hover:bg-[#fafafa] transition-colors"
+            className="px-4 py-2 text-sm font-medium text-[#595959] bg-white border border-border rounded-md hover:bg-[#fafafa] transition-colors"
           >
             Cancel
           </Link>

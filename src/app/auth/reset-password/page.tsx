@@ -28,12 +28,16 @@ export default function ResetPasswordPage() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.updateUser({ password });
+    const { data, error } = await supabase.auth.updateUser({ password });
     if (error) {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push('/admin/login');
+      if (data.user?.user_metadata?.is_customer) {
+        router.push('/auth/login');
+      } else {
+        router.push('/admin/login');
+      }
     }
   };
 
@@ -72,7 +76,7 @@ export default function ResetPasswordPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] px-4">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#2aabb0] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-neutral-600">Verifying recovery link...</p>
         </div>
       </div>
@@ -90,13 +94,18 @@ export default function ResetPasswordPage() {
               <line x1="12" x2="12.01" y1="16" y2="16"></line>
             </svg>
           </div>
-          <h2 className="text-lg font-bold text-[#0a0e27] mb-2">Recovery link expired or already used</h2>
+          <h2 className="text-lg font-bold text-primary mb-2">Recovery link expired or already used</h2>
           <p className="text-sm text-neutral-500 mb-6 max-w-sm mx-auto">
             This recovery link may have expired or already been used. Please request a new one.
           </p>
-          <a href="/admin/login" className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#2aabb0] text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#239095] transition-colors">
-            Return to login
-          </a>
+          <div className="flex flex-col gap-2">
+            <a href="/auth/forgot-password" className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-accent text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#239095] transition-colors">
+              Request new link
+            </a>
+            <a href="/auth/login" className="text-xs text-neutral-400 hover:text-neutral-600 transition-colors">
+              Back to login
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -106,7 +115,7 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] px-4">
       <div className="w-full max-w-[440px] bg-white rounded-2xl shadow-[0_20px_50px_-10px_rgba(0,0,0,0.1)] border border-neutral-100 p-6 md:p-8">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-[#0a0e27]">Set New Password</h1>
+          <h1 className="text-2xl font-bold text-primary">Set New Password</h1>
           <p className="text-sm text-neutral-500 mt-1">Enter your new password below</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -116,7 +125,7 @@ export default function ResetPasswordPage() {
             </div>
           )}
           <div>
-            <label htmlFor="password" className="block text-sm font-semibold text-[#0a0e27] mb-1.5">
+            <label htmlFor="password" className="block text-sm font-semibold text-primary mb-1.5">
               New Password
             </label>
             <input
@@ -127,13 +136,13 @@ export default function ResetPasswordPage() {
               minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:border-[#2aabb0] focus:ring-2 focus:ring-[#2aabb0]/20 focus:outline-none transition-all"
+              className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none transition-all"
               placeholder="••••••••"
               disabled={loading}
             />
           </div>
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-semibold text-[#0a0e27] mb-1.5">
+            <label htmlFor="confirmPassword" className="block text-sm font-semibold text-primary mb-1.5">
               Confirm New Password
             </label>
             <input
@@ -144,7 +153,7 @@ export default function ResetPasswordPage() {
               minLength={8}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:border-[#2aabb0] focus:ring-2 focus:ring-[#2aabb0]/20 focus:outline-none transition-all"
+              className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none transition-all"
               placeholder="••••••••"
               disabled={loading}
             />
@@ -152,7 +161,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 bg-[#2aabb0] hover:bg-[#239095] text-white rounded-xl text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full py-3.5 bg-accent hover:bg-[#239095] text-white rounded-xl text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>
@@ -168,7 +177,7 @@ export default function ResetPasswordPage() {
           </button>
         </form>
         <p className="text-center text-xs text-neutral-500 mt-6">
-          <a href="/admin/login" className="text-[#2aabb0] hover:underline">Back to login</a>
+          <a href="/auth/login" className="text-accent hover:underline">Back to login</a>
         </p>
       </div>
     </div>

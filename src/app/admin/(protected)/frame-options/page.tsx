@@ -37,10 +37,10 @@ export default async function FrameOptionsPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#eaeaea] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-[#fcfcfc] border-b border-[#eaeaea]">
+            <thead className="bg-surface border-b border-border">
               <tr>
                 <th className="px-6 py-4 font-bold text-[#595959] text-xs uppercase tracking-wider">Option Name</th>
                 <th className="px-6 py-4 font-bold text-[#595959] text-xs uppercase tracking-wider">Category</th>
@@ -53,7 +53,7 @@ export default async function FrameOptionsPage() {
             <tbody className="divide-y divide-[#eaeaea]">
               {options && options.length > 0 ? (
                 options.map((opt) => (
-                  <tr key={opt.id} className="hover:bg-[#fcfcfc] transition-colors">
+                  <tr key={opt.id} className="hover:bg-surface transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div 

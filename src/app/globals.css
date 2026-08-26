@@ -12,11 +12,11 @@
 
 @theme {
   /* R Creation Premium Brand Colors */
-  --color-primary: #0a0e27; /* Darker, almost black navy for enterprise feel */
-  --color-primary-hover: #121840;
-  --color-primary-light: #161e4a;
-  --color-primary-deep: #050714;
-  --color-primary-surface: #0a0e27;
+  --color-primary: #01063B; /* Exact logo navy — enterprise feel */
+  --color-primary-hover: #0a1050;
+  --color-primary-light: #0f1a5e;
+  --color-primary-deep: #000420;
+  --color-primary-surface: #01063B;
   
   --color-secondary: #10164A;
   --color-secondary-hover: #1c246e;
@@ -52,8 +52,8 @@
   --color-ring: #2aabb0;
 
   /* Tinted shadows — carry the navy/teal hue instead of pure black */
-  --shadow-glass: 0 8px 32px 0 rgba(10, 14, 39, 0.15);
-  --shadow-soft: 0 4px 20px 0 rgba(10, 14, 39, 0.08);
+  --shadow-glass: 0 8px 32px 0 rgba(1, 6, 59, 0.15);
+  --shadow-soft: 0 4px 20px 0 rgba(1, 6, 59, 0.08);
   --shadow-glow: 0 0 20px rgba(42, 171, 176, 0.3);
   --shadow-teal-glow: 0 0 24px rgba(42, 171, 176, 0.22);
   --shadow-gold-glow: 0 0 24px rgba(245, 184, 56, 0.18);
@@ -134,8 +134,8 @@
   }
 
   .glass-panel-dark {
-    background: #050714;
-    border: 1px solid #1a1f4a;
+    background: #000420;
+    border: 1px solid #0f1a5e;
     border-radius: 0;
   }
 

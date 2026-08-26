@@ -112,8 +112,8 @@ export function InfiniteSlider() {
           {/* Label row */}
           <div>
             <div className="flex items-center gap-3 mb-8">
-              <span className="inline-block w-8 h-[2px] bg-[#2aabb0]" />
-              <span className="text-[#2aabb0] text-xs font-bold tracking-[0.22em] uppercase">
+              <span className="inline-block w-8 h-[2px] bg-accent" />
+              <span className="text-accent text-xs font-bold tracking-[0.22em] uppercase">
                 Masterpiece Collection
               </span>
             </div>
@@ -128,10 +128,10 @@ export function InfiniteSlider() {
             <div className="overflow-hidden mb-4">
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div key={current} custom={direction} variants={textVariants} initial="enter" animate="center" exit="exit">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-[#2aabb0] font-semibold mb-2">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-accent font-semibold mb-2">
                     {slide.category}
                   </p>
-                  <h2 className="text-3xl sm:text-4xl xl:text-5xl font-semibold text-[#0a0e27] leading-[1.1] tracking-tight mb-5">
+                  <h2 className="text-3xl sm:text-4xl xl:text-5xl font-semibold text-primary leading-[1.1] tracking-tight mb-5">
                     {slide.alt}
                   </h2>
                   <p className="text-neutral-500 text-base leading-relaxed max-w-sm">
@@ -144,11 +144,11 @@ export function InfiniteSlider() {
             {/* CTA link */}
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 mt-2 text-sm font-semibold text-[#0a0e27] hover:text-[#2aabb0] transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] rounded"
+              className="inline-flex items-center gap-2 mt-2 text-sm font-semibold text-primary hover:text-accent transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
               onMouseEnter={() => setPaused(true)}
               onMouseLeave={() => setPaused(false)}
             >
-              <span className="border-b border-[#0a0e27]/20 group-hover:border-[#2aabb0] transition-colors pb-0.5">
+              <span className="border-b border-primary/20 group-hover:border-accent transition-colors pb-0.5">
                 Explore Collection
               </span>
               <ArrowUpRight
@@ -164,14 +164,14 @@ export function InfiniteSlider() {
               <button
                 onClick={prev}
                 aria-label="Previous slide"
-                className="w-11 h-11 flex items-center justify-center rounded-full border border-neutral-200 text-neutral-500 hover:border-[#2aabb0] hover:text-[#2aabb0] active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0]"
+                className="w-11 h-11 flex items-center justify-center rounded-full border border-neutral-200 text-neutral-500 hover:border-accent hover:text-accent active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={next}
                 aria-label="Next slide"
-                className="w-11 h-11 flex items-center justify-center rounded-full bg-[#0a0e27] text-white hover:bg-[#2aabb0] active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0]"
+                className="w-11 h-11 flex items-center justify-center rounded-full bg-primary text-white hover:bg-accent active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -184,12 +184,12 @@ export function InfiniteSlider() {
                   key={i}
                   onClick={() => go(i)}
                   aria-label={`Go to slide ${i + 1}`}
-                  className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] rounded-full"
+                  className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-full"
                 >
                   <span
                     className={`block rounded-full transition-all duration-500 ${
                       i === current
-                        ? 'w-6 h-2 bg-[#2aabb0]'
+                        ? 'w-6 h-2 bg-accent'
                         : 'w-2 h-2 bg-neutral-300 hover:bg-neutral-400'
                     }`}
                   />
@@ -243,8 +243,8 @@ export function InfiniteSlider() {
                       animation: rc-pulse 1.8s ease-in-out infinite;
                     }
                   `}</style>
-                  <span className="rc-pulse-dot w-1.5 h-1.5 rounded-full bg-[#2aabb0] inline-block" />
-                  <span className="text-xs font-semibold text-[#0a0e27] tracking-wide">
+                  <span className="rc-pulse-dot w-1.5 h-1.5 rounded-full bg-accent inline-block" />
+                  <span className="text-xs font-semibold text-primary tracking-wide">
                     {slide.category}
                   </span>
                 </div>
@@ -255,7 +255,7 @@ export function InfiniteSlider() {
           {/* Vertical progress bar (right edge) */}
           <div className="absolute right-0 top-0 bottom-0 w-1 bg-neutral-100 z-20">
             <motion.div
-              className="w-full bg-[#2aabb0] origin-top"
+              className="w-full bg-accent origin-top"
               style={{ height: `${((current + 1) / showcaseImages.length) * 100}%` }}
               animate={{ height: `${((current + 1) / showcaseImages.length) * 100}%` }}
               transition={{ duration: 0.5, ease: 'easeInOut' }}

@@ -18,7 +18,7 @@ function BestsellerCard({ product, index }: { product: BestsellerProduct; index:
     <Link
       href={`/products/${product.slug}`}
       className="group relative flex flex-col bg-white rounded-2xl border border-neutral-100 overflow-hidden
-                 hover:border-[#2aabb0]/40 hover:shadow-[0_8px_30px_rgba(42,171,176,0.12)]
+                 hover:border-accent/40 hover:shadow-[0_8px_30px_rgba(42,171,176,0.12)]
                  transition-all duration-300 snap-start shrink-0
                  w-[240px] sm:w-auto"
       aria-label={product.title}
@@ -51,7 +51,7 @@ function BestsellerCard({ product, index }: { product: BestsellerProduct; index:
         {/* Badges — only show Bestseller badge for real curated products */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
           {product.is_curated && (
-            <span className="inline-flex items-center gap-1 bg-[#0a0e27] text-white text-[10px] font-black uppercase px-2.5 py-1 rounded shadow-sm tracking-wider">
+            <span className="inline-flex items-center gap-1 bg-primary text-white text-[10px] font-black uppercase px-2.5 py-1 rounded shadow-sm tracking-wider">
               <Trophy className="w-2.5 h-2.5 fill-[#F5B838] text-[#F5B838]" />
               Best Seller
             </span>
@@ -66,7 +66,7 @@ function BestsellerCard({ product, index }: { product: BestsellerProduct; index:
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <span className="inline-flex items-center gap-1.5 bg-white text-[#0a0e27] text-xs font-bold px-4 py-2 rounded-full shadow-lg">
+          <span className="inline-flex items-center gap-1.5 bg-white text-primary text-xs font-bold px-4 py-2 rounded-full shadow-lg">
             View Product <ArrowRight className="w-3 h-3" />
           </span>
         </div>
@@ -74,7 +74,7 @@ function BestsellerCard({ product, index }: { product: BestsellerProduct; index:
 
       {/* ── Content ── */}
       <div className="p-4 flex flex-col flex-1">
-        <h3 className="text-sm font-bold text-[#0a0e27] leading-snug line-clamp-2 mb-1 group-hover:text-[#2aabb0] transition-colors">
+        <h3 className="text-sm font-bold text-primary leading-snug line-clamp-2 mb-1 group-hover:text-accent transition-colors">
           {product.title}
         </h3>
         {product.subtitle && (
@@ -108,12 +108,12 @@ function BestsellerCard({ product, index }: { product: BestsellerProduct; index:
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Wholesale</span>
                 <span className="text-xs text-neutral-400 line-through font-mono">₹{product.price}</span>
               </div>
-              <span className="text-lg font-black text-[#0a0e27] font-mono tabular-nums">
+              <span className="text-lg font-black text-primary font-mono tabular-nums">
                 ₹{product.wholesale_price}
               </span>
             </div>
           ) : (
-            <span className="text-lg font-black text-[#0a0e27] font-mono tabular-nums">
+            <span className="text-lg font-black text-primary font-mono tabular-nums">
               ₹{product.price}
             </span>
           )}
@@ -153,14 +153,14 @@ export async function TopSellers() {
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <span className="inline-block w-8 h-[2px] bg-[#2aabb0]" />
-              <span className="text-[#2aabb0] text-xs font-bold tracking-[0.22em] uppercase">
+              <span className="inline-block w-8 h-[2px] bg-accent" />
+              <span className="text-accent text-xs font-bold tracking-[0.22em] uppercase">
                 {isCurated ? 'Customer Favourites' : 'Featured Products'}
               </span>
             </div>
             <h2
               id="top-sellers-heading"
-              className="text-3xl sm:text-4xl font-semibold text-[#0a0e27] tracking-tight leading-tight"
+              className="text-3xl sm:text-4xl font-semibold text-primary tracking-tight leading-tight"
             >
               {isCurated ? 'Our Top Sellers' : 'New Arrivals'}
             </h2>
@@ -173,11 +173,11 @@ export async function TopSellers() {
 
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#0a0e27]
-                       hover:text-[#2aabb0] transition-colors group shrink-0
-                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2aabb0] rounded"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-primary
+                       hover:text-accent transition-colors group shrink-0
+                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
           >
-            <span className="border-b border-[#0a0e27]/20 group-hover:border-[#2aabb0] transition-colors pb-0.5">
+            <span className="border-b border-primary/20 group-hover:border-accent transition-colors pb-0.5">
               View All Products
             </span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

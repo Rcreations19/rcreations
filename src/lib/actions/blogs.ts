@@ -3,6 +3,7 @@
 import { createPublicClient, getAdminClient } from '../supabase/server';
 import { revalidatePath } from 'next/cache';
 import { validateImageFile, generateUploadPath } from '../supabase/upload-utils';
+import { rateLimit } from '../rate-limit';
 
 // ========== PUBLIC ACTIONS ==========
 
@@ -57,6 +58,9 @@ export async function getAdminBlogById(id: string) {
 }
 
 export async function createBlog(formData: FormData) {
+  const rl = await rateLimit(10, 60000); // 10 creates per minute max
+  if (!rl.success) throw new Error(rl.error);
+
   const supabase = await getAdminClient();
   
   const title = formData.get('title') as string;
@@ -112,6 +116,9 @@ export async function createBlog(formData: FormData) {
 }
 
 export async function updateBlog(id: string, formData: FormData) {
+  const rl = await rateLimit(10, 60000); 
+  if (!rl.success) throw new Error(rl.error);
+
   const supabase = await getAdminClient();
   
   const title = formData.get('title') as string;
@@ -170,6 +177,9 @@ export async function updateBlog(id: string, formData: FormData) {
 }
 
 export async function deleteBlog(id: string) {
+  const rl = await rateLimit(5, 60000); // 5 deletes per minute max
+  if (!rl.success) throw new Error(rl.error);
+
   const supabase = await getAdminClient();
   
   const { error } = await supabase

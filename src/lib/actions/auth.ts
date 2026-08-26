@@ -33,7 +33,7 @@ export async function loginAdmin(formData: FormData) {
     { auth: { persistSession: false } }
   );
 
-  let { data, error: signInError } = await statelessSupabase.auth.signInWithPassword({ email, password });
+  const { data, error: signInError } = await statelessSupabase.auth.signInWithPassword({ email, password });
 
   if (signInError || !data.session) {
     console.error('[Auth] Login failed — returning error to client', {
@@ -46,9 +46,9 @@ export async function loginAdmin(formData: FormData) {
   // Check Role
   const adminSupabase = await getServiceRoleClient();
   const { data: profile } = await adminSupabase.from('profiles').select('role, is_active').eq('id', data.user.id).single();
-  const p = profile as any;
+  const p = profile as { role: string; is_active: boolean } | null;
   if (!p || p.role !== 'admin' || !p.is_active) {
-    return { error: 'Unauthorized. Admin access required.' };
+    return { error: 'Invalid login credentials.' };
   }
 
   // Generate 6-digit OTP using cryptographically secure random
@@ -58,7 +58,8 @@ export async function loginAdmin(formData: FormData) {
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 mins
 
   // Store ONLY the OTP code + user identity — never store session tokens
-  const { error: insertError } = await adminSupabase.from('admin_otps').insert({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: insertError } = await adminSupabase.from('admin_otps' as any).insert({
     email,
     code,
     expires_at: expiresAt
@@ -102,16 +103,27 @@ export async function verifyAdminOtp(formData: FormData) {
   const adminSupabase = await getServiceRoleClient();
   
   // Find OTP (no tokens stored — only code + expiry)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await adminSupabase
-    .from('admin_otps')
-    .select('id')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .from('admin_otps' as any)
+    .select('*')
     .eq('email', email)
-    .eq('code', code)
     .gte('expires_at', new Date().toISOString())
     .single();
 
-  if (error || !data) {
+  const otp = data as { id: string; code: string; attempts: number } | null;
+
+  if (error || !otp) {
     return { error: 'Invalid or expired code.' };
+  }
+
+  // OTP Burner (Zero Tolerance for Admins)
+  if (otp.code !== code) {
+    // Burn the OTP completely on 1st failed attempt
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await adminSupabase.from('admin_otps' as any).delete().eq('id', otp.id);
+    return { error: 'Invalid code. Please request a new one.' };
   }
 
   // Re-authenticate with password to derive a fresh session (no stored tokens)
@@ -131,8 +143,6 @@ export async function verifyAdminOtp(formData: FormData) {
     return { error: 'Failed to authenticate session.' };
   }
 
-  console.log('[Auth] OTP verify — re-auth succeeded, setting session...');
-
   // Set the fresh session using the cookie-aware client
   const supabase = await createClient();
   const { error: sessionError } = await supabase.auth.setSession({
@@ -145,10 +155,9 @@ export async function verifyAdminOtp(formData: FormData) {
     return { error: 'Failed to authenticate session.' };
   }
 
-  console.log('[Auth] OTP verify — session set successfully');
-
   // Cleanup used OTP
-  await adminSupabase.from('admin_otps').delete().eq('id', data.id);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await adminSupabase.from('admin_otps' as any).delete().eq('id', otp.id);
 
   return { success: true };
 }

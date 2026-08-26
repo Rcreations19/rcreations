@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { MessageSquareQuote, Eye, EyeOff, Plus, Star } from 'lucide-react';
+import { MessageSquareQuote, Eye, EyeOff, Plus, Star, Edit } from 'lucide-react';
 import { toggleReviewStatus } from '@/lib/actions/reviews';
 
 export const metadata = {
@@ -47,7 +47,7 @@ export default async function ReviewsPage() {
       <div className="grid grid-cols-1 gap-6">
         {reviews && reviews.length > 0 ? (
           reviews.map((review) => (
-            <div key={review.id} className="bg-white rounded-xl border border-[#eaeaea] shadow-sm overflow-hidden flex flex-col md:flex-row">
+            <div key={review.id} className="bg-white rounded-xl border border-border shadow-sm overflow-hidden flex flex-col md:flex-row">
               <div className="p-6 flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="flex text-yellow-400">
@@ -60,7 +60,7 @@ export default async function ReviewsPage() {
                   </span>
                 </div>
                 
-                <p className="text-[#111111] text-sm italic mb-4">"{review.comment}"</p>
+                <p className="text-[#111111] text-sm italic mb-4">&quot;{review.comment}&quot;</p>
                 
                 <div className="flex items-center justify-between">
                   <div>
@@ -76,7 +76,7 @@ export default async function ReviewsPage() {
                 </div>
               </div>
               
-              <div className="bg-[#fcfcfc] border-t md:border-t-0 md:border-l border-[#eaeaea] p-6 flex md:flex-col items-center justify-center gap-4 md:w-48">
+              <div className="bg-surface border-t md:border-t-0 md:border-l border-border p-6 flex md:flex-col items-center justify-center gap-4 md:w-48">
                 <div className="text-center">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-[#888888] mb-2">Status</p>
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
@@ -85,26 +85,33 @@ export default async function ReviewsPage() {
                     {review.is_published ? 'Published' : 'Hidden'}
                   </span>
                 </div>
-                
-                <form action={handleToggle}>
-                  <input type="hidden" name="id" value={review.id} />
-                  <input type="hidden" name="is_published" value={review.is_published.toString()} />
-                  <button 
-                    type="submit"
-                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-2 ${
-                      review.is_published 
-                        ? 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700' 
-                        : 'bg-[#10164A] hover:bg-[#1c246e] text-white'
-                    }`}
+                <div className="flex gap-2">
+                  <Link 
+                    href={`/admin/reviews/edit/${review.id}`}
+                    className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-lg text-xs font-bold transition-colors flex items-center gap-2"
                   >
-                    {review.is_published ? <><EyeOff className="w-3 h-3"/> Hide</> : <><Eye className="w-3 h-3"/> Publish</>}
-                  </button>
-                </form>
+                    <Edit className="w-3 h-3" /> Edit
+                  </Link>
+                  <form action={handleToggle}>
+                    <input type="hidden" name="id" value={review.id} />
+                    <input type="hidden" name="is_published" value={review.is_published.toString()} />
+                    <button 
+                      type="submit"
+                      className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors flex items-center gap-2 ${
+                        review.is_published 
+                          ? 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700' 
+                          : 'bg-[#10164A] hover:bg-[#1c246e] text-white'
+                      }`}
+                    >
+                      {review.is_published ? <><EyeOff className="w-3 h-3"/> Hide</> : <><Eye className="w-3 h-3"/> Publish</>}
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
           ))
         ) : (
-          <div className="bg-white rounded-xl border border-[#eaeaea] p-12 text-center text-[#595959]">
+          <div className="bg-white rounded-xl border border-border p-12 text-center text-[#595959]">
             <div className="flex flex-col items-center justify-center gap-2">
               <MessageSquareQuote className="w-8 h-8 text-[#888888] mb-2" />
               <p className="font-medium">No reviews found</p>
