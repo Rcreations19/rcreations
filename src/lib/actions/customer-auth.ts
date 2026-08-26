@@ -32,7 +32,7 @@ export async function registerCustomer(formData: FormData): Promise<ActionRespon
       phone: formData.get('phone') || undefined,
     });
 
-    const { email, password, fullName, phone } = parsed;
+    const { email, fullName, phone } = parsed;
     const supabase = await createClient();
 
     const { data: existing } = await supabase.from('customers').select('id').eq('email', email).maybeSingle();
@@ -44,10 +44,10 @@ export async function registerCustomer(formData: FormData): Promise<ActionRespon
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 mins
 
     if (!existing) {
-      const adminSupabase = await getServiceRoleClient();
+      const adminSupabase = (await getServiceRoleClient()) as any;
 
-      // Upsert in customer_otps table
-      const { error: upsertError } = await adminSupabase.from('customer_otps' as any).upsert(
+      // @ts-ignore
+      const { error: upsertError } = await (adminSupabase as any).from('customer_otps').upsert(
         {
           email,
           code,
@@ -94,17 +94,18 @@ export async function verifyCustomerRegistrationOtp(formData: FormData): Promise
     });
 
     const { email, password, code } = parsed;
-    const adminSupabase = await getServiceRoleClient();
+    const adminSupabase = (await getServiceRoleClient()) as any;
     
     // 1. Verify OTP (Anti-Brute Force OTP Burner)
+    // @ts-ignore
     const { data: otpData, error: otpFetchError } = await adminSupabase
-      .from('customer_otps' as any)
+      .from('customer_otps')
       .select('*')
       .eq('email', email)
       .gte('expires_at', new Date().toISOString())
       .single();
 
-    const otp = otpData as any;
+    const otp = otpData as { id: string, code: string, attempts: number, full_name: string | null, phone: string | null };
 
     if (otpFetchError || !otp) {
       throw new Error('Invalid or expired code.');
@@ -113,12 +114,12 @@ export async function verifyCustomerRegistrationOtp(formData: FormData): Promise
     if (otp.code !== code) {
       // Wrong guess
       if (otp.attempts >= 2) {
-        // Burn the OTP completely on 3rd failed attempt
-        await adminSupabase.from('customer_otps' as any).delete().eq('id', otp.id);
+        // @ts-ignore
+        await (adminSupabase as any).from('customer_otps').delete().eq('id', otp.id);
         throw new Error('Too many failed attempts. Please request a new code.');
       } else {
-        // Increment attempt counter
-        await adminSupabase.from('customer_otps' as any).update({ attempts: otp.attempts + 1 } as any).eq('id', otp.id);
+        // @ts-ignore
+        await (adminSupabase as any).from('customer_otps').update({ attempts: otp.attempts + 1 } as never).eq('id', otp.id);
         throw new Error('Invalid code.');
       }
     }
@@ -150,7 +151,8 @@ export async function verifyCustomerRegistrationOtp(formData: FormData): Promise
             },
             { onConflict: 'id' }
           );
-          await adminSupabase.from('customer_otps' as any).delete().eq('id', otp.id);
+          // @ts-ignore
+          await (adminSupabase as any).from('customer_otps').delete().eq('id', otp.id);
           return { success: true };
         }
       }
@@ -172,8 +174,8 @@ export async function verifyCustomerRegistrationOtp(formData: FormData): Promise
       { onConflict: 'id' }
     );
 
-    // 4. Cleanup used OTP
-    await adminSupabase.from('customer_otps' as any).delete().eq('id', otp.id);
+    // @ts-ignore
+    await (adminSupabase as any).from('customer_otps').delete().eq('id', otp.id);
 
     return { success: true };
   } catch (error) {
@@ -234,7 +236,7 @@ export async function logoutCustomer(): Promise<ActionResponse> {
     const supabase = await createClient();
     await supabase.auth.signOut();
     return { success: true };
-  } catch (error) {
+  } catch {
     return { success: false, error: 'Failed to logout.' };
   }
 }
@@ -254,7 +256,7 @@ export async function requestCustomerPasswordReset(formData: FormData): Promise<
 
     const { email } = parsed;
     const supabase = await createClient();
-    const adminSupabase = await getServiceRoleClient();
+    const adminSupabase = (await getServiceRoleClient()) as any;
 
     // Check if customer exists before sending reset
     const { data: existing } = await adminSupabase

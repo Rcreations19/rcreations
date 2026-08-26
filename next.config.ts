@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactCompiler: true,
+  // reactCompiler disabled due to Turbopack Babel crash on Windows
   images: {
     unoptimized: true,
     formats: ['image/avif', 'image/webp'],

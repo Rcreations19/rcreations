@@ -31,7 +31,10 @@ export default function BlogsListPage() {
   const handleDelete = async (ids: string[]) => {
     if (confirm(`Are you sure you want to delete ${ids.length} blogs?`)) {
       for (const id of ids) {
-        await deleteBlog(id);
+        const result = await deleteBlog(id);
+        if (!result.success) {
+          alert(`Error deleting blog: ${result.error}`);
+        }
       }
       await fetchBlogs();
     }

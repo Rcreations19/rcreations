@@ -290,7 +290,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[70] bg-primary/95 backdrop-blur-md pt-24 pb-8 px-6 lg:hidden flex flex-col"
+            className="fixed inset-0 z-[70] bg-primary/95 backdrop-blur-md pt-24 pb-28 px-6 lg:hidden flex flex-col overflow-y-auto"
           >
             <button
               onClick={() => setMobileMenuOpen(false)}
@@ -315,24 +315,27 @@ export default function Navbar() {
                 );
               })}
             </nav>
-            <div className="mt-auto space-y-3">
+            <div className="mt-8 space-y-3">
               {user ? (
                 <>
-                  <Link href="/account" className="w-full py-3 text-white text-center font-bold uppercase tracking-widest block border border-white/20 rounded">
+                  <Link href="/account" className="w-full py-3.5 px-4 bg-white/5 hover:bg-white/10 text-white flex items-center justify-center gap-2 font-bold uppercase tracking-widest border border-white/10 rounded-xl transition-colors">
+                    <User className="w-4 h-4" />
                     My Account
                   </Link>
-                  <button onClick={logout} className="w-full py-3 text-red-400 text-center font-bold uppercase tracking-widest border border-red-400/20 rounded">
+                  <button onClick={logout} className="w-full py-3.5 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-400 flex items-center justify-center gap-2 font-bold uppercase tracking-widest border border-red-500/20 rounded-xl transition-colors">
+                    <LogOut className="w-4 h-4" />
                     Sign Out
                   </button>
                 </>
               ) : (
-                <Link href="/auth/login" className="w-full py-3 text-white text-center font-bold uppercase tracking-widest block border border-white/20 rounded">
+                <Link href="/auth/login" className="w-full py-3.5 px-4 bg-white/5 hover:bg-white/10 text-white flex items-center justify-center gap-2 font-bold uppercase tracking-widest border border-white/10 rounded-xl transition-colors">
+                  <User className="w-4 h-4" />
                   Sign In
                 </Link>
               )}
               <Link
                 href="/contact"
-                className="w-full py-4 bg-accent text-primary text-center font-bold uppercase tracking-widest rounded shadow-[0_0_20px_rgba(56,200,204,0.3)] block"
+                className="w-full py-4 bg-accent hover:bg-[#2eb1b5] text-primary flex items-center justify-center gap-2 font-bold uppercase tracking-widest rounded-xl shadow-[0_0_20px_rgba(56,200,204,0.3)] transition-all"
               >
                 Contact Sales
               </Link>

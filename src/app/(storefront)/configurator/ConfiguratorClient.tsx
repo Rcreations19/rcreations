@@ -38,7 +38,7 @@ async function dataUrlToFile(dataUrl: string, fileName: string): Promise<File> {
   return new File([u8arr], fileName, { type: mime });
 }
 
-export default function ConfiguratorClient({ config }: { config: any }) {
+export default function ConfiguratorClient({ config }: { config: Record<string, any> }) {
   const { addCustom } = useCart();
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -54,16 +54,7 @@ export default function ConfiguratorClient({ config }: { config: any }) {
   
   const [productType, setProductType] = useState<'frames' | 'backlit'>('frames');
   
-  if (frames.length === 0 && backlit.length === 0) {
-    return (
-      <div className="bg-neutral-50 min-h-screen pt-32 pb-24 flex items-center justify-center">
-        <div className="bg-white p-10 rounded-2xl shadow-sm text-center max-w-md">
-          <h2 className="text-xl font-bold text-neutral-900 mb-4">Configurator Unavailable</h2>
-          <p className="text-neutral-500 mb-6">Pricing configuration has not been set up. Please upload the Rate Card in the admin site settings to enable the configurator.</p>
-        </div>
-      </div>
-    );
-  }
+
   
   // Selection States
   const [selectedSize, setSelectedSize] = useState<string>('');
@@ -75,40 +66,43 @@ export default function ConfiguratorClient({ config }: { config: any }) {
   useEffect(() => {
     const data = productType === 'frames' ? frames : backlit;
     if (data.length > 0) {
-      const sizes = Array.from(new Set(data.map((d: any) => d.size)));
+      const sizes = Array.from(new Set(data.map((d: Record<string, unknown>) => d.size)));
       const firstSize = sizes[0] as string;
-      setSelectedSize(firstSize);
       
       const thicks = productType === 'frames' && settings.thicknesses.length > 0 
-        ? settings.thicknesses.map((t: any) => t.thickness)
-        : Array.from(new Set(data.filter((d: any) => d.size === firstSize).map((d: any) => d.thickness)));
+        ? settings.thicknesses.map((t: Record<string, unknown>) => t.thickness)
+        : Array.from(new Set(data.filter((d: Record<string, unknown>) => d.size === firstSize).map((d: Record<string, unknown>) => d.thickness)));
       const firstThick = thicks[0] as string;
-      setSelectedThickness(firstThick);
       
       const finishes = productType === 'frames' && settings.finishes.length > 0
-        ? settings.finishes.map((f: any) => f.finish)
-        : Array.from(new Set(data.filter((d: any) => d.size === firstSize && d.thickness === firstThick).map((d: any) => d.finish)));
-      setSelectedFinish(finishes[0] as string);
+        ? settings.finishes.map((f: Record<string, unknown>) => f.finish)
+        : Array.from(new Set(data.filter((d: Record<string, unknown>) => d.size === firstSize && d.thickness === firstThick).map((d: Record<string, unknown>) => d.finish)));
+        
+      setTimeout(() => {
+        setSelectedSize(firstSize);
+        setSelectedThickness(firstThick);
+        setSelectedFinish(finishes[0] as string);
+      }, 0);
     }
-  }, [productType, frames.length, backlit.length, settings]);
+  }, [productType, frames, backlit, settings]);
 
   // Derived options for dropdowns
   const currentData = productType === 'frames' ? frames : backlit;
-  const availableSizes = Array.from(new Set(currentData.map((d: any) => d.size)));
+  const availableSizes = Array.from(new Set(currentData.map((d: Record<string, unknown>) => d.size)));
   const availableThicknesses = productType === 'frames' && settings.thicknesses.length > 0 
-    ? settings.thicknesses.map((t: any) => t.thickness) 
-    : Array.from(new Set(currentData.filter((d: any) => d.size === selectedSize).map((d: any) => d.thickness)));
+    ? settings.thicknesses.map((t: Record<string, unknown>) => t.thickness) 
+    : Array.from(new Set(currentData.filter((d: Record<string, unknown>) => d.size === selectedSize).map((d: Record<string, unknown>) => d.thickness)));
   const availableFinishes = productType === 'frames' && settings.finishes.length > 0
-    ? settings.finishes.map((f: any) => f.finish)
-    : Array.from(new Set(currentData.filter((d: any) => d.size === selectedSize && d.thickness === selectedThickness).map((d: any) => d.finish)));
+    ? settings.finishes.map((f: Record<string, unknown>) => f.finish)
+    : Array.from(new Set(currentData.filter((d: Record<string, unknown>) => d.size === selectedSize && d.thickness === selectedThickness).map((d: Record<string, unknown>) => d.finish)));
 
   const handleSizeChange = (s: string) => {
     setSelectedSize(s);
     if (productType === 'backlit') {
-      const thicks = Array.from(new Set(currentData.filter((d: any) => d.size === s).map((d: any) => d.thickness)));
+      const thicks = Array.from(new Set(currentData.filter((d: Record<string, any>) => d.size === s).map((d: Record<string, any>) => d.thickness)));
       if (thicks.length > 0) {
         setSelectedThickness(thicks[0] as string);
-        const fins = Array.from(new Set(currentData.filter((d: any) => d.size === s && d.thickness === thicks[0]).map((d: any) => d.finish)));
+        const fins = Array.from(new Set(currentData.filter((d: Record<string, any>) => d.size === s && d.thickness === thicks[0]).map((d: Record<string, any>) => d.finish)));
         if (fins.length > 0) setSelectedFinish(fins[0] as string);
       }
     }
@@ -117,7 +111,7 @@ export default function ConfiguratorClient({ config }: { config: any }) {
   const handleThicknessChange = (t: string) => {
     setSelectedThickness(t);
     if (productType === 'backlit') {
-      const fins = Array.from(new Set(currentData.filter((d: any) => d.size === selectedSize && d.thickness === t).map((d: any) => d.finish)));
+      const fins = Array.from(new Set(currentData.filter((d: Record<string, any>) => d.size === selectedSize && d.thickness === t).map((d: Record<string, any>) => d.finish)));
       if (fins.length > 0) setSelectedFinish(fins[0] as string);
     }
   };
@@ -131,27 +125,27 @@ export default function ConfiguratorClient({ config }: { config: any }) {
   // Pricing calculation
   let baseRate = 0;
   if (productType === 'frames') {
-    const matchingRow = currentData.find((d: any) => d.size === selectedSize);
+    const matchingRow = currentData.find((d: Record<string, any>) => d.size === selectedSize);
     const baseFinal = matchingRow ? matchingRow.finalPrice : 0;
     
     const sqFt = (wIn * hIn) / 144;
-    const selectedThickSetting = settings.thicknesses.find((t: any) => t.thickness === selectedThickness);
+    const selectedThickSetting = settings.thicknesses.find((t: Record<string, any>) => t.thickness === selectedThickness);
     const thicknessAddonTotal = selectedThickSetting ? (selectedThickSetting.addonSqFt * sqFt) : 0;
     
-    const selectedFinishSetting = settings.finishes.find((f: any) => f.finish === selectedFinish);
+    const selectedFinishSetting = settings.finishes.find((f: Record<string, any>) => f.finish === selectedFinish);
     const finishSurchargeTotal = selectedFinishSetting ? (baseFinal * selectedFinishSetting.surchargePercent) : 0;
     
     baseRate = Math.round((baseFinal + thicknessAddonTotal + finishSurchargeTotal) / 10) * 10;
   } else {
     // backlit
-    const matchingRow = currentData.find((d: any) => d.size === selectedSize && d.thickness === selectedThickness && d.finish === selectedFinish);
+    const matchingRow = currentData.find((d: Record<string, any>) => d.size === selectedSize && d.thickness === selectedThickness && d.finish === selectedFinish);
     baseRate = matchingRow ? matchingRow.finalPrice : 0;
   }
 
   // Other configurations
   const [glassType, setGlassType] = useState<GlassType>('clear-glass');
   const [mountBoard, setMountBoard] = useState<MountBoard>('none');
-  const [customText, setCustomText] = useState('');
+  const [customText] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [uploadedPhoto, setUploadedPhoto] = useState<string | null>(null);
   const [uncroppedImage, setUncroppedImage] = useState<string | null>(null);
@@ -165,6 +159,17 @@ export default function ConfiguratorClient({ config }: { config: any }) {
   const [isUploading, setIsUploading] = useState(false);
 
   const selectedMaterial = useMemo(() => FRAME_OPTIONS.find(m => m.id === materialId) || FRAME_OPTIONS[0], [materialId]);
+
+  if (frames.length === 0 && backlit.length === 0) {
+    return (
+      <div className="bg-neutral-50 min-h-screen pt-32 pb-24 flex items-center justify-center">
+        <div className="bg-white p-10 rounded-2xl shadow-sm text-center max-w-md">
+          <h2 className="text-xl font-bold text-neutral-900 mb-4">Configurator Unavailable</h2>
+          <p className="text-neutral-500 mb-6">Pricing configuration has not been set up. Please upload the Rate Card in the admin site settings to enable the configurator.</p>
+        </div>
+      </div>
+    );
+  }
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>, target: 'primary' | 'secondary' = 'primary') => {
     if (e.target.files && e.target.files[0]) {
@@ -338,7 +343,7 @@ export default function ConfiguratorClient({ config }: { config: any }) {
                             disabled={availableThicknesses.length <= 1}
                             className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
                           >
-                            {availableThicknesses.map((t: any) => (
+                            {availableThicknesses.map((t: string) => (
                               <option key={t} value={t}>{t}{availableThicknesses.length <= 1 ? ' (Only option)' : ''}</option>
                             ))}
                           </select>
@@ -351,7 +356,7 @@ export default function ConfiguratorClient({ config }: { config: any }) {
                             disabled={availableFinishes.length <= 1}
                             className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
                           >
-                            {availableFinishes.map((f: any) => (
+                            {availableFinishes.map((f: string) => (
                               <option key={f} value={f}>{f}{availableFinishes.length <= 1 ? ' (Only option)' : ''}</option>
                             ))}
                           </select>

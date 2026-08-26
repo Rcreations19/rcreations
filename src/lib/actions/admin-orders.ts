@@ -20,7 +20,10 @@ export async function getOrderById(id: string) {
     .from('orders')
     .select(`
       *,
-      items:order_items(*)
+      items:order_items(
+        *,
+        product:products(image_url)
+      )
     `)
     .eq('id', id)
     .single();
@@ -29,7 +32,7 @@ export async function getOrderById(id: string) {
 
   // Resolve any customer-uploaded photo paths to signed URLs
   if (data?.items) {
-    for (const item of data.items as any[]) {
+    for (const item of data.items as Record<string, any>[]) {
       const storagePath = item.custom_config?.uploadedPhotoUrl;
       if (storagePath && !storagePath.startsWith('http')) {
         const { data: signedData } = await supabase.storage

@@ -46,7 +46,10 @@ export function StateAutocomplete({
 
   // Sync external value into local query when value changes programmatically
   useEffect(() => {
-    setQuery(value);
+    let t = setTimeout(() => {
+      setQuery(value);
+    }, 0);
+    return () => clearTimeout(t);
   }, [value]);
 
   // Close on outside click
@@ -110,6 +113,7 @@ export function StateAutocomplete({
         id={id}
         role="combobox"
         aria-expanded={open}
+        aria-controls="state-listbox"
         aria-haspopup="listbox"
         aria-autocomplete="list"
         aria-describedby={ariaDescribedBy}
@@ -151,6 +155,7 @@ export function StateAutocomplete({
       <AnimatePresence>
         {open && filtered.length > 0 && (
           <motion.ul
+            id="state-listbox"
             ref={listRef}
             role="listbox"
             initial={{ opacity: 0, y: -4, scale: 0.98 }}

@@ -29,7 +29,7 @@ export async function uploadProductImage(file: File, context: UploadContext = 'p
   const fileExt = file.name.split('.').pop()!;
   const filePath = generateUploadPath(context, fileExt);
 
-  const bucket = context === 'blog' ? 'public' : 'product-images';
+  const bucket = 'product-images';
 
   const { data, error } = await supabase.storage
     .from(bucket)

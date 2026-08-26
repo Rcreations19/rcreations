@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { Search, ShoppingBag, Star, Check, Heart, Filter, X, ChevronDown, ChevronUp, Flame } from 'lucide-react';
+import { Search, ShoppingBag, Star, Check, Filter, X, ChevronDown, Flame } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/components/storefront/CartContext';
 
@@ -26,8 +26,8 @@ export default function ProductCatalogClient({
   categories,
   initialCategory
 }: { 
-  initialProducts: any[], 
-  categories: any[],
+  initialProducts: Record<string, any>[], 
+  categories: Record<string, any>[],
   initialCategory?: string
 }) {
   // ALL hooks must be called unconditionally at the top — no early returns before hooks
@@ -37,6 +37,7 @@ export default function ProductCatalogClient({
   const [sortBy, setSortBy] = useState<'recommended' | 'price-low' | 'price-high' | 'rating' | 'moq'>('recommended');
   const [maxPrice, setMaxPrice] = useState(5000);
   const [onlyWholesale, setOnlyWholesale] = useState(false);
+
   const [isFiltering, setIsFiltering] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const { addPreset } = useCart();
@@ -84,7 +85,7 @@ export default function ProductCatalogClient({
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 lg:gap-16">
         
         {/* Filters Sidebar */}
-        <div className={`xl:col-span-3 ${showMobileFilters ? 'fixed inset-0 z-50 bg-white/80 backdrop-blur-xl p-6 overflow-y-auto' : 'hidden xl:block'}`}>
+        <div className={`xl:col-span-3 ${showMobileFilters ? 'fixed inset-0 z-[80] bg-white/80 backdrop-blur-xl p-6 overflow-y-auto' : 'hidden xl:block'}`}>
           <motion.div 
             initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}
             className={`bg-transparent space-y-10 ${showMobileFilters ? '' : 'sticky top-32 pt-2'}`}
@@ -170,44 +171,36 @@ export default function ProductCatalogClient({
 
         {/* Product Grid Area */}
         <div className="xl:col-span-9 space-y-6">
-          
-          {/* Mobile Filter Toggle (Floating Bottom Bar) */}
-          <div className="xl:hidden fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom,0px))] left-1/2 -translate-x-1/2 z-40">
+          {/* Sticky Sort & Filter Bar (Mobile) */}
+          <div className="xl:hidden sticky top-[60px] sm:top-[72px] z-30 bg-white border-b border-neutral-100 flex shadow-sm">
             <button 
               onClick={() => setShowMobileFilters(true)}
-              className="flex items-center gap-2 px-6 py-3.5 bg-primary text-white rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.2)] active:scale-[0.95] transition-all border border-white/10"
+              className="flex-1 flex items-center justify-center gap-2 py-3.5 text-xs font-bold uppercase tracking-wider text-neutral-700 active:bg-neutral-50 transition-colors"
             >
-              <Filter className="w-4 h-4 text-accent" />
-              <span className="text-xs font-bold uppercase tracking-wider">Filters & Sort</span>
+              <Filter className="w-4 h-4 text-primary" /> Filter
             </button>
-          </div>
-          
-          {/* Top Sort Bar */}
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="bg-transparent pb-4 border-b border-neutral-100 flex flex-wrap items-center justify-between gap-4 mb-4"
-          >
-            {/* Mobile Dropdown Sort */}
-            <div className="w-full sm:hidden relative">
+            <div className="w-[1px] bg-neutral-200 my-2"></div>
+            <div className="flex-1 relative">
               <select 
                 value={sortBy} 
                 onChange={(e) => handleFilterChange(setSortBy, e.target.value)}
-                className="w-full appearance-none bg-surface-muted text-primary px-4 py-3 rounded-lg text-xs font-bold font-sans outline-none focus:ring-2 focus:ring-accent"
+                className="w-full h-full appearance-none bg-transparent text-neutral-700 text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wider outline-none focus:ring-0 cursor-pointer"
               >
-                {[
-                  { id: 'recommended', label: 'Recommended' },
-                  { id: 'price-low', label: 'Price: Low' },
-                  { id: 'price-high', label: 'Price: High' },
-                  { id: 'rating', label: 'Top Rated' },
-                  { id: 'moq', label: 'Lowest MOQ' },
-                ].map((s) => (
-                  <option key={s.id} value={s.id}>{s.label}</option>
-                ))}
+                <option value="recommended">Sort</option>
+                <option value="price-low">Low Price</option>
+                <option value="price-high">High Price</option>
+                <option value="rating">Top Rated</option>
+                <option value="moq">Low MOQ</option>
               </select>
-              <ChevronDown className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 text-[#595959] pointer-events-none" />
+              <ChevronDown className="w-3.5 h-3.5 absolute right-4 sm:right-10 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none" />
             </div>
+          </div>
 
-            {/* Desktop Button Sort */}
-            <div className="hidden sm:flex items-center gap-1 overflow-x-auto hide-scrollbar">
+          {/* Top Sort Bar (Desktop) */}
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+            className="hidden xl:flex bg-transparent pb-4 border-b border-neutral-100 flex-wrap items-center justify-between gap-4 mb-4"
+          >
+            <div className="flex items-center gap-1 overflow-x-auto hide-scrollbar">
               {[
                 { id: 'recommended', label: 'Recommended' },
                 { id: 'price-low', label: 'Price: Low' },
@@ -223,7 +216,7 @@ export default function ProductCatalogClient({
                 </button>
               ))}
             </div>
-            <div className="text-sm font-medium text-neutral-400 tracking-tight hidden sm:block shrink-0">
+            <div className="text-sm font-medium text-neutral-400 tracking-tight shrink-0">
               {filteredProducts.length} Items
             </div>
           </motion.div>
@@ -267,10 +260,10 @@ export default function ProductCatalogClient({
                     key={product.id}
                     layout
                     variants={fadeUp}
-                    className="group bg-white rounded-2xl overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-400 flex flex-col relative"
+                    className="group bg-white rounded-xl overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-400 flex flex-col relative border border-neutral-100/60"
                   >
                     {/* Image Area */}
-                    <Link href={`/products/${product.slug}`} className="relative aspect-[4/5] bg-neutral-100 overflow-hidden group/image block">
+                    <Link href={`/products/${product.slug}`} className="relative aspect-square sm:aspect-[4/5] bg-neutral-100 overflow-hidden group/image block">
                       {/* Primary Image */}
                       <Image 
                         src={product.image_url} 
@@ -293,69 +286,49 @@ export default function ProductCatalogClient({
                         />
                       )}
                       {/* Badges */}
-                      <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10 pointer-events-none">
-                        {discount > 0 && (
-                          <span className="bg-red-500/90 backdrop-blur-sm text-white text-[9px] sm:text-[10px] font-black font-mono uppercase px-2 py-1 sm:px-2.5 sm:py-1 rounded shadow-sm">
+                      <div className="absolute top-0 left-0 flex flex-col z-10 pointer-events-none">
+                        {discount > 0 ? (
+                          <span className="bg-red-600 text-white text-[10px] sm:text-xs font-bold px-2 py-1 shadow-sm rounded-br-lg">
                             {discount}% OFF
                           </span>
-                        )}
+                        ) : product.is_bestseller ? (
+                          <span className="bg-orange-500 text-white text-[10px] sm:text-xs font-bold px-2 py-1 shadow-sm rounded-br-lg flex items-center gap-1">
+                            <Flame className="w-3 h-3" /> Best Seller
+                          </span>
+                        ) : null}
                       </div>
-                      
-                      {/* Mobile Quick Add (Floating Bag Icon) */}
-                      <button 
-                        onClick={(e) => { e.preventDefault(); addPreset({ id: product.id, title: product.title, price: product.price, wholesale_price: product.wholesale_price, image: product.image_url, subtitle: product.subtitle, moq: product.moq }); }}
-                        className="sm:hidden absolute bottom-3 right-3 w-10 h-10 bg-white/90 backdrop-blur-sm shadow-md border border-white/50 rounded-full flex items-center justify-center text-primary active:scale-[0.9] transition-transform z-20"
-                        aria-label="Quick add to cart"
-                      >
-                        <ShoppingBag className="w-5 h-5 text-primary" />
-                      </button>
                     </Link>
 
                     {/* Content Area */}
-                    <div className="p-4 sm:p-6 flex-1 flex flex-col justify-between relative z-10 bg-white">
-                      <Link href={`/products/${product.slug}`} className="block group/link mb-4">
-                        {product.is_bestseller && (
-                          <div className="flex items-center gap-1.5 mb-2">
-                            <Flame className="w-3.5 h-3.5 text-orange-500" />
-                            <span className="text-[10px] font-bold text-orange-600 uppercase tracking-widest">Most Popular</span>
-                          </div>
-                        )}
-                        <h3 className="text-base font-semibold tracking-tight text-neutral-900 mb-1 leading-snug group-hover/link:text-neutral-600 transition-colors line-clamp-2">
+                    <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between bg-white">
+                      <Link href={`/products/${product.slug}`} className="block group/link mb-2">
+                        <h3 className="text-sm sm:text-base font-medium tracking-tight text-neutral-900 mb-0.5 leading-snug group-hover/link:text-accent transition-colors line-clamp-2">
                           {product.title}
                         </h3>
-                        <p className="text-sm text-neutral-500 line-clamp-1">{product.subtitle}</p>
+                        <div className="flex items-center gap-1 opacity-90 mb-1">
+                          <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-600 fill-green-600" />
+                          <span className="text-xs sm:text-sm font-semibold text-neutral-600">{product.rating} <span className="text-neutral-400 font-normal">(120+)</span></span>
+                        </div>
                       </Link>
                       
                       {/* Pricing */}
-                      <div className="mt-auto pt-4 flex items-end justify-between border-t border-neutral-100">
+                      <div className="mt-auto mb-3 flex flex-wrap items-baseline gap-1.5 sm:gap-2">
                         {product.wholesale_price && product.moq ? (
-                          <div className="flex flex-col">
-                            <span className="text-xs font-medium text-neutral-400 line-through mb-0.5">Retail: ₹{product.price}</span>
-                            <div className="flex items-baseline gap-2">
-                              <span className="text-lg font-semibold tracking-tight text-neutral-900">₹{product.wholesale_price}</span>
-                              <span className="text-xs font-medium text-neutral-500">Bulk (from {product.moq})</span>
-                            </div>
-                          </div>
+                          <>
+                            <span className="text-base sm:text-lg font-bold tracking-tight text-neutral-900">₹{product.wholesale_price}</span>
+                            <span className="text-[10px] sm:text-xs font-medium text-neutral-400 line-through">₹{product.price}</span>
+                          </>
                         ) : (
-                          <div className="flex flex-col">
-                            <span className="text-lg font-semibold tracking-tight text-neutral-900">₹{product.price}</span>
-                          </div>
+                          <span className="text-base sm:text-lg font-bold tracking-tight text-neutral-900">₹{product.price}</span>
                         )}
-                        
-                        <div className="flex items-center gap-1.5 opacity-80">
-                          <Star className="w-3.5 h-3.5 text-neutral-400 fill-neutral-400" />
-                          <span className="text-sm font-medium text-neutral-600">{product.rating}</span>
-                        </div>
                       </div>
-                    </div>
-
-                    {/* Desktop Full Width Quick Add (Hidden on Mobile, Visible on Desktop Hover) */}
-                    <div className="hidden sm:block absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 bg-white/95 backdrop-blur-md p-4 transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] z-20 border-t border-neutral-100">
-                       <button 
-                         onClick={(e) => { e.preventDefault(); addPreset({ id: product.id, title: product.title, price: product.price, wholesale_price: product.wholesale_price, image: product.image_url, subtitle: product.subtitle, moq: product.moq }); }}
-                         className="w-full bg-accent hover:brightness-105 text-primary py-3 rounded-xl text-sm font-semibold tracking-tight flex items-center justify-center gap-2 transition-all active:scale-[0.98] outline-none"
-                       >
-                        <ShoppingBag className="w-4 h-4" /> Quick Add
+                      
+                      {/* Explicit Add to Cart Button */}
+                      <button 
+                        onClick={(e) => { e.preventDefault(); addPreset({ id: product.id, title: product.title, price: product.price, wholesale_price: product.wholesale_price, image: product.image_url, subtitle: product.subtitle, moq: product.moq }); }}
+                        className="w-full bg-white border border-neutral-200 text-primary py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold tracking-tight flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] active:bg-neutral-50 hover:border-primary hover:bg-neutral-50"
+                      >
+                        Add to cart
                       </button>
                     </div>
                   </motion.div>

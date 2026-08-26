@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Settings, Save, Loader2, Globe, Mail, Phone, MapPin, ShoppingBag, FileSpreadsheet, Upload } from 'lucide-react';
+import { Save, Loader2, Globe, Mail, Phone, MapPin, ShoppingBag, FileSpreadsheet, Upload } from 'lucide-react';
 import { updateSiteSettings } from '@/lib/actions/settings';
 import { uploadPricingData } from '@/lib/actions/pricing';
 import { createClient } from '@/lib/supabase/client';
@@ -35,7 +35,7 @@ export default function SiteSettingsPage() {
         const newSettings = { ...settings };
         data.forEach(item => {
           if (newSettings[item.key] !== undefined) {
-            newSettings[item.key] = (item.value as any)?.text || '';
+            newSettings[item.key] = (item.value as Record<string, string>)?.text || '';
           }
         });
         setSettings(newSettings);
@@ -43,6 +43,7 @@ export default function SiteSettingsPage() {
       setFetching(false);
     }
     loadSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

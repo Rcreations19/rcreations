@@ -112,7 +112,6 @@ const _getPublicCategories = async () => {
 export const getPublicCategories = unstable_cache(_getPublicCategories, ['public-categories'], { revalidate: 3600, tags: ['categories'] });
 
 /** Returns admin-curated bestsellers (is_bestseller = true), ordered by rating.
- *  Falls back to the 8 most recently added active products if none are flagged.
  *  Never throws — returns [] on unrecoverable error.
  */
 const _getBestsellerProducts = async (limit = 24): Promise<{
@@ -143,31 +142,13 @@ const _getBestsellerProducts = async (limit = 24): Promise<{
     .order('rating', { ascending: false })
     .limit(limit);
 
-  // If there are ANY curated bestsellers, return ONLY them (do not mix with recent)
   if (!err1 && bestsellers && bestsellers.length > 0) {
     return bestsellers.map(p => ({ ...p, is_curated: true }));
   }
 
   if (err1) console.error('[getBestsellerProducts] bestseller query failed');
 
-  // 2️⃣ Fallback: if ZERO curated bestsellers exist, fetch recent active products
-  // We'll limit the fallback to 8 items so the slider looks good
-  const { data: recent, error: err2 } = await supabase
-    .from('products')
-    .select(
-      'id, title, subtitle, slug, price, wholesale_price, moq, rating, review_count, image_url, gallery_images, is_bestseller'
-    )
-    .eq('is_active', true)
-    .order('created_at', { ascending: false })
-    .limit(8); 
-
-  if (err2) {
-    console.error('[getBestsellerProducts] fallback query failed');
-    return [];
-  }
-
-  return (recent ?? []).map(p => ({ ...p, is_curated: false }));
+  return [];
 }
 
 export const getBestsellerProducts = unstable_cache(_getBestsellerProducts, ['bestseller-products'], { revalidate: 3600, tags: ['products'] });
-

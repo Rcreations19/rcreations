@@ -7,7 +7,7 @@ import { RCreationLogo } from '../shared/Logo';
 
 export default function Footer() {
   return (
-    <footer className="bg-primary/90 backdrop-blur-xl text-white pt-12 pb-8 md:pt-20 md:pb-10 border-t border-white/10 relative overflow-hidden">
+    <footer className="bg-primary text-white pt-12 pb-8 md:pt-20 md:pb-10 border-t border-white/10 relative overflow-hidden">
       {/* Decorative gradient orb - hidden on mobile for performance */}
       <div className="hidden md:block absolute top-0 right-0 w-96 h-96 bg-accent rounded-full mix-blend-screen filter blur-[150px] opacity-10 pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
       

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createBlog } from '@/lib/actions/blogs';
 import { ArrowLeft, Upload, Loader2, Save } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
 import Link from 'next/link';
 
 export default function AddBlogPage() {
@@ -14,9 +15,25 @@ export default function AddBlogPage() {
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
+      let file = e.target.files[0];
+      
+      try {
+        const options = {
+          maxSizeMB: 0.9,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+        };
+        const originalName = file.name;
+        // Compress the image
+        const compressedFile = await imageCompression(file, options);
+        // Ensure it is a File object with the original name to pass server validation
+        file = new File([compressedFile], originalName, { type: compressedFile.type || file.type });
+      } catch (err) {
+        console.error('Error compressing image:', err);
+      }
+      
       setCoverImage(file);
       setPreview(URL.createObjectURL(file));
     }
@@ -33,10 +50,15 @@ export default function AddBlogPage() {
     }
     
     try {
-      await createBlog(formData);
+      const result = await createBlog(formData);
+      if (!result?.success) {
+        setError(result?.error || 'Failed to create blog.');
+        setLoading(false);
+        return;
+      }
       router.push('/admin/blogs');
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'An unexpected error occurred.');
       setLoading(false);
     }
   };
@@ -102,6 +124,19 @@ export default function AddBlogPage() {
                 <option value="true">Published (Public)</option>
               </select>
             </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="show_on_homepage"
+              name="show_on_homepage"
+              value="true"
+              className="w-4 h-4 text-[#0070f3] border-border rounded focus:ring-[#0070f3]"
+            />
+            <label htmlFor="show_on_homepage" className="text-sm text-[#111] font-medium">
+              Show on Homepage (Featured)
+            </label>
           </div>
 
           <div>

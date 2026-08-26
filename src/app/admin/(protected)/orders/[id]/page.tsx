@@ -57,6 +57,15 @@ export default async function OrderDetailsPage(props: { params: Promise<{ id: st
                           className="w-full h-full object-cover"
                         />
                       </div>
+                    ) : item.product?.image_url ? (
+                      <div className="w-16 h-16 bg-neutral-100 rounded-lg overflow-hidden shrink-0 border border-border relative">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img 
+                          src={item.product.image_url} 
+                          alt={item.title} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     ) : (
                       <div className="w-16 h-16 bg-neutral-100 rounded-lg flex items-center justify-center shrink-0 border border-border">
                         <Package className="w-6 h-6 text-neutral-400" />

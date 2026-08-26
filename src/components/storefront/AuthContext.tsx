@@ -38,7 +38,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Hydrate user on mount
   useEffect(() => {
-    refreshUser().finally(() => setIsLoading(false));
+    let isMounted = true;
+    const initAuth = async () => {
+      await refreshUser();
+      if (isMounted) {
+        setIsLoading(false);
+      }
+    };
+    initAuth();
+    return () => {
+      isMounted = false;
+    };
   }, [refreshUser]);
 
   const login = useCallback(async (email: string, password: string) => {

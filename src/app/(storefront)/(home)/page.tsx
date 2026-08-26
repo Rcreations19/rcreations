@@ -2,7 +2,7 @@ import React from 'react';
 import HomePageClient from '@/components/storefront/HomePageClient';
 import { GoogleReviews } from '@/components/storefront/GoogleReviews';
 import { TopSellers } from '@/components/storefront/TopSellers';
-import { getPublicBlogs } from '@/lib/actions/blogs';
+import { getHomepageBlogs } from '@/lib/actions/blogs';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -51,8 +51,8 @@ const faqSchema = {
 };
 
 export default async function HomePage() {
-  const blogs = await getPublicBlogs().catch(() => []);
-  const latestBlogs = (blogs || []).slice(0, 3);
+  const blogs = await getHomepageBlogs().catch(() => []);
+  const latestBlogs = blogs || [];
 
   return (
     <>

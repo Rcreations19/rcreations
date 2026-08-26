@@ -73,7 +73,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   ]);
 
   // Check if category actually exists in DB
-  const categoryExists = categories.find((c: any) => c.slug?.toLowerCase() === decodedSlug || c.name?.toLowerCase().replace(/\s+/g, '-') === decodedSlug);
+  const categoryExists = categories.find((c: { slug?: string, name?: string }) => c.slug?.toLowerCase() === decodedSlug || c.name?.toLowerCase().replace(/\s+/g, '-') === decodedSlug);
   if (!categoryExists && !seo) {
     return notFound();
   }

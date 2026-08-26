@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
-import { Star, ShoppingBag, ArrowRight, ShieldCheck, Truck, Package, Check, Clock, Flame, Camera, Crown, X } from 'lucide-react';
+import { Star, ShoppingBag, ArrowRight, ShieldCheck, Truck, Package, Check, Clock, Flame, Camera, X } from 'lucide-react';
 import { useCart } from '@/components/storefront/CartContext';
 import { toast } from 'sonner';
 import Image from 'next/image';
@@ -178,7 +178,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
               {/* Pagination Dots overlay */}
               {allImages.length > 1 && (
                 <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 sm:hidden pointer-events-none">
-                  {allImages.map((_: any, idx: number) => (
+                  {allImages.map((_: unknown, idx: number) => (
                     <div 
                       key={idx} 
                       className={`gallery-dot w-2 h-2 rounded-full transition-colors ${idx === 0 ? 'bg-primary' : 'bg-white/50 backdrop-blur-sm border border-black/10'}`} 
@@ -457,44 +457,46 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
       {relatedProducts && relatedProducts.length > 0 && (
         <div className="mt-24">
           <h2 className="text-3xl font-serif-heading font-extrabold text-primary mb-8">You May Also Like</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 sm:gap-6 pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 lg:grid lg:grid-cols-4 hide-scrollbar">
             {relatedProducts.map(related => (
               <Link
                 key={related.id}
                 href={`/products/${related.slug}`}
-                className="group bg-white rounded-none border-b border-border overflow-hidden hover:border-primary transition-all pb-4"
+                className="group bg-white rounded-xl border border-neutral-100 overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all flex-shrink-0 w-[160px] snap-start sm:w-[220px] lg:w-auto lg:flex-shrink flex flex-col"
               >
-                <div className="aspect-[4/5] bg-[#FAFAFA] overflow-hidden relative group/image">
-                  <Image src={related.image_url} alt={related.title} width={400} height={500} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover/image:scale-105 ${related.gallery_images && related.gallery_images.length > 1 ? 'group-hover/image:opacity-0' : ''}`} />
+                <div className="aspect-[4/5] bg-neutral-100 overflow-hidden relative group/image block">
+                  <Image src={related.image_url} alt={related.title} fill sizes="(max-width: 640px) 160px, (max-width: 1024px) 220px, 25vw" className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover/image:scale-105 ${related.gallery_images && related.gallery_images.length > 1 ? 'group-hover/image:opacity-0' : ''}`} />
                   {related.gallery_images && related.gallery_images.length > 1 && (
-                    <Image src={related.gallery_images[1]} alt={related.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="w-full h-full object-cover absolute inset-0 opacity-0 transition-all duration-700 ease-out group-hover/image:opacity-100 group-hover/image:scale-105" />
+                    <Image src={related.gallery_images[1]} alt={related.title} fill sizes="(max-width: 640px) 160px, (max-width: 1024px) 220px, 25vw" className="w-full h-full object-cover absolute inset-0 opacity-0 transition-all duration-700 ease-out group-hover/image:opacity-100 group-hover/image:scale-105" />
                   )}
-                </div>
-                <div className="pt-4 flex flex-col flex-grow bg-white group-hover:bg-neutral-50/50 transition-colors p-3">
                   {related.is_bestseller && (
-                    <div className="flex items-center gap-1 mb-1.5">
-                      <Flame className="w-3 h-3 text-orange-500" />
-                      <span className="text-[10px] font-bold text-orange-600 uppercase tracking-wide">Most Popular</span>
+                    <div className="absolute top-0 left-0 z-10">
+                      <span className="bg-orange-500 text-white text-[10px] sm:text-xs font-bold px-2 py-1 shadow-sm rounded-br-lg flex items-center gap-1">
+                        <Flame className="w-3 h-3" /> Best Seller
+                      </span>
                     </div>
                   )}
-                  <h3 className="text-sm sm:text-base font-serif-heading font-extrabold text-primary line-clamp-2 mb-1.5 leading-snug group-hover:text-accent transition-colors">{related.title}</h3>
-                  <div className="mt-auto pt-3 border-t border-border">
+                </div>
+                <div className="p-3 sm:p-4 flex flex-col flex-grow bg-white">
+                  <h3 className="text-sm font-medium tracking-tight text-neutral-900 line-clamp-2 mb-1 leading-snug group-hover:text-accent transition-colors">{related.title}</h3>
+                  <div className="mt-auto pt-2 flex flex-wrap items-baseline gap-1.5 mb-3">
                     {related.wholesale_price && related.moq ? (
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-[11px] font-medium text-neutral-500 line-through">Retail: ₹{related.price}</span>
-                        </div>
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-lg font-black text-emerald-600 font-mono tabular">₹{related.wholesale_price}</span>
-                          <span className="text-[10px] font-medium text-emerald-700/70">Bulk (from {related.moq} qty)</span>
-                        </div>
-                      </div>
+                      <>
+                        <span className="text-base font-bold tracking-tight text-neutral-900">₹{related.wholesale_price}</span>
+                        <span className="text-[10px] font-medium text-neutral-400 line-through">₹{related.price}</span>
+                      </>
                     ) : (
-                      <div className="flex flex-col">
-                        <span className="text-lg font-black text-primary font-mono tabular">₹{related.price}</span>
-                      </div>
+                      <span className="text-base font-bold tracking-tight text-neutral-900">₹{related.price}</span>
                     )}
                   </div>
+                  
+                  {/* Explicit Add to Cart Button */}
+                  <button 
+                    onClick={(e) => { e.preventDefault(); addPreset({ id: related.id, title: related.title, price: related.price, wholesale_price: related.wholesale_price, image: related.image_url, subtitle: related.subtitle, moq: related.moq }); }}
+                    className="w-full bg-white border border-neutral-200 text-primary py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold tracking-tight flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] active:bg-neutral-50 hover:border-primary hover:bg-neutral-50 mt-auto"
+                  >
+                    Add to cart
+                  </button>
                 </div>
               </Link>
             ))}

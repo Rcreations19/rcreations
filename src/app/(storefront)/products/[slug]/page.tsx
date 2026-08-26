@@ -51,7 +51,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   const relatedProducts = await getPublicRelatedProducts(product).catch(() => []);
 
-    const productSchema: any = {
+    const productSchema: Record<string, unknown> = {
       "@context": "https://schema.org/",
       "@type": "Product",
       "name": product.title,

@@ -29,7 +29,7 @@ import { ActionResponse, getSafeErrorMessage } from '../utils/action-response';
 
 export async function submitOrder(
   rawFormData: { name: string; email: string; phone: string; address: string; city: string; state: string; pincode: string },
-  rawCartItems: { id: string; quantity: number; type?: string; price?: number; title?: string; details?: string; custom_config?: any }[],
+  rawCartItems: { id: string; quantity: number; type?: string; price?: number; title?: string; details?: string; custom_config?: Record<string, unknown> }[],
   idempotencyKey: string
 ): Promise<ActionResponse<{ orderId: string }>> {
   try {
