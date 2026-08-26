@@ -55,9 +55,9 @@ export function DataTable<T extends { id: string }>({
   };
 
   return (
-    <div className="bg-white border border-[#e5e7eb] rounded-lg shadow-sm overflow-hidden flex flex-col">
-      {/* Django-style Action Bar */}
-      <div className="bg-neutral-100 px-4 py-3 border-b border-[#e5e7eb] flex flex-wrap items-center justify-between gap-4">
+    <div className="bg-white border border-[#e5e5ea] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden flex flex-col">
+      {/* Action Bar */}
+      <div className="bg-white px-5 py-4 border-b border-[#e5e5ea] flex flex-wrap items-center justify-between gap-4">
         {/* Search */}
         <div className="flex-1 min-w-[200px] max-w-md">
           {onSearchChange && (
@@ -68,7 +68,7 @@ export function DataTable<T extends { id: string }>({
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder={searchPlaceholder}
-                className="w-full pl-9 pr-3 py-1.5 text-sm bg-white border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:border-[#10164A] outline-none"
+                className="w-full pl-9 pr-3 py-1.5 text-sm bg-[#f5f5f7] border border-transparent rounded-lg text-[#1d1d1f] placeholder:text-[#86868b] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none"
               />
             </div>
           )}
@@ -76,13 +76,13 @@ export function DataTable<T extends { id: string }>({
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          <span className="text-sm text-neutral-500 font-medium">
+          <span className="text-sm text-[#86868b] font-medium">
             {data.length} {data.length === 1 ? 'result' : 'results'}
           </span>
           {actions?.addHref && (
             <Link
               href={actions.addHref}
-              className="px-4 py-1.5 bg-[#10164A] text-white text-sm font-bold rounded hover:bg-[#1c246e] transition-colors flex items-center gap-1.5"
+              className="px-4 py-1.5 bg-[#0071e3] text-white text-sm font-medium rounded-full hover:bg-[#0077ED] transition-colors flex items-center gap-1.5 shadow-sm"
             >
               <Plus className="w-4 h-4" />
               {actions.addLabel || 'Add New'}
@@ -98,7 +98,7 @@ export function DataTable<T extends { id: string }>({
             {selectedIds.size} {selectedIds.size === 1 ? 'item' : 'items'} selected
           </span>
           <div className="flex items-center gap-2">
-            <select className="text-sm border border-amber-300 bg-white rounded px-3 py-1 text-amber-900 outline-none focus:ring-1 focus:ring-amber-500">
+            <select className="text-sm border border-amber-300 bg-white rounded-lg px-3 py-1 text-amber-900 outline-none focus:ring-4 focus:ring-amber-500/10">
               <option value="">--------</option>
               <option value="delete">Delete selected items</option>
             </select>
@@ -111,7 +111,7 @@ export function DataTable<T extends { id: string }>({
               }}
               disabled={selectedIds.size === 0}
               aria-disabled={selectedIds.size === 0}
-              className="px-3 py-1 bg-amber-600 text-white text-sm font-bold rounded hover:bg-amber-700 transition-colors"
+              className="px-4 py-1.5 bg-amber-600 text-white text-sm font-medium rounded-full hover:bg-amber-700 transition-colors shadow-sm"
             >
               Go
             </button>
@@ -121,49 +121,49 @@ export function DataTable<T extends { id: string }>({
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse admin-table-striped">
+        <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-neutral-100 border-b border-[#e5e7eb] text-xs font-bold text-neutral-600 uppercase tracking-wider">
-              <th className="px-4 py-3 w-10 text-center">
+            <tr className="bg-[#f5f5f7]/50 border-b border-[#e5e5ea] text-xs font-semibold text-[#86868b] uppercase tracking-wider">
+              <th className="px-5 py-3.5 w-10 text-center">
                 <input
                   type="checkbox"
                   aria-label="Select all rows"
                   checked={data.length > 0 && selectedIds.size === data.length}
                   onChange={handleSelectAll}
-                  className="rounded border-neutral-300 text-[#10164A] focus:ring-[#10164A]"
+                  className="rounded border-[#c7c7cc] text-[#0071e3] focus:ring-[#0071e3]"
                 />
               </th>
               {columns.map((col, i) => (
-                <th key={i} className="px-4 py-3 whitespace-nowrap">
+                <th key={i} className="px-5 py-3.5 whitespace-nowrap">
                   {col.header}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#e5e7eb] text-sm text-neutral-800">
+          <tbody className="divide-y divide-[#e5e5ea] text-sm text-[#1d1d1f]">
             {data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + 1} className="px-4 py-8 text-center text-neutral-500">
+                <td colSpan={columns.length + 1} className="px-5 py-12 text-center text-[#86868b]">
                   No records found.
                 </td>
               </tr>
             ) : (
               data.map((item) => (
-                <tr key={item.id} className="group">
-                  <td className="px-4 py-3 text-center border-r border-[#e5e7eb]/50">
+                <tr key={item.id} className="group hover:bg-[#f5f5f7]/50 transition-colors">
+                  <td className="px-5 py-3.5 text-center border-r border-[#e5e5ea]/50">
                     <input
                       type="checkbox"
                       aria-label={`Select row ${item.id}`}
                       checked={selectedIds.has(item.id)}
                       onChange={() => handleSelectRow(item.id)}
-                      className="rounded border-neutral-300 text-[#10164A] focus:ring-[#10164A]"
+                      className="rounded border-[#c7c7cc] text-[#0071e3] focus:ring-[#0071e3]"
                       onClick={(e) => e.stopPropagation()}
                     />
                   </td>
                   {columns.map((col, colIdx) => (
                     <td
                       key={colIdx}
-                      className="px-4 py-3"
+                      className="px-5 py-3.5"
                       onClick={() => onRowClick && onRowClick(item)}
                     >
                       {col.cell
@@ -180,8 +180,8 @@ export function DataTable<T extends { id: string }>({
         </table>
       </div>
 
-      {/* Pagination Footer (Django-style) */}
-      <div className="bg-neutral-100 px-4 py-3 border-t border-[#e5e7eb] flex items-center justify-between text-sm text-neutral-600 font-medium">
+      {/* Pagination Footer */}
+      <div className="bg-[#f5f5f7]/30 px-5 py-3 border-t border-[#e5e5ea] flex items-center justify-between text-sm text-[#86868b] font-medium">
         <div>
           {data.length} {data.length === 1 ? 'record' : 'records'}
         </div>

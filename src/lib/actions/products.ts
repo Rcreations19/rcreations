@@ -54,7 +54,10 @@ const productSchema = z.object({
   title: z.string().min(1, "Title is required").max(200, "Title is too long"),
   subtitle: z.string().nullable().optional().transform(val => val || ""),
   slug: z.string().min(1, "Slug is required").max(100),
-  category_id: z.string().uuid("Invalid category ID"),
+  category_id: z.string().min(1, "Please select a category").refine(
+    (val: string) => /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i.test(val),
+    "Please select a valid category from the list"
+  ),
   price: z.coerce.number().min(0, "Price must be positive"),
   wholesale_price: z.coerce.number().min(0, "Wholesale price must be positive"),
   moq: z.coerce.number().int().min(1, "MOQ must be at least 1"),
@@ -123,6 +126,12 @@ export async function saveProduct(formData: FormData): Promise<ActionResponse> {
       urgency_timer_title: formData.get('urgency_timer_title'),
       urgency_timer_subtitle: formData.get('urgency_timer_subtitle'),
     };
+
+    const catId = formData.get('category_id');
+    const isUuid = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i.test(String(catId));
+    if (!isUuid) {
+      throw new Error(`DEBUG_INVALID_CAT_ID: received exact value: "${catId}" of type ${typeof catId}`);
+    }
 
     const validatedData = productSchema.parse(rawData);
     const productData = validatedData;

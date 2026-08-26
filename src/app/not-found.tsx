@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Home, Package, Mail } from 'lucide-react';
 
 export const metadata = {
   title: 'Page Not Found',
@@ -8,37 +7,21 @@ export const metadata = {
 
 export default function NotFoundPage() {
   return (
-    <div className="min-h-screen bg-surface flex items-center justify-center px-4">
-      <div className="text-center max-w-md">
-        <div className="w-24 h-24 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-8">
-          <span className="text-5xl font-serif-heading font-bold text-secondary">404</span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-secondary mb-4">Page Not Found</h1>
-        <p className="text-neutral-600 mb-8 leading-relaxed">
-          The page you&apos;re looking for doesn&apos;t exist or has been moved. Let&apos;s get you back on track.
+    <div className="min-h-screen bg-[#f5f5f7] flex flex-col items-center justify-center px-6 font-sans text-center">
+      <div className="max-w-md w-full animate-fade-in flex flex-col items-center">
+        <h1 className="text-4xl md:text-5xl font-semibold text-[#1d1d1f] tracking-tight mb-3">
+          The page you’re looking for can’t be found.
+        </h1>
+        <p className="text-lg text-[#86868b] mb-10 font-medium">
+          It might have been removed, renamed, or did not exist in the first place.
         </p>
-        <div className="flex flex-col gap-3">
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-secondary text-white rounded-xl text-sm font-bold hover:bg-secondary-hover transition-colors"
-          >
-            <Home className="w-4 h-4" /> Back to Home
-          </Link>
-          <div className="flex gap-3">
-            <Link
-              href="/products"
-              className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-secondary/20 text-secondary rounded-xl text-sm font-bold hover:bg-secondary/5 transition-colors"
-            >
-              <Package className="w-4 h-4" /> Browse Catalog
-            </Link>
-            <Link
-              href="/contact"
-              className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 border-2 border-secondary/20 text-secondary rounded-xl text-sm font-bold hover:bg-secondary/5 transition-colors"
-            >
-              <Mail className="w-4 h-4" /> Contact Us
-            </Link>
-          </div>
-        </div>
+        
+        <Link
+          href="/"
+          className="inline-flex items-center justify-center px-8 py-3.5 bg-[#1d1d1f] text-white rounded-full text-[15px] font-medium hover:bg-[#000000] hover:scale-105 transition-all duration-300 shadow-sm"
+        >
+          Back to Safety
+        </Link>
       </div>
     </div>
   );

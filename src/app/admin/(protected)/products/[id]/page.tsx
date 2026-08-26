@@ -198,16 +198,16 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
   return (
     <div className="max-w-5xl">
       {/* Breadcrumbs */}
-      <div className="flex items-center gap-2 text-xs font-bold text-neutral-500 mb-6">
-        <Link href="/admin" className="hover:text-[#10164A]">Home</Link>
-        <ChevronRight className="w-3 h-3" />
-        <Link href="/admin/products" className="hover:text-[#10164A]">Products</Link>
-        <ChevronRight className="w-3 h-3" />
-        <span className="text-[#10164A]">{isNew ? 'Add product' : form.title}</span>
+      <div className="flex items-center gap-2 text-sm font-medium text-[#86868b] mb-6">
+        <Link href="/admin" className="hover:text-[#1d1d1f] transition-colors">Home</Link>
+        <ChevronRight className="w-4 h-4" />
+        <Link href="/admin/products" className="hover:text-[#1d1d1f] transition-colors">Products</Link>
+        <ChevronRight className="w-4 h-4" />
+        <span className="text-[#1d1d1f]">{isNew ? 'Add product' : form.title}</span>
       </div>
 
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-extrabold text-[#10164A]">{isNew ? 'Add product' : 'Change product'}</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-2xl font-semibold text-[#1d1d1f] tracking-tight">{isNew ? 'Add product' : 'Change product'}</h1>
       </div>
 
       {error && (
@@ -226,32 +226,32 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Fieldset: General */}
-        <div className="bg-white border border-neutral-200 rounded-lg shadow-sm overflow-hidden">
-          <div className="bg-[#10164A] px-4 py-2 border-b border-neutral-200">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider">General Information</h2>
+        <div className="bg-white border border-[#e5e5ea] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden">
+          <div className="bg-[#f5f5f7] px-5 py-3 border-b border-[#e5e5ea]">
+            <h2 className="text-xs font-semibold text-[#86868b] uppercase tracking-wider">General Information</h2>
           </div>
           <div className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Title *</label>
-                <input required name="title" value={form.title} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+                <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Title *</label>
+                <input required name="title" value={form.title} onChange={handleTextChange} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Slug *</label>
-                <input required name="slug" value={form.slug} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none font-mono text-sm" />
-                <p className="text-[10px] text-neutral-500 mt-1">Used in the URL. Must be unique.</p>
+                <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Slug *</label>
+                <input required name="slug" value={form.slug} onChange={handleTextChange} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none font-mono" />
+                <p className="text-xs text-[#86868b] mt-1.5">Used in the URL. Must be unique.</p>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Subtitle</label>
-              <input name="subtitle" value={form.subtitle} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+              <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Subtitle</label>
+              <input name="subtitle" value={form.subtitle} onChange={handleTextChange} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Category *</label>
-                <select required name="category_id" value={form.category_id} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none">
+                <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Category *</label>
+                <select required name="category_id" value={form.category_id} onChange={handleTextChange} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none">
                   <option value="" disabled>Select category...</option>
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
@@ -259,16 +259,16 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
             </div>
             
             <div>
-              <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Description</label>
-              <textarea name="description" rows={4} value={form.description} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none"></textarea>
+              <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Description</label>
+              <textarea name="description" rows={4} value={form.description} onChange={handleTextChange} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none"></textarea>
             </div>
           </div>
         </div>
 
         {/* Fieldset: Product Images */}
-        <div className="bg-white border border-neutral-200 rounded-lg shadow-sm overflow-hidden">
-          <div className="bg-[#10164A] px-4 py-2 border-b border-neutral-200">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider">Product Images</h2>
+        <div className="bg-white border border-[#e5e5ea] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden">
+          <div className="bg-[#f5f5f7] px-5 py-3 border-b border-[#e5e5ea]">
+            <h2 className="text-xs font-semibold text-[#86868b] uppercase tracking-wider">Product Images</h2>
           </div>
           <div className="p-6">
             <MultiImageUploader 
@@ -279,57 +279,57 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
         </div>
 
         {/* Fieldset: Pricing & Wholesale */}
-        <div className="bg-white border border-neutral-200 rounded-lg shadow-sm overflow-hidden">
-          <div className="bg-[#10164A] px-4 py-2 border-b border-neutral-200">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider">Pricing & Wholesale</h2>
+        <div className="bg-white border border-[#e5e5ea] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden">
+          <div className="bg-[#f5f5f7] px-5 py-3 border-b border-[#e5e5ea]">
+            <h2 className="text-xs font-semibold text-[#86868b] uppercase tracking-wider">Pricing & Wholesale</h2>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Retail Price (₹) *</label>
-                <input required type="number" min="0" step="0.01" name="price" value={form.price} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none font-mono" />
+                <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Retail Price (₹) *</label>
+                <input required type="number" min="0" step="0.01" name="price" value={form.price} onChange={handleTextChange} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none font-mono" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Wholesale Price (₹) *</label>
-                <input required type="number" min="0" step="0.01" name="wholesale_price" value={form.wholesale_price} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none font-mono" />
+                <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Wholesale Price (₹) *</label>
+                <input required type="number" min="0" step="0.01" name="wholesale_price" value={form.wholesale_price} onChange={handleTextChange} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none font-mono" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Minimum Order Qty (MOQ) *</label>
-                <input required type="number" min="1" name="moq" value={form.moq} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none font-mono" />
+                <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Minimum Order Qty (MOQ) *</label>
+                <input required type="number" min="1" name="moq" value={form.moq} onChange={handleTextChange} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none font-mono" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Fieldset: Technical Specifications */}
-        <div className="bg-white border border-neutral-200 rounded-lg shadow-sm overflow-hidden">
-          <div className="bg-[#10164A] px-4 py-2 border-b border-neutral-200 flex justify-between items-center">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider">Technical Specifications</h2>
-            <button type="button" onClick={() => setSpecs([...specs, {label: '', value: ''}])} className="text-xs bg-white/20 hover:bg-white/30 text-white px-2 py-1 rounded flex items-center gap-1 transition-colors">
-              <Plus className="w-3 h-3" /> Add Spec
+        <div className="bg-white border border-[#e5e5ea] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden">
+          <div className="bg-[#f5f5f7] px-5 py-3 border-b border-[#e5e5ea] flex justify-between items-center">
+            <h2 className="text-xs font-semibold text-[#86868b] uppercase tracking-wider">Technical Specifications</h2>
+            <button type="button" onClick={() => setSpecs([...specs, {label: '', value: ''}])} className="text-xs bg-white border border-[#e5e5ea] text-[#1d1d1f] px-3 py-1.5 rounded-md flex items-center gap-1.5 transition-colors hover:bg-[#f5f5f7] shadow-sm font-medium">
+              <Plus className="w-3.5 h-3.5" /> Add Spec
             </button>
           </div>
           <div className="p-6">
             {specs.length === 0 ? (
-              <p className="text-sm text-neutral-500 italic">No specifications added yet.</p>
+              <p className="text-sm text-[#86868b]">No specifications added yet.</p>
             ) : (
               <div className="space-y-3">
                 {specs.map((spec, i) => (
                   <div key={i} className="flex items-start gap-3">
-                    <div className="mt-2 text-neutral-400 cursor-move"><GripVertical className="w-4 h-4" /></div>
+                    <div className="mt-2 text-[#c7c7cc] cursor-move"><GripVertical className="w-4 h-4" /></div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1">
                       <input placeholder="Label (e.g., Material)" value={spec.label} onChange={e => {
                         const newSpecs = [...specs];
                         newSpecs[i].label = e.target.value;
                         setSpecs(newSpecs);
-                      }} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none text-sm" />
+                      }} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none" />
                       <input placeholder="Value (e.g., Solid Pine Wood)" value={spec.value} onChange={e => {
                         const newSpecs = [...specs];
                         newSpecs[i].value = e.target.value;
                         setSpecs(newSpecs);
-                      }} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none text-sm" />
+                      }} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none" />
                     </div>
-                    <button type="button" onClick={() => setSpecs(specs.filter((_, idx) => idx !== i))} className="mt-2 text-red-500 hover:text-red-700 p-1">
+                    <button type="button" onClick={() => setSpecs(specs.filter((_, idx) => idx !== i))} className="mt-2 text-[#ff3b30] hover:bg-[#ff3b30]/10 p-1 rounded transition-colors">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -340,39 +340,39 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
         </div>
 
         {/* Fieldset: Frequently Asked Questions */}
-        <div className="bg-white border border-neutral-200 rounded-lg shadow-sm overflow-hidden">
-          <div className="bg-[#10164A] px-4 py-2 border-b border-neutral-200 flex justify-between items-center">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider">Frequently Asked Questions</h2>
-            <button type="button" onClick={() => setFaqs([...faqs, {question: '', answer: ''}])} className="text-xs bg-white/20 hover:bg-white/30 text-white px-2 py-1 rounded flex items-center gap-1 transition-colors">
-              <Plus className="w-3 h-3" /> Add FAQ
+        <div className="bg-white border border-[#e5e5ea] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden">
+          <div className="bg-[#f5f5f7] px-5 py-3 border-b border-[#e5e5ea] flex justify-between items-center">
+            <h2 className="text-xs font-semibold text-[#86868b] uppercase tracking-wider">Frequently Asked Questions</h2>
+            <button type="button" onClick={() => setFaqs([...faqs, {question: '', answer: ''}])} className="text-xs bg-white border border-[#e5e5ea] text-[#1d1d1f] px-3 py-1.5 rounded-md flex items-center gap-1.5 transition-colors hover:bg-[#f5f5f7] shadow-sm font-medium">
+              <Plus className="w-3.5 h-3.5" /> Add FAQ
             </button>
           </div>
           <div className="p-6">
             {faqs.length === 0 ? (
-              <p className="text-sm text-neutral-500 italic">No FAQs added yet.</p>
+              <p className="text-sm text-[#86868b]">No FAQs added yet.</p>
             ) : (
               <div className="space-y-4">
                 {faqs.map((faq, i) => (
-                  <div key={i} className="flex items-start gap-3 bg-neutral-50 p-4 rounded border border-neutral-200">
-                    <div className="flex-1 space-y-3">
+                  <div key={i} className="flex items-start gap-3 bg-[#f5f5f7]/50 p-4 rounded-xl border border-[#e5e5ea]">
+                    <div className="flex-1 space-y-4">
                       <div>
-                        <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-1">Question</label>
+                        <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Question</label>
                         <input placeholder="e.g., Does this frame include glass?" value={faq.question} onChange={e => {
                           const newFaqs = [...faqs];
                           newFaqs[i].question = e.target.value;
                           setFaqs(newFaqs);
-                        }} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none text-sm font-bold" />
+                        }} className="w-full px-3 py-2 bg-white border border-[#e5e5ea] rounded-lg text-sm text-[#1d1d1f] focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none font-medium" />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-1">Answer</label>
+                        <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Answer</label>
                         <textarea placeholder="e.g., Yes, all frames come with clear acrylic glass..." value={faq.answer} onChange={e => {
                           const newFaqs = [...faqs];
                           newFaqs[i].answer = e.target.value;
                           setFaqs(newFaqs);
-                        }} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none text-sm" rows={2} />
+                        }} className="w-full px-3 py-2 bg-white border border-[#e5e5ea] rounded-lg text-sm text-[#1d1d1f] focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none" rows={2} />
                       </div>
                     </div>
-                    <button type="button" onClick={() => setFaqs(faqs.filter((_, idx) => idx !== i))} className="mt-6 text-red-500 hover:text-red-700 p-2 bg-white rounded shadow-sm border border-neutral-200">
+                    <button type="button" onClick={() => setFaqs(faqs.filter((_, idx) => idx !== i))} className="mt-7 text-[#ff3b30] hover:bg-[#ff3b30]/10 p-2 rounded-lg transition-colors bg-white shadow-sm border border-[#e5e5ea]">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -383,45 +383,45 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
         </div>
 
         {/* Fieldset: Marketing & Reviews */}
-        <div className="bg-white border border-neutral-200 rounded-lg shadow-sm overflow-hidden">
-          <div className="bg-[#10164A] px-4 py-2 border-b border-neutral-200">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider">Marketing & Reviews</h2>
+        <div className="bg-white border border-[#e5e5ea] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden">
+          <div className="bg-[#f5f5f7] px-5 py-3 border-b border-[#e5e5ea]">
+            <h2 className="text-xs font-semibold text-[#86868b] uppercase tracking-wider">Marketing & Reviews</h2>
           </div>
           <div className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Rating (0-5)</label>
-                <input type="number" step="0.1" min="0" max="5" name="rating" value={form.rating} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+                <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Rating (0-5)</label>
+                <input type="number" step="0.1" min="0" max="5" name="rating" value={form.rating} onChange={handleTextChange} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Review Count</label>
-                <input type="number" min="0" name="review_count" value={form.review_count} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+                <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Review Count</label>
+                <input type="number" min="0" name="review_count" value={form.review_count} onChange={handleTextChange} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Inventory Count</label>
-                <input type="number" min="0" name="inventory_count" value={form.inventory_count} onChange={handleTextChange} className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
-                <p className="text-[10px] text-neutral-500 mt-1">Leave blank for unlimited</p>
+                <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Inventory Count</label>
+                <input type="number" min="0" name="inventory_count" value={form.inventory_count} onChange={handleTextChange} className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none" />
+                <p className="text-xs text-[#86868b] mt-1.5">Leave blank for unlimited</p>
               </div>
             </div>
             
-            <div className="pt-4 border-t border-neutral-200">
-              <h3 className="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-4">Urgency Elements</h3>
+            <div className="pt-6 border-t border-[#e5e5ea]">
+              <h3 className="text-sm font-medium text-[#1d1d1f] mb-5">Urgency Elements</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div>
-                  <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Stock Urgency Remaining (Leave blank to hide)</label>
-                  <input type="number" min="1" name="stock_urgency_remaining" value={form.stock_urgency_remaining} onChange={handleTextChange} placeholder="e.g., 17" className="w-full md:w-1/2 px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
-                  <p className="text-[10px] text-neutral-500 mt-1">Displays &quot;High Demand! Only X units remaining at this factory price.&quot;</p>
+                  <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Stock Urgency Remaining</label>
+                  <input type="number" min="1" name="stock_urgency_remaining" value={form.stock_urgency_remaining} onChange={handleTextChange} placeholder="e.g., 17" className="w-full md:w-1/2 px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none" />
+                  <p className="text-xs text-[#86868b] mt-1.5">Displays &quot;High Demand! Only X units remaining at this factory price.&quot;</p>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                   <div>
-                    <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Timer Title (Leave blank to hide)</label>
-                    <input name="urgency_timer_title" value={form.urgency_timer_title} onChange={handleTextChange} placeholder="e.g., Order within 2 hrs 15 mins" className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+                    <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Timer Title</label>
+                    <input name="urgency_timer_title" value={form.urgency_timer_title} onChange={handleTextChange} placeholder="e.g., Order within 2 hrs 15 mins" className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">Timer Subtitle</label>
-                    <input name="urgency_timer_subtitle" value={form.urgency_timer_subtitle} onChange={handleTextChange} placeholder="e.g., for priority same-day dispatch." className="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-1 focus:ring-[#10164A] focus:outline-none" />
+                    <label className="block text-sm font-medium text-[#1d1d1f] mb-2">Timer Subtitle</label>
+                    <input name="urgency_timer_subtitle" value={form.urgency_timer_subtitle} onChange={handleTextChange} placeholder="e.g., for priority same-day dispatch." className="w-full px-3 py-2 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none" />
                   </div>
                 </div>
               </div>
@@ -430,50 +430,50 @@ export default function ProductChangePage({ params }: { params: Promise<{ id: st
         </div>
 
         {/* Fieldset: Status & Visibility */}
-        <div className="bg-white border border-neutral-200 rounded-lg shadow-sm overflow-hidden">
-          <div className="bg-[#10164A] px-4 py-2 border-b border-neutral-200">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider">Status & Visibility</h2>
+        <div className="bg-white border border-[#e5e5ea] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden">
+          <div className="bg-[#f5f5f7] px-5 py-3 border-b border-[#e5e5ea]">
+            <h2 className="text-xs font-semibold text-[#86868b] uppercase tracking-wider">Status & Visibility</h2>
           </div>
           <div className="p-6">
             <div className="space-y-4">
               <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" name="is_active" checked={form.is_active} onChange={handleCheckboxChange} className="w-4 h-4 rounded border-neutral-300 text-[#10164A] focus:ring-[#10164A]" />
-                <span className="text-sm font-bold text-neutral-800">Is Active</span>
+                <input type="checkbox" name="is_active" checked={form.is_active} onChange={handleCheckboxChange} className="w-4 h-4 rounded border-[#c7c7cc] text-[#0071e3] focus:ring-[#0071e3]" />
+                <span className="text-sm font-medium text-[#1d1d1f]">Is Active</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" name="is_bestseller" checked={form.is_bestseller} onChange={handleCheckboxChange} className="w-4 h-4 rounded border-neutral-300 text-[#10164A] focus:ring-[#10164A]" />
-                <span className="text-sm font-bold text-neutral-800">Bestseller (shows badge)</span>
+                <input type="checkbox" name="is_bestseller" checked={form.is_bestseller} onChange={handleCheckboxChange} className="w-4 h-4 rounded border-[#c7c7cc] text-[#0071e3] focus:ring-[#0071e3]" />
+                <span className="text-sm font-medium text-[#1d1d1f]">Bestseller (shows badge)</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" name="is_wholesale_featured" checked={form.is_wholesale_featured} onChange={handleCheckboxChange} className="w-4 h-4 rounded border-neutral-300 text-[#10164A] focus:ring-[#10164A]" />
-                <span className="text-sm font-bold text-neutral-800">Featured in Wholesale Catalog</span>
+                <input type="checkbox" name="is_wholesale_featured" checked={form.is_wholesale_featured} onChange={handleCheckboxChange} className="w-4 h-4 rounded border-[#c7c7cc] text-[#0071e3] focus:ring-[#0071e3]" />
+                <span className="text-sm font-medium text-[#1d1d1f]">Featured in Wholesale Catalog</span>
               </label>
             </div>
           </div>
         </div>
 
-        {/* Form Actions (Django-style sticky bar) */}
-        <div className="bg-neutral-100 border border-neutral-200 rounded-lg p-4 flex items-center justify-between shadow-sm sticky bottom-4 z-10">
+        {/* Form Actions (Sticky Bar) */}
+        <div className="bg-white/80 backdrop-blur-xl border border-[#e5e5ea] rounded-2xl p-4 flex items-center justify-between shadow-[0_-4px_20px_rgba(0,0,0,0.04)] sticky bottom-4 z-10">
           {!isNew ? (
             <button
               type="button"
               onClick={handleDelete}
               disabled={saving}
-              className="px-4 py-2 bg-red-600 text-white text-sm font-bold rounded hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+              className="px-5 py-2.5 bg-white border border-[#e5e5ea] text-[#ff3b30] text-sm font-medium rounded-full hover:bg-[#f5f5f7] disabled:opacity-50 transition-colors flex items-center gap-2 shadow-sm"
             >
               <Trash2 className="w-4 h-4" /> Delete
             </button>
           ) : <div />}
           
-          <div className="flex items-center gap-3">
-            <Link href="/admin/products" className="px-4 py-2 text-neutral-600 text-sm font-bold rounded hover:bg-neutral-200 transition-colors">
+          <div className="flex items-center gap-4">
+            <Link href="/admin/products" className="px-5 py-2.5 text-[#86868b] text-sm font-medium rounded-full hover:bg-[#f5f5f7] hover:text-[#1d1d1f] transition-colors">
               Cancel
             </Link>
             <button
               type="submit"
               disabled={saving || success}
-              className={`px-6 py-2 text-white text-sm font-bold rounded transition-colors flex items-center gap-2 disabled:opacity-50 ${
-                success ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-[#10164A] hover:bg-[#1c246e]'
+              className={`px-6 py-2.5 text-white text-sm font-medium rounded-full transition-all flex items-center gap-2 shadow-sm disabled:opacity-50 ${
+                success ? 'bg-[#34c759] hover:bg-[#34c759]' : 'bg-[#0071e3] hover:bg-[#0077ED]'
               }`}
             >
               {success ? (

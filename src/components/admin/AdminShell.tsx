@@ -57,7 +57,7 @@ export function AdminShell({ children, profile }: AdminShellProps) {
   }
 
   return (
-    <div className="flex h-screen bg-surface text-[#111111] font-admin selection:bg-[#0070f3] selection:text-white overflow-hidden">
+    <div className="flex h-screen bg-[#f5f5f7] text-[#1d1d1f] font-sans selection:bg-[#0071e3] selection:text-white overflow-hidden">
       
       {/* Mobile overlay */}
       {sidebarOpen && (
@@ -66,18 +66,18 @@ export function AdminShell({ children, profile }: AdminShellProps) {
 
       {/* SaaS Sidebar */}
       <aside className={`
-        fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white border-r border-border flex flex-col
+        fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white/80 backdrop-blur-xl border-r border-[#e5e5ea] flex flex-col
         transform transition-transform duration-200 ease-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         
         {/* Logo Area */}
-        <div className="h-14 flex items-center px-4 border-b border-border justify-between">
+        <div className="h-14 flex items-center px-6 border-b border-[#e5e5ea] justify-between">
           <RCreationLogo variant="full-horizontal" theme="light" iconSize={24} />
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1 hover:bg-[#f5f5f5] rounded">
             <X className="w-4 h-4 text-[#595959]" />
           </button>
-          <div className="hidden lg:flex w-6 h-6 rounded bg-[#f5f5f5] border border-border items-center justify-center text-[#595959] shadow-sm">
+          <div className="hidden lg:flex w-6 h-6 rounded-md bg-[#f5f5f7] border border-[#e5e5ea] items-center justify-center text-[#86868b] shadow-sm">
             <Command className="w-3.5 h-3.5" />
           </div>
         </div>
@@ -88,7 +88,7 @@ export function AdminShell({ children, profile }: AdminShellProps) {
             <label htmlFor="admin-search" className="sr-only">Search admin</label>
             <Search className="w-4 h-4 text-[#595959] absolute left-3 top-1/2 -translate-y-1/2" />
             <input id="admin-search" type="text" placeholder="Search..." 
-              className="w-full pl-9 pr-3 py-1.5 bg-[#f5f5f5] border border-transparent rounded-md text-xs focus:ring-1 focus:ring-[#0070f3] focus:border-[#0070f3] focus:bg-white transition-all outline-none" />
+              className="w-full pl-9 pr-3 py-1.5 bg-[#f5f5f7] border border-transparent rounded-lg text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:bg-white focus:border-[#d2d2d7] focus:ring-4 focus:ring-[#0071e3]/10 transition-all outline-none" />
           </div>
         </div>
 
@@ -97,7 +97,7 @@ export function AdminShell({ children, profile }: AdminShellProps) {
             if (item.group) {
               return (
                 <div key={`group-${index}`} className="pt-4 pb-1">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#595959] px-2">{item.group}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[#86868b] px-3">{item.group}</p>
                 </div>
               );
             }
@@ -109,13 +109,13 @@ export function AdminShell({ children, profile }: AdminShellProps) {
               <Link 
                 key={href} 
                 href={href}
-                className={`flex items-center gap-3 px-2 py-1.5 rounded-md text-sm font-medium transition-colors group ${
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all group ${
                   isActive 
-                    ? 'bg-[#f5f5f5] text-[#111111]' 
-                    : 'text-[#444444] hover:bg-[#f5f5f5] hover:text-[#111111]'
+                    ? 'bg-[#0071e3] text-white shadow-sm' 
+                    : 'text-[#1d1d1f] hover:bg-[#f5f5f7]'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-[#0070f3]' : 'text-[#595959] group-hover:text-[#111111]'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#86868b] group-hover:text-[#1d1d1f]'}`} />
                 {item.name}
               </Link>
             );
@@ -123,14 +123,14 @@ export function AdminShell({ children, profile }: AdminShellProps) {
         </nav>
 
         {/* User Context */}
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-[#e5e5ea]">
           <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0070f3] to-[#2aabb0] flex items-center justify-center text-white shadow-inner">
+            <div className="w-9 h-9 rounded-full bg-[#f5f5f7] border border-[#e5e5ea] flex items-center justify-center text-[#1d1d1f] shadow-sm">
               <User className="w-4 h-4" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-[#111111] truncate">{profile?.full_name || 'Admin User'}</p>
-              <p className="text-[10px] text-[#595959] font-mono uppercase truncate">{profile?.role || 'Superuser'}</p>
+              <p className="text-sm font-semibold text-[#1d1d1f] truncate">{profile?.full_name || 'Admin User'}</p>
+              <p className="text-[11px] text-[#86868b] truncate">{profile?.role || 'Superuser'}</p>
             </div>
           </div>
           
@@ -139,7 +139,7 @@ export function AdminShell({ children, profile }: AdminShellProps) {
             await signOutAdmin();
             window.location.href = '/admin/login';
           }}>
-            <button type="submit" className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-transparent border border-border rounded-md text-xs font-bold text-[#444444] hover:border-[#dc2626] hover:text-[#dc2626] hover:bg-[#dc2626]/5 transition-colors">
+            <button type="submit" className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-white border border-[#e5e5ea] shadow-sm rounded-lg text-sm font-medium text-[#1d1d1f] hover:bg-[#f5f5f7] hover:text-[#ff3b30] transition-colors">
               <LogOut className="w-3.5 h-3.5" /> Sign Out
             </button>
           </form>
@@ -149,20 +149,20 @@ export function AdminShell({ children, profile }: AdminShellProps) {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col relative z-10 min-w-0">
         {/* Top Navbar */}
-        <header className="h-14 bg-white border-b border-border flex items-center justify-between px-4 lg:px-6 shrink-0">
+        <header className="h-14 bg-white/80 backdrop-blur-xl border-b border-[#e5e5ea] flex items-center justify-between px-6 shrink-0 sticky top-0 z-30">
           <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-1.5 hover:bg-[#f5f5f5] rounded-md">
-              <Menu className="w-5 h-5 text-[#595959]" />
+            <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-1.5 hover:bg-[#f5f5f7] rounded-md transition-colors">
+              <Menu className="w-5 h-5 text-[#1d1d1f]" />
             </button>
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-[#595959]">rcreation</span>
-              <span className="text-[#eaeaea]">/</span>
-              <span className="font-bold text-[#111111]">Admin Console</span>
+              <span className="text-[#86868b] font-medium">rcreation</span>
+              <span className="text-[#d2d2d7]">/</span>
+              <span className="font-semibold text-[#1d1d1f]">Admin Console</span>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <Link href="/" target="_blank" className="hidden sm:flex text-xs font-bold text-[#0070f3] hover:underline items-center gap-1">
-              View Site <ArrowUpRight className="w-3 h-3" />
+          <div className="flex items-center gap-5">
+            <Link href="/" target="_blank" className="hidden sm:flex text-sm font-medium text-[#0071e3] hover:underline items-center gap-1 transition-all">
+              View Site <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
             <AdminNotifications />
           </div>
