@@ -3,6 +3,8 @@ import { getCustomerUploads } from '@/lib/actions/admin-uploads';
 import { Image as ImageIcon, Download, ExternalLink, Calendar, HardDrive } from 'lucide-react';
 import { format } from 'date-fns';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminUploadsPage() {
   const uploads = await getCustomerUploads();
 

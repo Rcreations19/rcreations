@@ -57,6 +57,9 @@ export async function loginAdmin(formData: FormData) {
   const code = (100000 + (arr[0] % 900000)).toString();
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 mins
 
+  // Clean up any existing OTPs for this email to prevent .single() multiple rows error
+  await adminSupabase.from('admin_otps' as any).delete().eq('email', email);
+
   // Store ONLY the OTP code + user identity — never store session tokens
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error: insertError } = await adminSupabase.from('admin_otps' as any).insert({
@@ -103,18 +106,19 @@ export async function verifyAdminOtp(formData: FormData) {
   const adminSupabase = await getServiceRoleClient();
   
   // Find OTP (no tokens stored — only code + expiry)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await adminSupabase
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .from('admin_otps' as any)
     .select('*')
     .eq('email', email)
     .gte('expires_at', new Date().toISOString())
-    .single();
+    .order('expires_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   const otp = data as { id: string; code: string; attempts: number } | null;
 
   if (error || !otp) {
+    console.error('[Auth] verifyAdminOtp lookup failed', { error });
     return { error: 'Invalid or expired code.' };
   }
 
