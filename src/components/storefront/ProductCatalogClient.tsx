@@ -2,7 +2,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Search, ShoppingBag, Star, Check, Filter, X, ChevronDown, Flame } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -30,10 +29,21 @@ export default function ProductCatalogClient({
   categories: Record<string, any>[],
   initialCategory?: string
 }) {
-  // ALL hooks must be called unconditionally at the top — no early returns before hooks
-  const searchParams = useSearchParams();
+  // Remove useSearchParams to prevent BAILOUT_TO_CLIENT_SIDE_RENDERING on the server
   const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'all');
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Read search params only on the client side after hydration
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const search = params.get('search');
+      if (search) {
+        setSearchQuery(search);
+      }
+    }
+  }, []);
+
   const [sortBy, setSortBy] = useState<'recommended' | 'price-low' | 'price-high' | 'rating' | 'moq'>('recommended');
   const [maxPrice, setMaxPrice] = useState(5000);
   const [onlyWholesale, setOnlyWholesale] = useState(false);

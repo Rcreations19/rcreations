@@ -11,6 +11,7 @@ export const metadata: Metadata = {
     title: 'Wholesale B2B | R Creation',
     description:
       'Factory-direct wholesale photo frames, crystal trophies, and wooden mementos from Gudiyattam, Vellore. MOQ 10 units.',
+    images: ['/og-default.png'],
   },
 };
 

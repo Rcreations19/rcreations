@@ -9,10 +9,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://rcreationframes.com'),
+  metadataBase: new URL('https://www.rcreationframes.com'),
   title: {
     template: '%s | R Creation',
-    default: 'R Creation — Premium Photo Frames & Custom Gifts',
+    default: 'R Creation — Photo Frames & Custom Gifts in Vellore | Gudiyattam',
   },
   description: 'Wholesale photo frames & crystal trophies in Vellore & Gudiyattam. Factory-direct pricing for studios and events. Manufacturer of synthetic frames, wooden mementos, and personalized gifts. MOQ 10 units.',
   keywords: ['R Creation', 'photo frames', 'Gudiyattam', 'Vellore', 'wholesale frames', 'crystal trophies', 'wooden mementos', 'custom gifts', 'Tamil Nadu'],
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://rcreationframes.com/og-default.png',
+        url: 'https://www.rcreationframes.com/og-default.png',
         width: 1200,
         height: 630,
         alt: 'R Creation — Premium Photo Frames & Custom Gifts',
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'R Creation — Premium Photo Frames & Custom Gifts',
     description: 'Factory-direct wholesale & retail. Synthetic photo frames, crystal trophies, LED acrylic displays from Gudiyattam, Vellore.',
-    images: ['https://rcreationframes.com/og-default.png'],
+    images: ['https://www.rcreationframes.com/og-default.png'],
   },
 };
 
@@ -71,15 +71,20 @@ const cormorant = Cormorant_Garamond({
 
 const orgSchema = {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "@id": "https://rcreationframes.com/#organization",
+  "@type": "Store",
+  "@id": "https://www.rcreationframes.com/#organization",
   "name": "R Creation",
-  "url": "https://rcreationframes.com",
-  "logo": "https://rcreationframes.com/logo.svg",
-  "image": "https://rcreationframes.com/og-default.png",
+  "url": "https://www.rcreationframes.com",
+  "logo": "https://www.rcreationframes.com/logo.svg",
+  "image": "https://www.rcreationframes.com/og-default.png",
+  "telephone": "+91-8754940610",
+  "email": "rcreationsstudio@gmail.com",
   "description": "Manufacturer & wholesaler of synthetic photo frames, crystal trophies, wooden mementos, and personalized gifts.",
   "priceRange": "₹₹",
-  "sameAs": [],
+  "sameAs": [
+    "https://www.instagram.com/thercreationframes",
+    "https://www.facebook.com/profile.php?id=100091502950429"
+  ],
   "contactPoint": {
     "@type": "ContactPoint",
     "telephone": "+91-8754940610",
@@ -97,8 +102,8 @@ const orgSchema = {
   },
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": "12.9472",
-    "longitude": "78.8711"
+    "latitude": "12.94720",
+    "longitude": "78.87110"
   },
   "openingHoursSpecification": [
     {
@@ -114,12 +119,12 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "R Creation",
-  "url": "https://rcreationframes.com",
+  "url": "https://www.rcreationframes.com",
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "https://rcreationframes.com/products?search={search_term_string}"
+      "urlTemplate": "https://www.rcreationframes.com/products?search={search_term_string}"
     },
     "query-input": "required name=search_term_string"
   }

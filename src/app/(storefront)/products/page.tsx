@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     title: 'Product Catalog | R Creation',
     description:
       'Factory-direct photo frames, crystal trophies, and custom gifts from Gudiyattam, Vellore.',
+    images: ['/og-default.png'],
   },
 };
 

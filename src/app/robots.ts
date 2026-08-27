@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin/', '/auth/', '/account/', '/checkout/', '/api/', '/_next/'],
     },
-    sitemap: 'https://rcreationframes.com/sitemap.xml',
+    sitemap: 'https://www.rcreationframes.com/sitemap.xml',
   };
 }
