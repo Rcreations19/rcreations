@@ -824,6 +824,8 @@ export interface CustomFrameConfig {
   customEngravingText?: string;
   quantity: number;
   thicknessInches?: number;
+  uploadedPhotoUrl?: string;
+  uploadId?: string;
 }
 
 export interface CartItem {

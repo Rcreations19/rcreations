@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useMemo, useState, useEffect } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, Lightformer, useTexture, Center } from '@react-three/drei';
 import * as THREE from 'three';
 import { Maximize, Minimize } from 'lucide-react';
@@ -211,10 +211,10 @@ function createLenticularNormalMap() {
 function PhotoCanvasFallback({ widthCm, heightCm, finish }: { widthCm: number; heightCm: number; finish?: string }) {
   const w = widthCm / 10;
   const h = heightCm / 10;
-  const pParams: THREE.MeshPhysicalMaterialParameters = { roughness: 0.85, metalness: 0.0, clearcoat: 0 };
+  const pParams: THREE.MeshPhysicalMaterialParameters = { roughness: 1.0, metalness: 0.0, clearcoat: 0 };
   
   if (finish === 'Matte') {
-    pParams.roughness = 0.85;
+    pParams.roughness = 1.0;
     pParams.clearcoat = 0.0;
   } else if (finish === 'Glossy') {
     pParams.roughness = 0.05;
@@ -238,10 +238,12 @@ function PhotoCanvasFallback({ widthCm, heightCm, finish }: { widthCm: number; h
   }
 
   return (
-    <mesh position={[0, 0, 0.03]}>
-      <planeGeometry args={[w * 0.98, h * 0.98]} />
-      <meshPhysicalMaterial color="#2aabb0" {...pParams} />
-    </mesh>
+    <group position={[0, 0, 0.03]}>
+      <mesh receiveShadow>
+        <planeGeometry args={[w * 0.98, h * 0.98]} />
+        <meshPhysicalMaterial color="#f0f0f0" {...pParams} />
+      </mesh>
+    </group>
   );
 }
 
@@ -254,6 +256,7 @@ function PhotoCanvasStandard({ photoUrl, widthCm, heightCm, finish }: { photoUrl
   useEffect(() => {
     if (texture) {
       texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 16;
     }
   }, [texture]);
 
@@ -262,17 +265,17 @@ function PhotoCanvasStandard({ photoUrl, widthCm, heightCm, finish }: { photoUrl
     return null;
   }, [finish]);
 
-  const pParams: THREE.MeshPhysicalMaterialParameters = { roughness: 0.85, metalness: 0.0, clearcoat: 0 };
+  const pParams: THREE.MeshPhysicalMaterialParameters = { roughness: 0.4, metalness: 0.0, clearcoat: 0 };
 
   if (finish === 'Matte') {
-    pParams.roughness = 0.85;
+    pParams.roughness = 0.5;
     pParams.metalness = 0.0;
     pParams.clearcoat = 0.0;
   } else if (finish === 'Glossy') {
-    pParams.roughness = 0.05;
-    pParams.metalness = 0.05;
+    pParams.roughness = 0.1;
+    pParams.metalness = 0.0;
     pParams.clearcoat = 1.0;
-    pParams.clearcoatRoughness = 0.02;
+    pParams.clearcoatRoughness = 0.05;
   } else if (finish === 'Glitter') {
     pParams.roughness = 0.45;
     pParams.metalness = 0.25;
@@ -308,8 +311,14 @@ function PhotoCanvasLenticular({ photoUrl, photoUrl2, widthCm, heightCm }: { pho
   const texture2 = textures[1];
   
   useEffect(() => {
-    if (texture) texture.colorSpace = THREE.SRGBColorSpace;
-    if (texture2) texture2.colorSpace = THREE.SRGBColorSpace;
+    if (texture) {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 16;
+    }
+    if (texture2) {
+      texture2.colorSpace = THREE.SRGBColorSpace;
+      texture2.anisotropy = 16;
+    }
   }, [texture, texture2]);
 
   const lenticularNormalMap = useMemo(() => createLenticularNormalMap(), []);
@@ -388,23 +397,40 @@ function GlassPane({ widthCm, heightCm, glassType }: { widthCm: number; heightCm
   
   if ((glassType as string) === 'none') return null;
 
-  const roughness = glassType === 'anti-glare-acrylic' ? 0.3 : 0.05;
-  const transmission = glassType === 'anti-glare-acrylic' ? 0.8 : 0.95;
-
   return (
     <mesh position={[0, 0, 0.15]}>
       <planeGeometry args={[w, h]} />
       <meshPhysicalMaterial 
         transparent={true} 
-        opacity={1.0} 
-        roughness={roughness} 
-        transmission={transmission} 
-        ior={1.5}
-        thickness={0.1}
-        clearcoat={glassType === 'clear-glass' ? 1 : 0}
+        opacity={glassType === 'anti-glare-acrylic' ? 0.1 : 0.05} 
+        roughness={glassType === 'anti-glare-acrylic' ? 0.4 : 0.0} 
+        metalness={0.1}
+        clearcoat={glassType === 'clear-glass' ? 1.0 : 0.0}
+        clearcoatRoughness={0.0}
       />
     </mesh>
   );
+}
+
+function CameraAdjuster({ widthCm, heightCm, thicknessCm }: { widthCm: number; heightCm: number; thicknessCm: number }) {
+  const { camera, size } = useThree();
+  
+  useEffect(() => {
+    if (camera.type === 'PerspectiveCamera') {
+      const pCam = camera as THREE.PerspectiveCamera;
+      const aspect = size.width / size.height;
+      const totalW = (widthCm + thicknessCm * 2) / 10;
+      const totalH = (heightCm + thicknessCm * 2) / 10;
+      const margin = 1.1; // 10% margin
+      const fov = pCam.fov * (Math.PI / 180);
+      const distH = (totalH / 2 * margin) / Math.tan(fov / 2);
+      const distW = (totalW / 2 * margin) / (aspect * Math.tan(fov / 2));
+      pCam.position.set(0, 0, Math.max(distH, distW, 3)); // Ensure min distance
+      pCam.updateProjectionMatrix();
+    }
+  }, [widthCm, heightCm, thicknessCm, size, camera]);
+
+  return null;
 }
 
 interface ThreeDFrameViewerProps {
@@ -443,7 +469,7 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
   };
 
   return (
-    <div ref={containerRef} className={`w-full h-full min-h-[500px] ${isFullscreen ? 'bg-surface-muted' : 'bg-transparent'} rounded-3xl overflow-hidden relative cursor-grab active:cursor-grabbing group`}>
+    <div ref={containerRef} className={`w-full h-full ${isFullscreen ? 'bg-surface-muted min-h-[500px]' : 'bg-transparent'} rounded-3xl overflow-hidden relative cursor-grab active:cursor-grabbing group`}>
       
       {/* Fullscreen Toggle */}
       <button 
@@ -454,7 +480,8 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
         {isFullscreen ? <Minimize className="w-5 h-5 text-gray-700" /> : <Maximize className="w-5 h-5 text-gray-700" />}
       </button>
 
-      <Canvas frameloop="demand" shadows camera={{ position: [0, 0, Math.max(widthCm, heightCm) / 6.5], fov: 40 }}>
+      <Canvas frameloop={!photoUrl ? "always" : "demand"} shadows camera={{ position: photoUrl ? [0, 0, 10] : [-5, 2, 10], fov: 40 }}>
+        <CameraAdjuster widthCm={widthCm} heightCm={heightCm} thicknessCm={thicknessCm} />
         {/* Soft Physical Lighting - Maintain contrast and cast soft shadows */}
         <ambientLight intensity={0.4} />
         {/* Main light from front to illuminate diffuse maps and cast soft shadow */}
@@ -510,6 +537,8 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
           enableZoom={true}
           minDistance={2}
           maxDistance={30}
+          autoRotate={!photoUrl}
+          autoRotateSpeed={1.5}
         />
       </Canvas>
     </div>

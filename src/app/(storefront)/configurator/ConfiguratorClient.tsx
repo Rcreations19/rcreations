@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { uploadCustomerPhoto } from '@/lib/actions/customer-uploads';
-import { ArrowRight, ArrowLeft, Plus, Minus, Ruler, CheckCircle2, UploadCloud, Trash2, Layers2, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Plus, Minus, Ruler, CheckCircle2, UploadCloud, Trash2, Layers2, ShieldCheck, Zap, PackageX, Home } from 'lucide-react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import type { GlassType, MountBoard } from '@/lib/supabase/types';
 import dynamic from 'next/dynamic';
@@ -162,10 +162,16 @@ export default function ConfiguratorClient({ config }: { config: Record<string, 
 
   if (frames.length === 0 && backlit.length === 0) {
     return (
-      <div className="bg-neutral-50 min-h-screen pt-32 pb-24 flex items-center justify-center">
-        <div className="bg-white p-10 rounded-2xl shadow-sm text-center max-w-md">
-          <h2 className="text-xl font-bold text-neutral-900 mb-4">Configurator Unavailable</h2>
-          <p className="text-neutral-500 mb-6">Pricing configuration has not been set up. Please upload the Rate Card in the admin site settings to enable the configurator.</p>
+      <div className="bg-neutral-50 min-h-screen pt-20 md:pt-32 pb-24 flex flex-col items-center justify-center px-4">
+        <div className="bg-white p-10 rounded-[2rem] shadow-sm text-center max-w-md border border-neutral-100 flex flex-col items-center">
+          <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center mb-6">
+            <PackageX className="w-10 h-10 text-neutral-400" />
+          </div>
+          <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 mb-3">Configurator Unavailable</h2>
+          <p className="text-sm text-neutral-500 mb-8 leading-relaxed">Pricing configuration has not been set up. Please upload the Rate Card in the admin site settings to enable the configurator.</p>
+          <a href="/" className="px-8 py-3 bg-[#10164A] text-white rounded-full text-sm font-semibold transition-all flex items-center gap-2 hover:bg-[#10164A]/90">
+            <Home className="w-4 h-4" /> Return Home
+          </a>
         </div>
       </div>
     );
@@ -255,14 +261,14 @@ export default function ConfiguratorClient({ config }: { config: Record<string, 
   };
 
   return (
-    <div className="bg-neutral-50 min-h-screen pt-32 md:pt-28 pb-24 overflow-x-hidden">
+    <div className="bg-neutral-50 min-h-screen pt-4 md:pt-28 pb-24 overflow-x-hidden">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="mb-14 max-w-4xl mx-auto">
-          <div className="text-center mb-10">
-            <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-neutral-900">Configurator</h1>
-            <p className="text-lg font-medium text-neutral-500 mt-4 max-w-xl mx-auto">Configure your product using live pricing.</p>
+        <div className="mb-4 md:mb-14 max-w-4xl mx-auto">
+          <div className="text-center mb-4 md:mb-10">
+            <h1 className="text-2xl sm:text-4xl md:text-6xl font-semibold tracking-tight text-neutral-900">Configurator</h1>
+            <p className="text-sm md:text-lg font-medium text-neutral-500 mt-2 md:mt-4 max-w-xl mx-auto hidden sm:block">Configure your product using live pricing.</p>
           </div>
           
           <div className="relative flex justify-between items-center max-w-2xl mx-auto px-4">
@@ -522,7 +528,7 @@ export default function ConfiguratorClient({ config }: { config: Record<string, 
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
               className="relative lg:sticky top-0 lg:top-32 bg-transparent overflow-hidden flex flex-col items-center"
             >
-              <div className="w-full h-[300px] sm:h-[400px] lg:h-[600px] mb-8">
+              <div className="w-full h-[280px] sm:h-[400px] lg:h-[600px] mb-4 md:mb-8">
                 <ThreeDFrameViewer 
                   materialId={selectedMaterial.id} 
                   widthCm={widthCm} 

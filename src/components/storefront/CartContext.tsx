@@ -10,7 +10,7 @@ interface CartContextType {
   openCart: () => void;
   closeCart: () => void;
   addPreset: (product: { id: string; title: string; price: number; wholesale_price?: number; image: string; subtitle: string; moq: number }, qty?: number, customText?: string) => void;
-  addCustom: (config: CustomFrameConfig, price: number) => void;
+  addCustom: (config: CustomFrameConfig, price: number, image?: string) => void;
   updateQuantity: (id: string, delta: number) => void;
   removeItem: (id: string) => void;
   clearCart: () => void;
@@ -25,7 +25,21 @@ function loadCart(): CartItem[] {
   if (typeof window === 'undefined') return [];
   try {
     const stored = localStorage.getItem(CART_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    if (!stored) return [];
+    
+    let items = JSON.parse(stored) as CartItem[];
+    
+    // Retroactively fix any existing items that were saved with the broken direct Supabase URL
+    items = items.map(item => {
+      if (item.type === 'custom' && item.image && item.image.includes('/storage/v1/object/public/customer-uploads/')) {
+         if (item.customConfig?.uploadedPhotoUrl) {
+            item.image = `/api/secure-image?path=${encodeURIComponent(item.customConfig.uploadedPhotoUrl)}`;
+         }
+      }
+      return item;
+    });
+    
+    return items;
   } catch {
     return [];
   }
@@ -88,14 +102,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setIsOpen(true);
   }, []);
 
-  const addCustom = useCallback((config: CustomFrameConfig, price: number) => {
+  const addCustom = useCallback((config: CustomFrameConfig, price: number, image?: string) => {
     const id = `custom-frame-${Date.now()}`;
     const qty = config.quantity || 1;
+    
+    // Construct the proxy URL if uploadedPhotoUrl is available and no direct image was provided
+    let finalImage = image;
+    if (!finalImage && config.uploadedPhotoUrl) {
+      finalImage = `/api/secure-image?path=${encodeURIComponent(config.uploadedPhotoUrl)}`;
+    }
+    
     setItems(prev => [...prev, {
       id,
       title: 'Custom Frame / Memento Order',
       price: Math.round(price / qty),
-      image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1000&auto=format&fit=crop',
+      image: finalImage || 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1000&auto=format&fit=crop',
       type: 'custom' as const,
       quantity: qty,
       details: `${config.widthCm}x${config.heightCm} cm • ${config.glassType} • Custom Laser Engraved`,

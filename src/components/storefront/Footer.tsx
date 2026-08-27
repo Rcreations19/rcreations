@@ -21,10 +21,10 @@ export default function Footer() {
               Vellore & Gudiyattam&rsquo;s premier manufacturer of synthetic photo frames, optic crystal trophies, and customized wooden mementos. Factory-direct pricing since 2015.
             </p>
             <div className="flex gap-4 pt-2">
-              <a href="https://instagram.com/rcreationframes" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-300 hover:bg-accent hover:text-[#000420] transition-all" aria-label="Instagram">
+              <a href="https://www.instagram.com/thercreationframes" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-300 hover:bg-accent hover:text-[#000420] transition-all" aria-label="Instagram">
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="https://facebook.com/rcreationframes" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-300 hover:bg-accent hover:text-[#000420] transition-all" aria-label="Facebook">
+              <a href="https://www.facebook.com/profile.php?id=100091502950429" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-300 hover:bg-accent hover:text-[#000420] transition-all" aria-label="Facebook">
                 <Facebook className="w-4 h-4" />
               </a>
             </div>
