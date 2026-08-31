@@ -3,9 +3,122 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, ShoppingBag, Star, Check, Filter, X, ChevronDown, Flame } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Star, Check, Filter, X, ChevronDown, Flame } from 'lucide-react';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { useCart } from '@/components/storefront/CartContext';
+
+export type Product = {
+  id: string;
+  slug: string;
+  title: string;
+  price: number;
+  wholesale_price: number;
+  moq: number;
+  image_url: string;
+  gallery_images?: string[];
+  is_bestseller?: boolean;
+  is_wholesale_featured?: boolean;
+  rating: number;
+  subtitle?: string;
+  category?: { name: string };
+};
+
+export type PresetItem = {
+  id: string;
+  title: string;
+  price: number;
+  wholesale_price: number;
+  image: string;
+  subtitle: string;
+  moq: number;
+};
+
+function ProductCard({ product, addPreset, fadeUp }: { product: Product, addPreset: (preset: PresetItem) => void, fadeUp: Variants }) {
+  const [hasHovered, setHasHovered] = useState(false);
+  const discount = Math.round(((product.price - product.wholesale_price) / product.price) * 100);
+
+  return (
+    <motion.div 
+      layout
+      variants={fadeUp}
+      className="group bg-white rounded-xl overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-400 flex flex-col relative border border-neutral-100/60"
+    >
+      {/* Image Area */}
+      <Link 
+        href={`/products/${product.slug}`} 
+        className="relative aspect-square sm:aspect-[4/5] bg-neutral-100 overflow-hidden group/image block"
+        onMouseEnter={() => { if (!hasHovered) setHasHovered(true); }}
+      >
+        {/* Primary Image */}
+        <Image 
+          src={product.image_url} 
+          alt={product.title} 
+          fill 
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" 
+          className={`object-cover transform transition-all duration-700 ease-out group-hover/image:scale-110 ${
+            product.gallery_images && product.gallery_images.length > 1 ? 'group-hover/image:opacity-0' : ''
+          }`} 
+        />
+        
+        {/* Secondary Image (Hover State) */}
+        {hasHovered && product.gallery_images && product.gallery_images.length > 1 && (
+          <Image
+            src={product.gallery_images[1]}
+            alt={`${product.title} Alternate View`}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover opacity-0 transition-all duration-700 ease-out absolute inset-0 group-hover/image:opacity-100 group-hover/image:scale-110"
+          />
+        )}
+        {/* Badges */}
+        <div className="absolute top-0 left-0 flex flex-col z-10 pointer-events-none">
+          {discount > 0 ? (
+            <span className="bg-red-600 text-white text-[10px] sm:text-xs font-bold px-2 py-1 shadow-sm rounded-br-lg">
+              {discount}% OFF
+            </span>
+          ) : product.is_bestseller ? (
+            <span className="bg-orange-500 text-white text-[10px] sm:text-xs font-bold px-2 py-1 shadow-sm rounded-br-lg flex items-center gap-1">
+              <Flame className="w-3 h-3" /> Best Seller
+            </span>
+          ) : null}
+        </div>
+      </Link>
+
+      {/* Content Area */}
+      <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between bg-white">
+        <Link href={`/products/${product.slug}`} className="block group/link mb-2">
+          <h3 className="text-sm sm:text-base font-medium tracking-tight text-neutral-900 mb-0.5 leading-snug group-hover/link:text-accent transition-colors line-clamp-2">
+            {product.title}
+          </h3>
+          <div className="flex items-center gap-1 opacity-90 mb-1">
+            <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-600 fill-green-600" />
+            <span className="text-xs sm:text-sm font-semibold text-neutral-600">{product.rating} <span className="text-neutral-400 font-normal">(120+)</span></span>
+          </div>
+        </Link>
+        
+        {/* Pricing */}
+        <div className="mt-auto mb-3 flex flex-wrap items-baseline gap-1.5 sm:gap-2">
+          {product.wholesale_price && product.moq ? (
+            <>
+              <span className="text-base sm:text-lg font-bold tracking-tight text-neutral-900">₹{product.wholesale_price}</span>
+              <span className="text-[10px] sm:text-xs font-medium text-neutral-400 line-through">₹{product.price}</span>
+            </>
+          ) : (
+            <span className="text-base sm:text-lg font-bold tracking-tight text-neutral-900">₹{product.price}</span>
+          )}
+        </div>
+        
+        {/* Explicit Add to Cart Button */}
+        <button 
+          onClick={(e) => { e.preventDefault(); addPreset({ id: product.id, title: product.title, price: product.price, wholesale_price: product.wholesale_price, image: product.image_url, subtitle: product.subtitle || '', moq: product.moq }); }}
+          className="w-full bg-white border border-neutral-200 text-primary py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold tracking-tight flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] active:bg-neutral-50 hover:border-primary hover:bg-neutral-50"
+        >
+          Add to cart
+        </button>
+      </div>
+    </motion.div>
+  );
+}
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -25,8 +138,8 @@ export default function ProductCatalogClient({
   categories,
   initialCategory
 }: { 
-  initialProducts: Record<string, any>[], 
-  categories: Record<string, any>[],
+  initialProducts: Product[], 
+  categories: { id: string, name: string }[],
   initialCategory?: string
 }) {
   // Remove useSearchParams to prevent BAILOUT_TO_CLIENT_SIDE_RENDERING on the server
@@ -39,7 +152,7 @@ export default function ProductCatalogClient({
       const params = new URLSearchParams(window.location.search);
       const search = params.get('search');
       if (search) {
-        setSearchQuery(search);
+        setTimeout(() => setSearchQuery(search), 0);
       }
     }
   }, []);
@@ -47,7 +160,6 @@ export default function ProductCatalogClient({
   const [sortBy, setSortBy] = useState<'recommended' | 'price-low' | 'price-high' | 'rating' | 'moq'>('recommended');
   const [maxPrice, setMaxPrice] = useState(5000);
   const [onlyWholesale, setOnlyWholesale] = useState(false);
-
   const [isFiltering, setIsFiltering] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const { addPreset } = useCart();
@@ -62,8 +174,10 @@ export default function ProductCatalogClient({
     return () => document.body.classList.remove('scroll-locked');
   }, [showMobileFilters]);
 
-  const handleFilterChange = (setter: any, value: any) => {
+  const handleFilterChange = <T,>(setter: (value: T) => void, value: T) => {
+    setIsFiltering(true);
     setter(value);
+    setTimeout(() => setIsFiltering(false), 300);
   };
 
   const filteredProducts = useMemo(() => {
@@ -193,7 +307,7 @@ export default function ProductCatalogClient({
             <div className="flex-1 relative">
               <select 
                 value={sortBy} 
-                onChange={(e) => handleFilterChange(setSortBy, e.target.value)}
+                onChange={(e) => handleFilterChange(setSortBy, e.target.value as any)}
                 className="w-full h-full appearance-none bg-transparent text-neutral-700 text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wider outline-none focus:ring-0 cursor-pointer"
               >
                 <option value="recommended">Sort</option>
@@ -218,7 +332,7 @@ export default function ProductCatalogClient({
                 { id: 'rating', label: 'Top Rated' },
                 { id: 'moq', label: 'Lowest MOQ' },
               ].map((s) => (
-                <button key={s.id} onClick={() => handleFilterChange(setSortBy, s.id)}
+                <button key={s.id} onClick={() => handleFilterChange(setSortBy, s.id as any)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all shrink-0 ${
                     sortBy === s.id ? 'bg-accent text-primary' : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'
                   }`}>
@@ -262,87 +376,9 @@ export default function ProductCatalogClient({
               className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6"
             >
               <AnimatePresence>
-                {filteredProducts.map((product) => {
-                  const discount = Math.round(((product.price - product.wholesale_price) / product.price) * 100);
-                  
-                  return (
-                  <motion.div 
-                    key={product.id}
-                    layout
-                    variants={fadeUp}
-                    className="group bg-white rounded-xl overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-400 flex flex-col relative border border-neutral-100/60"
-                  >
-                    {/* Image Area */}
-                    <Link href={`/products/${product.slug}`} className="relative aspect-square sm:aspect-[4/5] bg-neutral-100 overflow-hidden group/image block">
-                      {/* Primary Image */}
-                      <Image 
-                        src={product.image_url} 
-                        alt={product.title} 
-                        fill 
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" 
-                        className={`object-cover transform transition-all duration-700 ease-out group-hover/image:scale-110 ${
-                          product.gallery_images && product.gallery_images.length > 1 ? 'group-hover/image:opacity-0' : ''
-                        }`} 
-                      />
-                      
-                      {/* Secondary Image (Hover State) */}
-                      {product.gallery_images && product.gallery_images.length > 1 && (
-                        <Image
-                          src={product.gallery_images[1]}
-                          alt={`${product.title} Alternate View`}
-                          fill
-                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                          className="object-cover opacity-0 transition-all duration-700 ease-out absolute inset-0 group-hover/image:opacity-100 group-hover/image:scale-110"
-                        />
-                      )}
-                      {/* Badges */}
-                      <div className="absolute top-0 left-0 flex flex-col z-10 pointer-events-none">
-                        {discount > 0 ? (
-                          <span className="bg-red-600 text-white text-[10px] sm:text-xs font-bold px-2 py-1 shadow-sm rounded-br-lg">
-                            {discount}% OFF
-                          </span>
-                        ) : product.is_bestseller ? (
-                          <span className="bg-orange-500 text-white text-[10px] sm:text-xs font-bold px-2 py-1 shadow-sm rounded-br-lg flex items-center gap-1">
-                            <Flame className="w-3 h-3" /> Best Seller
-                          </span>
-                        ) : null}
-                      </div>
-                    </Link>
-
-                    {/* Content Area */}
-                    <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between bg-white">
-                      <Link href={`/products/${product.slug}`} className="block group/link mb-2">
-                        <h3 className="text-sm sm:text-base font-medium tracking-tight text-neutral-900 mb-0.5 leading-snug group-hover/link:text-accent transition-colors line-clamp-2">
-                          {product.title}
-                        </h3>
-                        <div className="flex items-center gap-1 opacity-90 mb-1">
-                          <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-600 fill-green-600" />
-                          <span className="text-xs sm:text-sm font-semibold text-neutral-600">{product.rating} <span className="text-neutral-400 font-normal">(120+)</span></span>
-                        </div>
-                      </Link>
-                      
-                      {/* Pricing */}
-                      <div className="mt-auto mb-3 flex flex-wrap items-baseline gap-1.5 sm:gap-2">
-                        {product.wholesale_price && product.moq ? (
-                          <>
-                            <span className="text-base sm:text-lg font-bold tracking-tight text-neutral-900">₹{product.wholesale_price}</span>
-                            <span className="text-[10px] sm:text-xs font-medium text-neutral-400 line-through">₹{product.price}</span>
-                          </>
-                        ) : (
-                          <span className="text-base sm:text-lg font-bold tracking-tight text-neutral-900">₹{product.price}</span>
-                        )}
-                      </div>
-                      
-                      {/* Explicit Add to Cart Button */}
-                      <button 
-                        onClick={(e) => { e.preventDefault(); addPreset({ id: product.id, title: product.title, price: product.price, wholesale_price: product.wholesale_price, image: product.image_url, subtitle: product.subtitle, moq: product.moq }); }}
-                        className="w-full bg-white border border-neutral-200 text-primary py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold tracking-tight flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] active:bg-neutral-50 hover:border-primary hover:bg-neutral-50"
-                      >
-                        Add to cart
-                      </button>
-                    </div>
-                  </motion.div>
-                )})}
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} addPreset={addPreset} fadeUp={fadeUp} />
+                ))}
               </AnimatePresence>
             </motion.div>
           )}

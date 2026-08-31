@@ -2,8 +2,9 @@
 
 import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Mail, Lock, ArrowRight, Loader2, ShoppingBag, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/components/storefront/AuthContext';
 
@@ -42,7 +43,7 @@ function LoginForm() {
         {/* Brand Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 group">
-            <ShoppingBag className="w-8 h-8 text-accent group-hover:scale-110 transition-transform" />
+            <Image src="/logo.svg" alt="R Creation Logo" width={32} height={32} className="group-hover:scale-110 transition-transform" />
             <span className="text-2xl font-extrabold text-secondary tracking-tight">R Creation</span>
           </Link>
           <p className="text-sm text-neutral-500 mt-2">Welcome back! Sign in to your account.</p>

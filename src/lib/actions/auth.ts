@@ -5,7 +5,26 @@ import { rateLimit } from '../rate-limit';
 import { z } from 'zod';
 import { Resend } from 'resend';
 import { createClient as createStatelessClient } from '@supabase/supabase-js';
+import { createHash } from 'node:crypto';
 
+// Helper for premium email template
+const getOtpEmailHtml = (code: string, title: string, subtitle: string) => `
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px 20px; border: 1px solid #eaeaea; border-radius: 12px; background-color: #ffffff;">
+  <div style="text-align: center; margin-bottom: 24px;">
+    <img src="https://rcreationframes.com/logo.png" alt="R Creation" style="height: 48px; width: auto;" />
+  </div>
+  <h2 style="color: #10164A; text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 12px; margin-top: 0;">${title}</h2>
+  <p style="color: #555555; font-size: 15px; line-height: 1.5; text-align: center; margin-bottom: 32px; margin-top: 0;">
+    ${subtitle}
+  </p>
+  <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 32px;">
+    <span style="font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #10164A; font-family: monospace;">${code}</span>
+  </div>
+  <p style="color: #888888; font-size: 13px; text-align: center; margin: 0;">
+    This security code will expire in 10 minutes. If you didn't request this, you can safely ignore this email.
+  </p>
+</div>
+`;
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email format').max(255),
@@ -60,11 +79,14 @@ export async function loginAdmin(formData: FormData) {
   // Clean up any existing OTPs for this email to prevent .single() multiple rows error
   await adminSupabase.from('admin_otps' as any).delete().eq('email', email);
 
-  // Store ONLY the OTP code + user identity — never store session tokens
+  // Hash the OTP before storing it
+  const hashedCode = createHash('sha256').update(code).digest('hex');
+
+  // Store ONLY the hashed OTP code + user identity — never store session tokens
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error: insertError } = await adminSupabase.from('admin_otps' as any).insert({
     email,
-    code,
+    code: hashedCode,
     expires_at: expiresAt
   });
 
@@ -80,7 +102,11 @@ export async function loginAdmin(formData: FormData) {
       from: 'R Creation Security <noreply@rcreationframes.com>',
       to: email,
       subject: 'Your Admin Login Code',
-      html: `<p>Your R Creation Admin Login code is: <strong>${code}</strong></p><p>This code expires in 10 minutes.</p>`
+      html: getOtpEmailHtml(
+        code, 
+        'Admin Access Code', 
+        'Please use the following verification code to sign in to your R Creation Admin account.'
+      )
     });
   } catch (err) {
     console.error('[Auth] Failed to send OTP email', { message: (err as Error).message });
@@ -122,8 +148,11 @@ export async function verifyAdminOtp(formData: FormData) {
     return { error: 'Invalid or expired code.' };
   }
 
+  // Hash the user-provided code to compare with the stored hash
+  const hashedInput = createHash('sha256').update(code).digest('hex');
+
   // OTP Burner (Zero Tolerance for Admins)
-  if (otp.code !== code) {
+  if (otp.code !== hashedInput) {
     // Burn the OTP completely on 1st failed attempt
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await adminSupabase.from('admin_otps' as any).delete().eq('id', otp.id);

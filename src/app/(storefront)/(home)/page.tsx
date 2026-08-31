@@ -2,6 +2,8 @@ import React from 'react';
 import HomePageClient from '@/components/storefront/HomePageClient';
 import { GoogleReviews } from '@/components/storefront/GoogleReviews';
 import { TopSellers } from '@/components/storefront/TopSellers';
+import { FrameCatalogue } from '@/components/storefront/FrameCatalogue';
+import { BusinessTestimonials } from '@/components/storefront/BusinessTestimonials';
 import { getHomepageBlogs } from '@/lib/actions/blogs';
 import type { Metadata } from 'next';
 
@@ -56,7 +58,12 @@ export default async function HomePage() {
 
   return (
     <>
-      <HomePageClient latestBlogs={latestBlogs} topSellers={<TopSellers />}>
+      <HomePageClient 
+        latestBlogs={latestBlogs} 
+        topSellers={<TopSellers />}
+        frameCatalogue={<FrameCatalogue />}
+        businessTestimonials={<BusinessTestimonials />}
+      >
         <GoogleReviews />
       </HomePageClient>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema).replace(/</g, '\\u003c') }} />

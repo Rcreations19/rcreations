@@ -16,7 +16,7 @@ export default function StorefrontLayout({
     <AuthProvider>
       <CartProvider>
         <div className="min-h-screen relative font-sans text-neutral-900 selection:bg-neutral-200 bg-[#FAFAFA]">
-          <FallingAnimation className="opacity-15 !z-0" />
+          <FallingAnimation className="opacity-50 z-40" />
           {/* Skip to content — keyboard accessibility */}
           <a
             href="#main-content"

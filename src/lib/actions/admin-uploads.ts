@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient, verifyAdmin } from '@/lib/supabase/server';
+import { createClient, verifyAdmin, getServiceRoleClient } from '@/lib/supabase/server';
 
 export interface UploadRecord {
   id: string;
@@ -52,7 +52,9 @@ export async function getCustomerUploads(): Promise<UploadRecord[]> {
     
     const signedUrlMap: Record<string, string> = {};
     if (paths.length > 0) {
-      const { data: signedUrls, error: signError } = await supabase
+      // MED-5: Use service role client for private bucket signed URL generation
+      const adminSupabase = await getServiceRoleClient();
+      const { data: signedUrls, error: signError } = await adminSupabase
         .storage
         .from('customer-uploads')
         .createSignedUrls(paths, 3600);

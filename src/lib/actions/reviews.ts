@@ -131,3 +131,20 @@ export async function updateReview(id: string, formData: FormData) {
   revalidatePath('/admin/reviews');
   return { success: true };
 }
+
+export async function deleteReview(id: string) {
+  try { await verifyAdmin(); } catch (e) { return { error: 'Unauthorized' }; }
+  const rl = await rateLimit(20, 60000);
+  if (!rl.success) return { error: rl.error };
+  
+  const supabase = await createClient();
+  
+  const { error } = await supabase.from('reviews').delete().eq('id', id);
+
+  if (error) {
+    return { error: 'Failed to delete review.' };
+  }
+
+  revalidatePath('/admin/reviews');
+  return { success: true };
+}

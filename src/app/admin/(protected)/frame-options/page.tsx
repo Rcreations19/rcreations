@@ -2,7 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { Plus, Edit, Trash2, Settings } from 'lucide-react';
+import { Plus, Edit, Trash2, Settings, Image as ImageIcon } from 'lucide-react';
+import { deleteFrameOption } from '@/lib/actions/frame-options';
 
 export const metadata = {
   title: 'Frame Options | Admin Dashboard',
@@ -21,6 +22,12 @@ export default async function FrameOptionsPage() {
     .select('*')
     .order('category', { ascending: true })
     .order('name', { ascending: true });
+
+  const handleDelete = async (formData: FormData) => {
+    'use server';
+    const id = formData.get('id') as string;
+    await deleteFrameOption(id);
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -61,7 +68,10 @@ export default async function FrameOptionsPage() {
                           style={{ backgroundColor: opt.color_hex }}
                         />
                         <div>
-                          <span className="font-semibold text-[#111111] block">{opt.name}</span>
+                          <span className="font-semibold text-[#111111] flex items-center gap-2">
+                            {opt.name}
+                            {opt.image_url && <span title="Has Image"><ImageIcon className="w-3 h-3 text-[#0070f3]" /></span>}
+                          </span>
                           {opt.color_name && <span className="text-[10px] text-[#595959]">{opt.color_name}</span>}
                         </div>
                       </div>
@@ -85,9 +95,12 @@ export default async function FrameOptionsPage() {
                         <Link href={`/admin/frame-options/${opt.id}/edit`} className="p-2 text-[#595959] hover:text-[#0070f3] hover:bg-blue-50 rounded-lg transition-colors">
                           <Edit className="w-4 h-4" />
                         </Link>
-                        <button className="p-2 text-[#595959] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <form action={handleDelete}>
+                          <input type="hidden" name="id" value={opt.id} />
+                          <button type="submit" className="p-2 text-[#595959] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete Option">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </form>
                       </div>
                     </td>
                   </tr>

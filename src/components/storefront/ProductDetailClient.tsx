@@ -171,7 +171,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
               >
                 {allImages.map((img: string, idx: number) => (
                   <div key={idx} className="w-full flex-shrink-0 snap-center relative aspect-[4/5]">
-                    <Image src={img} alt={`${product.title} ${idx + 1}`} fill className="object-cover" sizes="100vw" priority={idx === 0} />
+                    <Image src={img} alt={`${product.title} ${idx + 1}`} fill className="object-cover" sizes="(max-width: 640px) 100vw, 50vw" priority={idx === 0} />
                   </div>
                 ))}
               </div>
@@ -216,7 +216,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                   onClick={() => setCurrentImage(img)}
                   className={`relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${currentImage === img ? 'border-[#10164A]' : 'border-transparent hover:border-neutral-300'}`}
                 >
-                  <Image src={img} alt={`${product.title} view ${idx + 1}`} fill className="object-cover" />
+                  <Image src={img} alt={`${product.title} view ${idx + 1}`} fill sizes="96px" className="object-cover" />
                 </button>
               ))}
             </div>

@@ -264,6 +264,7 @@ export type Database = {
           description: string
           durability: string
           id: string
+          image_url: string | null
           is_active: boolean
           material: string
           name: string
@@ -278,6 +279,7 @@ export type Database = {
           description?: string
           durability?: string
           id?: string
+          image_url?: string | null
           is_active?: boolean
           material: string
           name: string
@@ -292,6 +294,7 @@ export type Database = {
           description?: string
           durability?: string
           id?: string
+          image_url?: string | null
           is_active?: boolean
           material?: string
           name?: string

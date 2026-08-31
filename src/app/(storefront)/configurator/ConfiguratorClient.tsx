@@ -232,6 +232,10 @@ export default function ConfiguratorClient({ config }: { config: Record<string, 
       const totalPrice = finalBase * quantity;
 
       addCustom({
+        productType,
+        size: selectedSize,
+        thicknessString: selectedThickness,
+        finish: selectedFinish,
         materialId,
         widthCm,
         heightCm,
@@ -314,13 +318,13 @@ export default function ConfiguratorClient({ config }: { config: Record<string, 
                     <div className="flex gap-4 mb-8">
                       <button 
                         onClick={() => { playHaptic(); setProductType('frames'); }}
-                        className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all ${productType === 'frames' ? 'bg-[#10164A] text-white shadow-md' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+                        className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] ${productType === 'frames' ? 'bg-[#10164A] text-white shadow-md' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
                       >
                         Photo Frames
                       </button>
                       <button 
                         onClick={() => { playHaptic(); setProductType('backlit'); }}
-                        className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all ${productType === 'backlit' ? 'bg-[#10164A] text-white shadow-md' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+                        className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] ${productType === 'backlit' ? 'bg-[#10164A] text-white shadow-md' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
                       >
                         Backlit / Acrylic Panel
                       </button>
@@ -496,7 +500,7 @@ export default function ConfiguratorClient({ config }: { config: Record<string, 
                 {currentStep > 1 ? (
                   <motion.button 
                     onClick={() => { playHaptic(); setCurrentStep(currentStep - 1); }} 
-                    className="px-6 py-3 rounded-full text-sm font-medium text-neutral-500 hover:bg-neutral-100 transition-colors flex items-center gap-2"
+                    className="px-6 py-3 rounded-full text-sm font-medium text-neutral-500 hover:bg-neutral-100 transition-colors flex items-center gap-2 active:scale-[0.98]"
                   >
                     <ArrowLeft className="w-4 h-4" /> Back
                   </motion.button>
@@ -505,15 +509,17 @@ export default function ConfiguratorClient({ config }: { config: Record<string, 
                 {currentStep < 3 ? (
                   <motion.button 
                     onClick={() => { playHaptic([20]); setCurrentStep(currentStep + 1); }} 
-                    className="px-8 py-3 bg-[#10164A] text-white rounded-full text-sm font-semibold transition-all flex items-center gap-2"
+                    disabled={currentStep === 1 && !uploadedPhoto}
+                    className="px-8 py-3 bg-[#10164A] text-white rounded-full text-sm font-semibold transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-[0.98]"
                   >
-                    Continue <ArrowRight className="w-4 h-4" />
+                    {currentStep === 1 && !uploadedPhoto ? 'Upload Photo to Continue' : 'Continue'} 
+                    {currentStep !== 1 || uploadedPhoto ? <ArrowRight className="w-4 h-4" /> : null}
                   </motion.button>
                 ) : (
                   <motion.button 
                     onClick={() => { playHaptic([20, 50, 20]); handleOrderSubmit(); }} 
                     disabled={isUploading}
-                    className="px-8 py-3 bg-[#10164A] text-white rounded-full text-sm font-semibold transition-all flex items-center gap-2 disabled:opacity-50"
+                    className="px-8 py-3 bg-[#10164A] text-white rounded-full text-sm font-semibold transition-all flex items-center gap-2 disabled:opacity-50 active:scale-[0.98]"
                   >
                     {isUploading ? 'Processing...' : `Add to Cart - ₹${(baseRate + (glassType !== 'clear-glass' ? 50 : 0) + (mountBoard !== 'none' ? 30 : 0)) * quantity}`}
                   </motion.button>

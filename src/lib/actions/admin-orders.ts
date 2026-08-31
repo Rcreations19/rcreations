@@ -30,20 +30,38 @@ export async function getOrderById(id: string) {
 
   if (error) throw new Error('Failed to fetch order details.');
 
-  // Resolve any customer-uploaded photo paths to signed URLs
+  // Resolve any customer-uploaded photo paths to signed URLs in batch
   if (data?.items) {
-    for (const item of data.items as Record<string, any>[]) {
+    const items = data.items as Record<string, any>[];
+    const pathsToSign: string[] = [];
+    
+    // Collect all paths
+    for (const item of items) {
       const storagePath = item.custom_config?.uploadedPhotoUrl;
       if (storagePath && !storagePath.startsWith('http')) {
-        const { data: signedData } = await supabase.storage
-          .from('customer-uploads')
-          .createSignedUrl(storagePath, 60 * 60); // 1 hour
-        if (signedData?.signedUrl) {
-          item.custom_config.signedPhotoUrl = signedData.signedUrl;
-        }
+        pathsToSign.push(storagePath);
       } else if (storagePath) {
-        // Already a full URL (legacy or fallback)
         item.custom_config.signedPhotoUrl = storagePath;
+      }
+    }
+
+    // Batch sign
+    if (pathsToSign.length > 0) {
+      const { data: signedData } = await supabase.storage
+        .from('customer-uploads')
+        .createSignedUrls(pathsToSign, 60 * 60); // 1 hour
+
+      if (signedData) {
+        // Map back to items
+        for (const item of items) {
+          const storagePath = item.custom_config?.uploadedPhotoUrl;
+          if (storagePath && !storagePath.startsWith('http')) {
+            const signed = signedData.find(s => s.path === storagePath);
+            if (signed?.signedUrl) {
+              item.custom_config.signedPhotoUrl = signed.signedUrl;
+            }
+          }
+        }
       }
     }
   }

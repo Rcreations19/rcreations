@@ -21,15 +21,16 @@
   --color-secondary: #10164A;
   --color-secondary-hover: #1c246e;
   
-  --color-accent: #2aabb0;
-  --color-accent-hover: #38C8CC;
-  --color-accent-light: rgba(42, 171, 176, 0.1);
+  --color-accent: #00F5FF;
+  --color-accent-hover: #00e0ea;
+  --color-accent-light: rgba(0, 245, 255, 0.15);
   
-  --color-cyan-accent: #2aabb0;
-  --color-cyan-hover: #38C8CC;
-  --color-cyan-glow: rgba(42, 171, 176, 0.4);
+  --color-cyan-accent: #00F5FF;
+  --color-cyan-hover: #38c3c0;
+  --color-cyan-glow: rgba(100, 233, 228, 0.4);
   
-  --color-gold-accent: #F5B838;
+  --color-gold-accent: #FAC34C;
+  --color-gold-hover: #e0ac3c;
 
   /* Premium SaaS Admin Colors (Linear/Stripe inspired) */
   --color-admin-bg: #fcfcfc;
@@ -48,15 +49,15 @@
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-script-extra: 'Dancing Script', cursive;
 
-  /* Focus ring (teal, matches accent) */
-  --color-ring: #2aabb0;
+  /* Focus ring (cyan, matches accent) */
+  --color-ring: #64E9E4;
 
   /* Tinted shadows — carry the navy/teal hue instead of pure black */
   --shadow-glass: 0 8px 32px 0 rgba(1, 6, 59, 0.15);
   --shadow-soft: 0 4px 20px 0 rgba(1, 6, 59, 0.08);
-  --shadow-glow: 0 0 20px rgba(42, 171, 176, 0.3);
-  --shadow-teal-glow: 0 0 24px rgba(42, 171, 176, 0.22);
-  --shadow-gold-glow: 0 0 24px rgba(245, 184, 56, 0.18);
+  --shadow-glow: 0 0 20px rgba(100, 233, 228, 0.3);
+  --shadow-teal-glow: 0 0 24px rgba(100, 233, 228, 0.22);
+  --shadow-gold-glow: 0 0 24px rgba(250, 195, 76, 0.25);
 }
 
 @layer base {

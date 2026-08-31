@@ -63,17 +63,17 @@ function simplex3(xin: number, yin: number, zin: number) {
   if (t3 < 0) n3 = 0.0;
   else { t3 *= t3; n3 = t3 * t3 * grad3(permMod12[ii + 1 + perm[jj + 1 + perm[kk + 1]]], x3, y3, z3); }
 
-  return 32.0 * (n0 + n1 + n2 + n3); // Returns value between -1 and 1
+  return 32.0 * (n0 + n1 + n2 + n3);
 }
 
 // ============================================================
 // CONFIGURATION
 // ============================================================
 const CONFIG = {
-  densityDesktop: 60, // Boosted density slightly now that it's highly optimized
-  densityTablet: 35,
-  spawnRateMs: 140,
-  ratios: { petals: 0.70, frames: 0.15, boxes: 0.15 },
+  densityDesktop: 54, // Increased by 50%
+  densityTablet: 36,
+  densityMobile: 22,  // Increased by 50%
+  spawnRateMs: 300,   // Slower spawn rate prevents lag
   layers: 3,
   fadeInFrames: 45,
   fadeOutStart: 0.88,
@@ -85,129 +85,110 @@ const CONFIG = {
 const rng = {
   range: (min: number, max: number) => Math.random() * (max - min) + min,
   int: (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min,
-  weighted: (w: { [k: string]: number }) => {
-    let sum = 0;
-    const r = Math.random();
-    for (const k in w) { sum += w[k]; if (r <= sum) return k as 'petals' | 'frames' | 'boxes'; }
-    return 'petals';
-  },
 };
 
 // ============================================================
 // DRAW ROUTINES (Called ONCE per variant during caching)
 // ============================================================
 function drawPetal(ctx: CanvasRenderingContext2D, variant: number, size: number) {
+  // We use slightly larger raw coordinates scaled by size to create the paths.
+  const s = size * 0.85; // Scale factor to fit inside the sprite box nicely
+  
   ctx.beginPath();
+  
   if (variant === 0) {
-    ctx.moveTo(0, size * 0.5);
-    ctx.bezierCurveTo(size * 0.5, size * 0.5, size, size * 0.2, size * 0.5, -size * 0.5);
-    ctx.bezierCurveTo(0, -size * 0.2, -size * 0.5, size * 0.2, 0, size * 0.5);
-    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, size);
-    g.addColorStop(0, '#e63946'); g.addColorStop(1, '#9b2226');
+    // 1. The Classic Teardrop (Heart dip top, tapered bottom)
+    ctx.moveTo(0, s * 0.9); // Base
+    ctx.bezierCurveTo(s * 0.5, s * 0.7, s * 0.9, -s * 0.2, s * 0.4, -s * 0.8);
+    ctx.bezierCurveTo(s * 0.1, -s * 1.0, -s * 0.1, -s * 1.0, -s * 0.4, -s * 0.8);
+    ctx.bezierCurveTo(-s * 0.9, -s * 0.2, -s * 0.5, s * 0.7, 0, s * 0.9);
+    const g = ctx.createRadialGradient(0, s * 0.3, 0, 0, 0, s * 1.5);
+    g.addColorStop(0, 'rgba(215, 24, 74, 1.0)');  // Deep base
+    g.addColorStop(0.6, 'rgba(255, 92, 138, 0.95)'); // Mid pink
+    g.addColorStop(1, 'rgba(255, 153, 178, 0.85)'); // Soft translucent edge
     ctx.fillStyle = g;
   } else if (variant === 1) {
-    ctx.moveTo(0, size * 0.8);
-    ctx.bezierCurveTo(size * 0.3, size * 0.4, size * 0.2, -size * 0.8, 0, -size * 0.9);
-    ctx.bezierCurveTo(-size * 0.4, -size * 0.8, -size * 0.6, size * 0.2, 0, size * 0.8);
-    ctx.fillStyle = '#c1121f';
+    // 2. The Side-Curl (3/4 angle, folded edge)
+    ctx.moveTo(0, s * 0.9);
+    ctx.bezierCurveTo(s * 0.8, s * 0.4, s * 0.6, -s * 0.7, 0, -s * 0.9);
+    ctx.bezierCurveTo(-s * 0.4, -s * 0.9, -s * 0.7, -s * 0.3, -s * 0.3, s * 0.2);
+    ctx.bezierCurveTo(-s * 0.1, s * 0.5, -s * 0.1, s * 0.7, 0, s * 0.9);
+    const g = ctx.createLinearGradient(-s, -s, s, s);
+    g.addColorStop(0, 'rgba(255, 117, 143, 0.9)');
+    g.addColorStop(1, 'rgba(201, 24, 74, 1.0)');
+    ctx.fillStyle = g;
   } else if (variant === 2) {
-    ctx.moveTo(0, size * 0.6);
-    ctx.quadraticCurveTo(size * 0.8, size * 0.2, size * 0.4, -size * 0.6);
-    ctx.quadraticCurveTo(0, -size * 0.4, -size * 0.3, -size * 0.6);
-    ctx.quadraticCurveTo(-size * 0.8, size * 0.2, 0, size * 0.6);
-    const g = ctx.createLinearGradient(-size, -size, size, size);
-    g.addColorStop(0, '#ff4d6d'); g.addColorStop(1, '#a81c2b');
+    // 3. The Ruffled Bloom (Wide, wavy top)
+    ctx.moveTo(0, s * 0.8);
+    ctx.bezierCurveTo(s * 0.7, s * 0.6, s * 1.1, -s * 0.2, s * 0.6, -s * 0.7);
+    ctx.bezierCurveTo(s * 0.2, -s * 0.6, -s * 0.2, -s * 0.9, -s * 0.6, -s * 0.7);
+    ctx.bezierCurveTo(-s * 1.1, -s * 0.2, -s * 0.7, s * 0.6, 0, s * 0.8);
+    const g = ctx.createRadialGradient(0, s * 0.5, 0, 0, 0, s * 1.4);
+    g.addColorStop(0, 'rgba(164, 19, 60, 1.0)');
+    g.addColorStop(1, 'rgba(255, 143, 163, 0.85)');
     ctx.fillStyle = g;
   } else if (variant === 3) {
-    ctx.arc(0, 0, size * 0.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#da1e37';
+    // 4. The Asymmetric Flutter (Wind-blown)
+    ctx.moveTo(-s * 0.2, s * 0.9);
+    ctx.bezierCurveTo(s * 0.6, s * 0.8, s * 0.8, 0, s * 0.3, -s * 0.8);
+    ctx.bezierCurveTo(0, -s * 0.9, -s * 0.5, -s * 0.8, -s * 0.8, -s * 0.2);
+    ctx.bezierCurveTo(-s * 0.9, s * 0.4, -s * 0.5, s * 0.7, -s * 0.2, s * 0.9);
+    const g = ctx.createLinearGradient(0, s, 0, -s);
+    g.addColorStop(0, 'rgba(128, 15, 47, 1.0)');
+    g.addColorStop(0.5, 'rgba(255, 77, 109, 0.95)');
+    g.addColorStop(1, 'rgba(255, 179, 198, 0.8)');
+    ctx.fillStyle = g;
   } else if (variant === 4) {
-    ctx.moveTo(0, size * 0.5);
-    ctx.bezierCurveTo(size * 0.6, size * 0.4, size * 0.8, -size * 0.4, 0, -size * 0.6);
-    ctx.bezierCurveTo(-size * 0.8, -size * 0.4, -size * 0.6, size * 0.4, 0, size * 0.5);
-    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 0.8);
-    g.addColorStop(0, '#ffffff'); g.addColorStop(0.7, '#ffccd5'); g.addColorStop(1, '#ff8fa3');
+    // 5. The Cupped Base (3D bowl illusion)
+    ctx.moveTo(0, s * 0.9);
+    ctx.bezierCurveTo(s * 1.0, s * 0.3, s * 0.7, -s * 0.5, s * 0.2, -s * 0.8);
+    ctx.bezierCurveTo(0, -s * 0.7, -s * 0.2, -s * 0.7, -s * 0.4, -s * 0.8);
+    ctx.bezierCurveTo(-s * 0.8, -s * 0.4, -s * 0.9, s * 0.4, 0, s * 0.9);
+    const g = ctx.createRadialGradient(0, -s * 0.2, 0, 0, 0, s * 1.2);
+    g.addColorStop(0, 'rgba(255, 143, 163, 0.9)'); // Bright center (cupped light)
+    g.addColorStop(0.7, 'rgba(201, 24, 74, 0.95)');
+    g.addColorStop(1, 'rgba(128, 15, 47, 1.0)');   // Dark edges
     ctx.fillStyle = g;
   } else {
-    ctx.moveTo(0, size);
-    ctx.quadraticCurveTo(size * 0.5, 0, 0, -size);
-    ctx.quadraticCurveTo(-size * 0.5, 0, 0, size);
-    ctx.fillStyle = '#590d22';
+    // 6. The Narrow Drop (Aerodynamic young petal)
+    ctx.moveTo(0, s * 1.0);
+    ctx.bezierCurveTo(s * 0.4, s * 0.5, s * 0.5, -s * 0.4, s * 0.2, -s * 0.9);
+    ctx.bezierCurveTo(0, -s * 1.0, 0, -s * 1.0, -s * 0.2, -s * 0.9);
+    ctx.bezierCurveTo(-s * 0.5, -s * 0.4, -s * 0.4, s * 0.5, 0, s * 1.0);
+    const g = ctx.createLinearGradient(0, s, 0, -s);
+    g.addColorStop(0, 'rgba(164, 19, 60, 1.0)');
+    g.addColorStop(1, 'rgba(255, 117, 143, 0.85)');
+    ctx.fillStyle = g;
   }
+  
   ctx.fill();
+  
+  // Organic radiating veins
   ctx.beginPath();
-  ctx.moveTo(0, size * 0.4); ctx.lineTo(0, -size * 0.2);
-  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-  ctx.lineWidth = 1.2;
+  // Center vein
+  ctx.moveTo(0, s * 0.8);
+  ctx.quadraticCurveTo(s * 0.05, 0, 0, -s * 0.4);
+  // Left vein
+  ctx.moveTo(-s * 0.05, s * 0.7);
+  ctx.quadraticCurveTo(-s * 0.2, 0, -s * 0.3, -s * 0.2);
+  // Right vein
+  ctx.moveTo(s * 0.05, s * 0.7);
+  ctx.quadraticCurveTo(s * 0.2, 0, s * 0.3, -s * 0.2);
+  
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+  ctx.lineWidth = s * 0.05;
   ctx.stroke();
-}
-
-function drawFrame(ctx: CanvasRenderingContext2D, variant: number, size: number) {
-  const w = size * 1.5, h = size * 1.95;
-  if (variant === 0) {
-    const g = ctx.createLinearGradient(-w / 2, -h / 2, w / 2, h / 2);
-    g.addColorStop(0, '#bf953f'); g.addColorStop(0.5, '#fcf6ba'); g.addColorStop(1, '#b38728');
-    ctx.fillStyle = g;
-    ctx.fillRect(-w / 2, -h / 2, w, h);
-    ctx.fillStyle = '#e5e5e5';
-    ctx.fillRect(-w / 2 + w * 0.15, -h / 2 + w * 0.15, w * 0.7, h - w * 0.3);
-  } else if (variant === 1) {
-    ctx.fillStyle = '#111'; ctx.fillRect(-w / 2, -h / 2, w, h);
-    ctx.fillStyle = '#f5f5f5';
-    ctx.fillRect(-w / 2 + w * 0.1, -h / 2 + w * 0.1, w * 0.8, h - w * 0.2);
-  } else if (variant === 2) {
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(-w / 2, -h / 2, w, h);
-    ctx.fillStyle = '#222';
-    ctx.fillRect(-w / 2 + w * 0.1, -h / 2 + w * 0.1, w * 0.8, w * 0.9);
-  } else {
-    ctx.fillStyle = '#f8f9fa'; ctx.fillRect(-w / 2, -h / 2, w, h);
-    ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1.5;
-    ctx.strokeRect(-w / 2, -h / 2, w, h);
-    ctx.fillStyle = '#e9ecef';
-    ctx.fillRect(-w / 2 + w * 0.15, -h / 2 + w * 0.15, w * 0.7, h - w * 0.3);
-  }
-  const edgeG = ctx.createLinearGradient(w / 2 - w * 0.3, 0, w / 2, 0);
-  edgeG.addColorStop(0, 'rgba(0,0,0,0)'); edgeG.addColorStop(1, 'rgba(0,0,0,0.18)');
-  ctx.fillStyle = edgeG;
-  ctx.fillRect(-w / 2, -h / 2, w, h);
-}
-
-function drawBox(ctx: CanvasRenderingContext2D, variant: number, size: number) {
-  const w = size * 1.5, h = size * 1.2;
-  const colors = [
-    { box: '#38C8CC', ribbon: '#ffffff', lid: '#2eb3b8' },
-    { box: '#01063B', ribbon: '#bf953f', lid: '#0a1050' },
-    { box: '#ff4d6d', ribbon: '#ffffff', lid: '#e63946' },
-    { box: '#f8f9fa', ribbon: '#01063B', lid: '#e9ecef' },
-  ];
-  const c = colors[variant % colors.length];
-  ctx.fillStyle = c.box; ctx.fillRect(-w / 2, -h / 2, w, h);
-  const shade = ctx.createLinearGradient(w / 2 - w * 0.25, 0, w / 2, 0);
-  shade.addColorStop(0, 'rgba(0,0,0,0)'); shade.addColorStop(1, 'rgba(0,0,0,0.15)');
-  ctx.fillStyle = shade; ctx.fillRect(-w / 2, -h / 2, w, h);
-  ctx.fillStyle = c.ribbon;
-  ctx.fillRect(-w * 0.1, -h / 2, w * 0.2, h);
-  if (variant % 2 === 0) ctx.fillRect(-w / 2, -h * 0.1, w, h * 0.2);
-  const lidH = h * 0.3, lidW = w * 1.05;
-  ctx.fillStyle = c.lid; ctx.fillRect(-lidW / 2, -h / 2 - lidH * 0.2, lidW, lidH);
-  ctx.fillStyle = c.ribbon; ctx.fillRect(-w * 0.1, -h / 2 - lidH * 0.2, w * 0.2, lidH);
-  if (variant !== 1) {
-    ctx.beginPath();
-    ctx.ellipse(-w * 0.15, -h / 2 - lidH * 0.2, w * 0.15, w * 0.09, Math.PI / 4, 0, Math.PI * 2);
-    ctx.ellipse(w * 0.15, -h / 2 - lidH * 0.2, w * 0.15, w * 0.09, -Math.PI / 4, 0, Math.PI * 2);
-    ctx.fillStyle = c.ribbon; ctx.fill();
-  }
 }
 
 // ============================================================
 // SPRITE CACHE ENGINE (Pre-renders all permutations once)
 // ============================================================
-const SPRITE_SIZE = 160;
-let spriteCache: { petals: HTMLCanvasElement[], frames: HTMLCanvasElement[], boxes: HTMLCanvasElement[] } | null = null;
+const SPRITE_SIZE = 120;
+let spriteCache: { petals: HTMLCanvasElement[] } | null = null;
 
 function initSpriteCache() {
   if (spriteCache) return;
-  spriteCache = { petals: [], frames: [], boxes: [] };
+  spriteCache = { petals: [] };
 
   const createCacheCanvas = (drawFn: (ctx: CanvasRenderingContext2D, v: number, s: number) => void, variant: number) => {
     const cvs = document.createElement('canvas');
@@ -222,15 +203,12 @@ function initSpriteCache() {
   };
 
   for (let i = 0; i < 6; i++) spriteCache.petals.push(createCacheCanvas(drawPetal, i));
-  for (let i = 0; i < 4; i++) spriteCache.frames.push(createCacheCanvas(drawFrame, i));
-  for (let i = 0; i < 4; i++) spriteCache.boxes.push(createCacheCanvas(drawBox, i));
 }
 
 // ============================================================
 // PARTICLE CLASS
 // ============================================================
 class Particle {
-  type: 'petals' | 'frames' | 'boxes' = 'petals';
   variant = 0;
   layer = 1;
   x = 0; y = 0;
@@ -251,7 +229,6 @@ class Particle {
     this.active = true;
     this.frameAge = 0;
     this.opacity = 0;
-    this.type = rng.weighted(CONFIG.ratios) as 'petals' | 'frames' | 'boxes';
     this.layer = rng.int(1, CONFIG.layers);
     
     // Spawn across top and left edges to flow into screen
@@ -268,25 +245,13 @@ class Particle {
     this.gravityMod = rng.range(0.85, 1.2);
     this.flip = rng.range(0, Math.PI * 2);
 
-    if (this.type === 'petals') {
-      this.variant = rng.int(0, 5);
-      this.size = rng.range(24, 38) * depth;
-      this.baseSpeedY = rng.range(1.2, 2.2) * depth;
-      this.angularSpeed = rng.range(-0.04, 0.04);
-      this.flipSpeed = rng.range(0.02, 0.08); // Fast flutter
-    } else if (this.type === 'frames') {
-      this.variant = rng.int(0, 3);
-      this.size = rng.range(40, 75) * depth;
-      this.baseSpeedY = rng.range(3.5, 6.0) * depth; // Heavy
-      this.angularSpeed = rng.range(-0.015, 0.015);
-      this.flipSpeed = rng.range(0.005, 0.02); // Slow tumble
-    } else {
-      this.variant = rng.int(0, 3);
-      this.size = rng.range(35, 60) * depth;
-      this.baseSpeedY = rng.range(2.8, 4.8) * depth; // Medium
-      this.angularSpeed = rng.range(-0.02, 0.02);
-      this.flipSpeed = rng.range(0.008, 0.025);
-    }
+    this.variant = rng.int(0, 5);
+    // Increased size by another 50% for high impact
+    this.size = rng.range(24, 44) * depth;
+    // Slower, more fluttery falling speed
+    this.baseSpeedY = rng.range(0.8, 1.6) * depth;
+    this.angularSpeed = rng.range(-0.06, 0.06);
+    this.flipSpeed = rng.range(0.02, 0.1);
 
     this.angle = rng.range(0, Math.PI * 2);
     this.speedX = 0;
@@ -309,68 +274,50 @@ class Particle {
       }
     }
 
-    // ----------------------------------------------------
-    // SIMPLEX NOISE FLOW FIELD PHYSICS
-    // ----------------------------------------------------
     const depth = this.layer === 1 ? 1 : this.layer === 2 ? 0.6 : 0.35;
-    
-    // Scale dictates how "zoomed in" the noise map is.
-    // Lower = sweeping, gentle curves. Higher = twitchy, tight swirls.
     const noiseScale = 0.002; 
-    
-    // Sample 3D noise (x, y, time) to get a value between -1 and 1
-    // We multiply by Math.PI to convert it into a rotational offset (-180deg to +180deg)
     const noiseValue = simplex3(this.x * noiseScale, this.y * noiseScale, timeRef);
     const angleOffset = noiseValue * Math.PI;
-    
-    // Base wind blows gently to the bottom right
     const baseWindAngle = Math.PI * 0.25; 
     const flowAngle = baseWindAngle + angleOffset;
     
-    // Aerodynamics (how much the object is caught in the wind)
-    // Petals catch a lot of wind, frames cut straight through
-    const windMultiplier = this.type === 'petals' ? 3.0 : 0.5;
-    
-    // Calculate the force vector applied by the flow field
+    // Wind force
+    const windMultiplier = 1.8;
     const windForceX = Math.cos(flowAngle) * windMultiplier * depth;
     const windForceY = Math.sin(flowAngle) * windMultiplier * depth;
     
-    // Apply soft drag to velocity (inertia)
+    // Drag and inertia
     this.speedX = this.speedX * 0.96 + windForceX * 0.04;
-    // Y speed is a mix of gravity and downward wind pressure
     const targetSpeedY = this.baseSpeedY * this.gravityMod + Math.max(0, windForceY);
     this.speedY = this.speedY * 0.96 + targetSpeedY * 0.04;
 
     this.x += this.speedX;
     this.y += this.speedY;
     
-    // 3D Tumbling
+    // Fluttering
     this.flip += this.flipSpeed;
     this.angle += this.angularSpeed;
 
-    // Boundary wrapping and cleanup
     if (this.y > this.ch + this.size * 2) this.active = false;
-    if (this.x < -this.size * 3) this.active = false; // let it die if it blows too far left
-    if (this.x > this.cw + this.size * 3) this.x = -this.size; // wrap around right side
+    if (this.x < -this.size * 3) this.active = false;
+    if (this.x > this.cw + this.size * 3) this.x = -this.size;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
     if (!this.active || this.opacity <= 0 || !spriteCache) return;
 
-    const sprite = spriteCache[this.type][this.variant];
+    const sprite = spriteCache.petals[this.variant];
     if (!sprite) return;
 
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
 
-    const cosFlip = Math.cos(this.flip);
+    // Subtle 3D wobble instead of full barrel rolls so they mostly face the screen
+    const cosFlip = Math.cos(this.flip) * 0.35 + 0.65; // Ranges from 0.3 to 1.0
     ctx.scale(cosFlip, 1);
 
     ctx.globalAlpha = this.opacity;
-    if (cosFlip < 0 && this.type !== 'petals') {
-      ctx.filter = 'brightness(0.75)';
-    }
 
     const drawW = this.size * 1.5;
     const drawH = this.size * 1.5;
@@ -386,8 +333,8 @@ export default function FallingAnimation({ className = '' }: { className?: strin
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    // Respect user's motion preference
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (window.innerWidth < 768) return;
 
     initSpriteCache();
 
@@ -396,31 +343,41 @@ export default function FallingAnimation({ className = '' }: { className?: strin
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    const density = window.innerWidth >= 1024 ? CONFIG.densityDesktop : CONFIG.densityTablet;
+    const density = window.innerWidth >= 1024 ? CONFIG.densityDesktop : window.innerWidth >= 768 ? CONFIG.densityTablet : CONFIG.densityMobile;
 
+    // Use viewport dimensions only — canvas is position:fixed so it always
+    // covers exactly what the user sees. No page-height density scaling needed.
     let resizeTimer: ReturnType<typeof setTimeout>;
+    const currentDensity = density;
+    let pool: Particle[] = [];
+    const buckets: Particle[][] = [[], [], [], []];
+    const rebucket = (p: Particle) => { buckets[p.layer]?.push(p); };
+
     const handleResize = () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        if (window.innerWidth < 768) {
-          canvas.style.display = 'none';
-          return;
-        }
-        canvas.style.display = '';
-        canvas.width = document.documentElement.clientWidth;
+        canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         pool.forEach(p => { p.cw = canvas.width; p.ch = canvas.height; });
       }, 120);
     };
 
     window.addEventListener('resize', handleResize);
-    canvas.width = document.documentElement.clientWidth;
+    canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const pool: Particle[] = Array.from({ length: density }, () => new Particle(canvas.width, canvas.height));
-    const buckets: Particle[][] = [[], [], [], []];
-    const rebucket = (p: Particle) => { buckets[p.layer]?.push(p); };
-    pool.forEach(rebucket);
+    pool = Array.from({ length: currentDensity }, () => new Particle(canvas.width, canvas.height));
+    
+    // Pre-warm the animation: spawn all particles immediately, spread across the screen
+    pool.forEach(p => {
+      p.spawn();
+      // Randomize initial positions so they are already falling across the screen
+      p.y = Math.random() * canvas.height;
+      p.x = Math.random() * canvas.width;
+      // Randomize age so they don't all fade out/die at the same time
+      p.frameAge = Math.floor(Math.random() * CONFIG.fadeInFrames);
+      rebucket(p);
+    });
 
     let lastSpawn = 0;
     let timeRef = 0;
@@ -436,7 +393,7 @@ export default function FallingAnimation({ className = '' }: { className?: strin
         }
       }
 
-      timeRef += 0.003; // Slow time progression for the Simplex Flow Field
+      timeRef += 0.003;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -465,7 +422,7 @@ export default function FallingAnimation({ className = '' }: { className?: strin
   return (
     <canvas
       ref={canvasRef}
-      className={`fixed inset-0 pointer-events-none z-0 ${className}`}
+      className={`fixed inset-0 pointer-events-none z-0 overflow-hidden ${className}`}
       aria-hidden="true"
     />
   );

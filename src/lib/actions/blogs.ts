@@ -176,8 +176,10 @@ export async function updateBlog(id: string, formData: FormData): Promise<Action
       .upload(filePath, coverImageFile);
       
     if (uploadError) {
+      // MED-6: Log internally; do NOT expose uploadError.message to the client
+      // (Supabase storage errors can reveal bucket names and policy details)
       console.error('Upload Error Details:', uploadError);
-      throw new Error(`Failed to upload cover image: ${uploadError.message || uploadError.name || 'Unknown Error'}`);
+      throw new Error('Failed to upload cover image. Please try again.');
     }
     
     const { data: { publicUrl } } = supabase.storage

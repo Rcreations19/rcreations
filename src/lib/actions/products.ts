@@ -1,7 +1,7 @@
 'use server';
 
-import { getAdminClient } from '../supabase/server';
-import { revalidatePath } from 'next/cache';
+import { getAdminClient, createPublicClient } from '../supabase/server';
+import { revalidatePath, unstable_cache } from 'next/cache';
 import { z } from 'zod';
 import { rateLimit } from '../rate-limit';
 
@@ -35,16 +35,20 @@ export async function getProduct(id: string) {
   return data;
 }
 
-export async function getCategoriesForSelect() {
-  const supabase = await getAdminClient();
-  const { data, error } = await supabase
-    .from('categories')
-    .select('id, name')
-    .order('name');
-  
-  if (error) throw new Error(error.message);
-  return data;
-}
+export const getCategoriesForSelect = unstable_cache(
+  async () => {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from('categories')
+      .select('id, name')
+      .order('name');
+    
+    if (error) throw new Error(error.message);
+    return data;
+  },
+  ['categories-select-list'],
+  { revalidate: 3600, tags: ['categories'] }
+);
 
 // -----------------------------------------------------
 // MUTATION ACTIONS
@@ -127,11 +131,7 @@ export async function saveProduct(formData: FormData): Promise<ActionResponse> {
       urgency_timer_subtitle: formData.get('urgency_timer_subtitle'),
     };
 
-    const catId = formData.get('category_id');
-    const isUuid = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i.test(String(catId));
-    if (!isUuid) {
-      throw new Error(`DEBUG_INVALID_CAT_ID: received exact value: "${catId}" of type ${typeof catId}`);
-    }
+    // Note: category_id UUID format is validated below by productSchema.parse().
 
     const validatedData = productSchema.parse(rawData);
     const productData = validatedData;

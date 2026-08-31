@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        dancing: ['var(--font-dancing-script)'],
+      },
       colors: {
         // Your Brand Colors
         primary: {

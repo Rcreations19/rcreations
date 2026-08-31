@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Save, Loader2, Globe, Mail, Phone, MapPin, ShoppingBag, FileSpreadsheet, Upload } from 'lucide-react';
+import { Save, Loader2, Globe, Mail, Phone, MapPin, ShoppingBag, FileSpreadsheet, Upload, Info, Plus, Trash2 } from 'lucide-react';
 import { updateSiteSettings } from '@/lib/actions/settings';
 import { uploadPricingData } from '@/lib/actions/pricing';
 import { createClient } from '@/lib/supabase/client';
@@ -24,7 +24,17 @@ export default function SiteSettingsPage() {
     delivery_charge: '500',
     free_shipping_threshold: '10000',
     gift_packing_charge: '250',
+    about_hero_title: 'Crafting Memories, Framing Legacies.',
+    about_hero_subtitle: 'Tamil Nadu’s premier framing and corporate gifting partner.',
+    about_story_text: 'R Creation began with a simple mission: to provide unparalleled quality in wholesale framing and corporate gifting. Over the years, we have grown into a trusted partner for hundreds of studios and businesses across Tamil Nadu, maintaining our commitment to craftsmanship, secure packaging, and unbeatable wholesale pricing.',
+    about_roadmap: JSON.stringify([
+      { year: '2020', title: 'The Beginning', desc: 'Started our journey as a small framing studio.' },
+      { year: '2022', title: 'Wholesale Expansion', desc: 'Expanded operations to serve B2B wholesale clients across Tamil Nadu.' },
+      { year: '2024', title: 'Digital Transformation', desc: 'Launched our digital storefront and advanced configurator.' }
+    ]),
   });
+
+  const [roadmapItems, setRoadmapItems] = useState<{year: string, title: string, desc: string}[]>([]);
 
   const supabase = createClient();
 
@@ -39,6 +49,13 @@ export default function SiteSettingsPage() {
           }
         });
         setSettings(newSettings);
+        if (newSettings.about_roadmap) {
+          try {
+            setRoadmapItems(JSON.parse(newSettings.about_roadmap));
+          } catch (e) {
+            console.error("Failed to parse roadmap JSON", e);
+          }
+        }
       }
       setFetching(false);
     }
@@ -209,6 +226,131 @@ export default function SiteSettingsPage() {
                     className="w-full pl-9 pr-3 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-shadow resize-none"
                     placeholder="123 Wholesale Market..."
                   />
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-4 pt-4">
+              <h2 className="text-sm font-bold text-[#111111] border-b border-border pb-2 flex items-center gap-2">
+                <Info className="w-4 h-4 text-[#595959]" /> About Us Page Content
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#595959]">Hero Title</label>
+                  <input 
+                    type="text" 
+                    name="about_hero_title" 
+                    defaultValue={settings.about_hero_title}
+                    className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-shadow"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-[#595959]">Hero Subtitle</label>
+                  <input 
+                    type="text" 
+                    name="about_hero_subtitle" 
+                    defaultValue={settings.about_hero_subtitle}
+                    className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-shadow"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#595959]">Our Story Text</label>
+                <textarea 
+                  name="about_story_text" 
+                  rows={4}
+                  defaultValue={settings.about_story_text}
+                  className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none transition-shadow resize-y"
+                />
+              </div>
+
+              {/* ROADMAP EDITOR */}
+              <div className="pt-6 border-t border-border space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-bold text-[#111111]">Roadmap Milestones</h3>
+                    <p className="text-[10px] text-[#888888] mt-1">Add up to 7 milestones to appear on the About Us page timeline.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setRoadmapItems([...roadmapItems, { year: '', title: '', desc: '' }])}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-[#111111] text-xs font-bold rounded-lg transition-colors"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Add Milestone
+                  </button>
+                </div>
+                
+                <input type="hidden" name="about_roadmap" value={JSON.stringify(roadmapItems)} />
+
+                <div className="space-y-3">
+                  {roadmapItems.map((item, index) => (
+                    <div key={index} className="flex gap-4 items-start p-4 bg-neutral-50 rounded-xl border border-neutral-200 relative group">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newItems = [...roadmapItems];
+                          newItems.splice(index, 1);
+                          setRoadmapItems(newItems);
+                        }}
+                        className="absolute top-4 right-4 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-red-50 rounded"
+                        title="Remove Milestone"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      
+                      <div className="w-24 shrink-0 space-y-1">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-[#888888]">Year</label>
+                        <input
+                          type="text"
+                          value={item.year}
+                          onChange={(e) => {
+                            const newItems = [...roadmapItems];
+                            newItems[index].year = e.target.value;
+                            setRoadmapItems(newItems);
+                          }}
+                          placeholder="e.g. 2024"
+                          className="w-full px-3 py-2 bg-white border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none"
+                        />
+                      </div>
+                      
+                      <div className="flex-1 space-y-3 pr-8">
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold uppercase tracking-wider text-[#888888]">Title</label>
+                          <input
+                            type="text"
+                            value={item.title}
+                            onChange={(e) => {
+                              const newItems = [...roadmapItems];
+                              newItems[index].title = e.target.value;
+                              setRoadmapItems(newItems);
+                            }}
+                            placeholder="e.g. Digital Transformation"
+                            className="w-full px-3 py-2 bg-white border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold uppercase tracking-wider text-[#888888]">Description</label>
+                          <textarea
+                            rows={2}
+                            value={item.desc}
+                            onChange={(e) => {
+                              const newItems = [...roadmapItems];
+                              newItems[index].desc = e.target.value;
+                              setRoadmapItems(newItems);
+                            }}
+                            placeholder="Brief description of the milestone..."
+                            className="w-full px-3 py-2 bg-white border border-neutral-200 rounded-lg text-sm focus:ring-2 focus:ring-[#10164A] focus:outline-none resize-y"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {roadmapItems.length === 0 && (
+                    <div className="text-center py-6 text-sm text-[#888888] italic border border-dashed border-neutral-200 rounded-xl">
+                      No milestones added yet.
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

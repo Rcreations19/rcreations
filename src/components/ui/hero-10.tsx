@@ -7,7 +7,9 @@ import { motion, type Variants } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 import { Cta, type CtaProps } from '@/components/ui/hero-10-utils/cta'
-import ShaderBackground from '@/components/ui/shader-background'
+import dynamic from 'next/dynamic'
+
+const ShaderBackground = dynamic(() => import('@/components/ui/shader-background'), { ssr: false })
 
 export interface Hero10Props {
   title: string
@@ -193,8 +195,7 @@ export function Hero10({
               {titleLine2Prefix && <span>{titleLine2Prefix} </span>}
               {titleHighlight && (
                 <span 
-                  className="text-accent mx-2 text-[1.3em] inline-block pt-2 drop-shadow-[0_1px_8px_rgba(42,171,176,0.2)]"
-                  style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 600 }}
+                  className="text-gold-accent mx-2 text-[1.3em] inline-block pt-2 drop-shadow-[0_1px_8px_rgba(250,195,76,0.35)] font-dancing font-semibold"
                 >
                   {titleHighlight}
                 </span>

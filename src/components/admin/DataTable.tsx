@@ -124,7 +124,7 @@ export function DataTable<T extends { id: string }>({
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-[#f5f5f7]/50 border-b border-[#e5e5ea] text-xs font-semibold text-[#86868b] uppercase tracking-wider">
-              <th className="px-5 py-3.5 w-10 text-center">
+              <th className="px-4 py-2.5 w-10 text-center">
                 <input
                   type="checkbox"
                   aria-label="Select all rows"
@@ -134,7 +134,7 @@ export function DataTable<T extends { id: string }>({
                 />
               </th>
               {columns.map((col, i) => (
-                <th key={i} className="px-5 py-3.5 whitespace-nowrap">
+                <th key={i} className="px-4 py-2.5 whitespace-nowrap">
                   {col.header}
                 </th>
               ))}
@@ -150,7 +150,7 @@ export function DataTable<T extends { id: string }>({
             ) : (
               data.map((item) => (
                 <tr key={item.id} className="group hover:bg-[#f5f5f7]/50 transition-colors">
-                  <td className="px-5 py-3.5 text-center border-r border-[#e5e5ea]/50">
+                  <td className="px-4 py-2 text-center border-r border-[#e5e5ea]/50">
                     <input
                       type="checkbox"
                       aria-label={`Select row ${item.id}`}
@@ -163,7 +163,7 @@ export function DataTable<T extends { id: string }>({
                   {columns.map((col, colIdx) => (
                     <td
                       key={colIdx}
-                      className="px-5 py-3.5"
+                      className="px-4 py-2 max-w-[250px] truncate"
                       onClick={() => onRowClick && onRowClick(item)}
                     >
                       {col.cell

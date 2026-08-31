@@ -2,8 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { MessageSquareQuote, Eye, EyeOff, Plus, Star, Edit } from 'lucide-react';
-import { toggleReviewStatus } from '@/lib/actions/reviews';
+import { MessageSquareQuote, Eye, EyeOff, Plus, Star, Edit, Trash2 } from 'lucide-react';
+import { toggleReviewStatus, deleteReview } from '@/lib/actions/reviews';
 
 export const metadata = {
   title: 'Reviews & Testimonials | Admin Dashboard',
@@ -27,6 +27,12 @@ export default async function ReviewsPage() {
     const id = formData.get('id') as string;
     const isPublished = formData.get('is_published') === 'true';
     await toggleReviewStatus(id, !isPublished);
+  };
+
+  const handleDelete = async (formData: FormData) => {
+    'use server';
+    const id = formData.get('id') as string;
+    await deleteReview(id);
   };
 
   return (
@@ -104,6 +110,16 @@ export default async function ReviewsPage() {
                       }`}
                     >
                       {review.is_published ? <><EyeOff className="w-3 h-3"/> Hide</> : <><Eye className="w-3 h-3"/> Publish</>}
+                    </button>
+                  </form>
+                  <form action={handleDelete}>
+                    <input type="hidden" name="id" value={review.id} />
+                    <button 
+                      type="submit"
+                      className="p-2 text-[#595959] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Delete Review"
+                    >
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </form>
                 </div>

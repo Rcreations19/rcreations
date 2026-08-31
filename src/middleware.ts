@@ -147,7 +147,9 @@ export async function middleware(request: NextRequest) {
   supabaseResponse.headers.set('X-XSS-Protection', '1; mode=block');
   supabaseResponse.headers.set('X-Frame-Options', 'DENY');
   supabaseResponse.headers.set('X-Content-Type-Options', 'nosniff');
-  supabaseResponse.headers.set('Referrer-Policy', 'origin-when-cross-origin');
+  supabaseResponse.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  // LOW-2: Deny hardware APIs to prevent rogue iframes from accessing camera/mic/location
+  supabaseResponse.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(self), usb=(), bluetooth=()');
 
   if (isAdminRoute || isAccountRoute || isCheckoutRoute || isAuthRoute) {
     supabaseResponse.headers.set('X-Robots-Tag', 'noindex, nofollow');

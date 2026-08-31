@@ -12,6 +12,7 @@ import { AnnouncementTicker } from './AnnouncementTicker';
 
 const navLinks = [
   { name: 'Home', href: '/' },
+  { name: 'About Us', href: '/about' },
   { name: 'Catalog', href: '/products' },
   { name: 'Wholesale B2B', href: '/wholesale' },
   { name: 'Custom Build', href: '/configurator' },
@@ -290,24 +291,25 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[70] bg-primary/95 backdrop-blur-md pt-24 pb-28 px-6 lg:hidden flex flex-col overflow-y-auto"
+            className="fixed inset-0 z-[70] bg-[#10164A]/98 backdrop-blur-xl pt-24 pb-28 px-8 lg:hidden flex flex-col overflow-y-auto"
           >
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="absolute top-6 right-6 p-2 text-white/70 hover:text-white transition-colors"
+              className="absolute top-6 right-6 p-4 -mr-4 -mt-4 text-white/70 hover:text-white transition-colors"
               aria-label="Close menu"
             >
               <X className="w-8 h-8" />
             </button>
-            <nav className="flex flex-col space-y-2 flex-1 mt-4">
+            <nav className="flex flex-col space-y-4 flex-1 mt-8">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
                 return (
                   <Link
                     key={link.name}
                     href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
                     aria-current={isActive ? 'page' : undefined}
-                    className={`text-2xl font-extrabold tracking-tight py-3 min-h-[44px] flex items-center ${isActive ? 'text-accent' : 'text-white'
+                    className={`text-3xl font-extrabold tracking-tight py-4 w-full min-h-[56px] flex items-center transition-colors ${isActive ? 'text-accent' : 'text-white'
                       }`}
                   >
                     {link.name}

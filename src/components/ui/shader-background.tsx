@@ -23,9 +23,11 @@ const ShaderBackground = () => {
     const float overallSpeed = 0.2;
     const float gridSmoothWidth = 0.015;
     const float scale = 5.0;
-    const vec4 lineColor = vec4(0.0, 0.85, 1.0, 1.0);
-    const float minLineWidth = 0.005;
-    const float maxLineWidth = 0.12;
+    // Pure Vibrant Cyan #00F5FF -> rgb(0, 245, 255)
+    // No multipliers used here to prevent the color from clamping to white!
+    const vec4 lineColor = vec4(0.0, 0.961, 1.0, 1.0);
+    const float minLineWidth = 0.010;
+    const float maxLineWidth = 0.20;
     const float lineSpeed = 1.0 * overallSpeed;
     const float lineAmplitude = 1.0;
     const float lineFrequency = 0.2;
@@ -61,7 +63,7 @@ const ShaderBackground = () => {
       space.y += random(space.x * warpFrequency + iTime * warpSpeed) * warpAmplitude * (0.5 + horizontalFade);
       space.x += random(space.y * warpFrequency + iTime * warpSpeed + 2.0) * warpAmplitude * horizontalFade;
 
-      vec4 lines = vec4(0.0);
+      float totalIntensity = 0.0;
       int lineCount = int(float(maxLines) * iQuality);
 
       for(int l = 0; l < maxLines; l++) {
@@ -79,14 +81,12 @@ const ShaderBackground = () => {
         vec2 circlePosition = vec2(circleX, getPlasmaY(circleX, horizontalFade, offset));
         float circle = drawCircle(circlePosition, 0.01, space) * 4.0;
 
-        line = line + circle;
-        lines += line * lineColor * rand;
+        totalIntensity += (line + circle) * rand;
       }
 
-      fragColor = vec4(0.0);
-      fragColor += lines * iOpacity;
-
-      gl_FragColor = fragColor;
+      // Output pure vibrant Cyan, using the intensity purely for transparency (Alpha Blending)
+      // This prevents the color from washing out to white on light backgrounds
+      gl_FragColor = vec4(lineColor.rgb, clamp(totalIntensity * iOpacity, 0.0, 1.0));
     }
   `;
 
@@ -177,8 +177,8 @@ const ShaderBackground = () => {
     let lastFrame = 0;
     const frameInterval = isMobile ? 33.33 : 16.67;
 
-    const quality = isMobile ? 1.0 : 0.4;
-    const opacity = isMobile ? 1.0 : 0.8;
+    const quality = isMobile ? 1.0 : 0.6;
+    const opacity = 1.0;
 
     const render = (timestamp: number) => {
       rafId = requestAnimationFrame(render);

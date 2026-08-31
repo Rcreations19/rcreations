@@ -7,8 +7,11 @@ export async function updateSiteSettings(formData: FormData) {
   try { await verifyAdmin(); } catch (e) { return { error: 'Unauthorized' }; }
   const supabase = await createClient();
   
-  // Update multiple keys at once
-  const keys = ['contact_email', 'contact_phone', 'store_address', 'announcement_banner', 'delivery_charge', 'free_shipping_threshold', 'gift_packing_charge'];
+  const keys = [
+    'contact_email', 'contact_phone', 'store_address', 'announcement_banner', 
+    'delivery_charge', 'free_shipping_threshold', 'gift_packing_charge',
+    'about_hero_title', 'about_hero_subtitle', 'about_story_text', 'about_roadmap'
+  ];
   
   for (const key of keys) {
     const valueStr = formData.get(key) as string;

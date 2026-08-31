@@ -2,7 +2,7 @@
 
 import { createClient, verifyAdmin } from '../supabase/server';
 import { revalidatePath } from 'next/cache';
-import * as xlsx from 'xlsx';
+import * as ExcelJS from 'exceljs';
 
 export async function uploadPricingData(formData: FormData) {
   try {
@@ -18,51 +18,56 @@ export async function uploadPricingData(formData: FormData) {
 
   try {
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const workbook = xlsx.read(buffer, { type: 'buffer' });
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(arrayBuffer);
     
     let frames: any[] = [];
     let backlit: any[] = [];
 
     // Parse Frame Pricing
-    const frameSheet = workbook.Sheets['Frame Pricing'];
+    const frameSheet = workbook.getWorksheet('Frame Pricing');
     if (frameSheet) {
-      const rows = xlsx.utils.sheet_to_json(frameSheet, { header: 1 }) as any[];
-      for (let i = 4; i < rows.length; i++) {
-        const row = rows[i];
-        const finalPrice = Number(row[6]) || 0;
-        if (!row || !row[0] || finalPrice <= 0) continue;
+      frameSheet.eachRow((row, rowNumber) => {
+        if (rowNumber <= 3) return; // skip headers
+        
+        const rowValues = row.values as any[];
+        // ExcelJS row values are 1-indexed, so rowValues[1] is the first column A
+        const finalPrice = Number(rowValues[7]) || 0; 
+        if (!rowValues || !rowValues[1] || finalPrice <= 0) return;
+        
         frames.push({
-          size: row[0],
-          basePrice: Number(row[1]) || 0,
-          knownAddOn: Number(row[2]) || 0,
-          thickness: row[3] || '',
-          finish: row[4] || '',
-          thicknessAddOn: Number(row[5]) || 0,
+          size: String(rowValues[1]),
+          basePrice: Number(rowValues[2]) || 0,
+          knownAddOn: Number(rowValues[3]) || 0,
+          thickness: String(rowValues[4] || ''),
+          finish: String(rowValues[5] || ''),
+          thicknessAddOn: Number(rowValues[6]) || 0,
           finalPrice: finalPrice,
         });
-      }
+      });
     } else {
       return { error: 'Missing "Frame Pricing" sheet in the uploaded Excel file.' };
     }
 
     // Parse Backlit Pricing
-    const backlitSheet = workbook.Sheets['Backlit Pricing'];
+    const backlitSheet = workbook.getWorksheet('Backlit Pricing');
     if (backlitSheet) {
-      const rows = xlsx.utils.sheet_to_json(backlitSheet, { header: 1 }) as any[];
-      for (let i = 4; i < rows.length; i++) {
-        const row = rows[i];
-        const finalPrice = Number(row[5]) || 0;
-        if (!row || !row[0] || !row[1] || row[1] === '—' || finalPrice <= 0) continue;
+      backlitSheet.eachRow((row, rowNumber) => {
+        if (rowNumber <= 3) return;
+        
+        const rowValues = row.values as any[];
+        const finalPrice = Number(rowValues[6]) || 0;
+        if (!rowValues || !rowValues[1] || !rowValues[2] || String(rowValues[2]) === '—' || finalPrice <= 0) return;
+        
         backlit.push({
-          thickness: row[0],
-          size: row[1],
-          basePrice: Number(row[2]) || 0,
-          finish: row[3] || '',
-          finishSurcharge: Number(row[4]) || 0,
+          thickness: String(rowValues[1]),
+          size: String(rowValues[2]),
+          basePrice: Number(rowValues[3]) || 0,
+          finish: String(rowValues[4] || ''),
+          finishSurcharge: Number(rowValues[5]) || 0,
           finalPrice: finalPrice,
         });
-      }
+      });
     } else {
       return { error: 'Missing "Backlit Pricing" sheet in the uploaded Excel file.' };
     }
@@ -70,44 +75,43 @@ export async function uploadPricingData(formData: FormData) {
     // Parse Settings
     let finishes: any[] = [];
     let thicknesses: any[] = [];
-    const settingsSheet = workbook.Sheets['Settings'];
+    const settingsSheet = workbook.getWorksheet('Settings');
     if (settingsSheet) {
-      const rows = xlsx.utils.sheet_to_json(settingsSheet, { header: 1 }) as any[];
       let currentSection = '';
 
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        if (row.length === 0 || !row[0]) {
+      settingsSheet.eachRow((row, rowNumber) => {
+        const rowValues = row.values as any[];
+        if (!rowValues || !rowValues[1]) {
           currentSection = '';
-          continue;
+          return;
         }
         
-        if (row[0] === 'Finish Surcharge') {
+        const col1 = String(rowValues[1]);
+        
+        if (col1 === 'Finish Surcharge') {
           currentSection = 'finishes';
-          i++; // skip header row
-          continue;
+          return; // skip header row
         }
         
-        if (row[0] === 'Frame Thickness Add-on') {
+        if (col1 === 'Frame Thickness Add-on') {
           currentSection = 'thicknesses';
-          i++; // skip header row
-          continue;
+          return; // skip header row
         }
         
         if (currentSection === 'finishes') {
           finishes.push({
-            finish: row[0],
-            surchargePercent: Number(row[1]) || 0
+            finish: col1,
+            surchargePercent: Number(rowValues[2]) || 0
           });
         }
         
         if (currentSection === 'thicknesses') {
           thicknesses.push({
-            thickness: row[0],
-            addonSqFt: Number(row[1]) || 0
+            thickness: col1,
+            addonSqFt: Number(rowValues[2]) || 0
           });
         }
-      }
+      });
     }
 
     const pricingConfig = {

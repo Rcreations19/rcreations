@@ -3,8 +3,15 @@
 import { createClient, verifyAdmin } from '../supabase/server';
 import { revalidatePath } from 'next/cache';
 
+const ALLOWED_INQUIRY_STATUSES = ['new', 'in_progress', 'resolved', 'closed'] as const;
+
 export async function updateInquiryStatus(id: string, status: string) {
   try { await verifyAdmin(); } catch (e) { return { error: 'Unauthorized' }; }
+
+  if (!ALLOWED_INQUIRY_STATUSES.includes(status as typeof ALLOWED_INQUIRY_STATUSES[number])) {
+    return { error: 'Invalid status value.' };
+  }
+
   const supabase = await createClient();
   
   const { error } = await supabase

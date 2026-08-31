@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   },
 };
 
-import { Montserrat, Outfit, Cormorant_Garamond } from 'next/font/google';
+import { Montserrat, Outfit, Cormorant_Garamond, Dancing_Script } from 'next/font/google';
 import { Toaster } from 'sonner';
 
 const montserrat = Montserrat({ 
@@ -67,6 +67,13 @@ const cormorant = Cormorant_Garamond({
   weight: ['400', '600', '700'],
   display: 'swap',
   variable: '--font-cormorant',
+});
+
+const dancingScript = Dancing_Script({
+  subsets: ['latin'],
+  weight: ['600'],
+  display: 'swap',
+  variable: '--font-dancing-script',
 });
 
 const orgSchema = {
@@ -136,7 +143,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${montserrat.variable} ${outfit.variable} ${cormorant.variable} font-sans`}>
+    <html lang="en" className={`${montserrat.variable} ${outfit.variable} ${cormorant.variable} ${dancingScript.variable} font-sans`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -150,11 +157,11 @@ export default function RootLayout({
         />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-FJSLXW6598"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
         <Script
           id="google-analytics"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
