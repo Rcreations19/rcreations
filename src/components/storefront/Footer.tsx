@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Instagram, Facebook, ArrowRight, ChevronDown } from 'lucide-react';
+import { Mail, Phone, MapPin, Instagram, Facebook, Linkedin, ArrowRight, ChevronDown } from 'lucide-react';
 import { RCreationLogo } from '../shared/Logo';
 
 export default function Footer() {
@@ -26,6 +26,9 @@ export default function Footer() {
               </a>
               <a href="https://www.facebook.com/profile.php?id=100091502950429" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-300 hover:bg-accent hover:text-[#000420] transition-all" aria-label="Facebook">
                 <Facebook className="w-4 h-4" />
+              </a>
+              <a href="https://www.linkedin.com/in/r-creations-71247342b/" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-300 hover:bg-accent hover:text-[#000420] transition-all" aria-label="LinkedIn">
+                <Linkedin className="w-4 h-4" />
               </a>
             </div>
           </div>
@@ -116,7 +119,8 @@ export default function Footer() {
           <p>© {new Date().getFullYear()} R Creation. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">Terms of Service</Link>
+            <Link href="/terms" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">Terms &amp; Conditions</Link>
+            <Link href="/cookies" className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">Cookie Policy</Link>
           </div>
         </div>
       </div>

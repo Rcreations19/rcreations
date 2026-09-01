@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import CookieBanner from '@/components/storefront/CookieBanner';
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -155,6 +156,22 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema).replace(/</g, '\\u003c') }}
         />
+        {/* GA Consent Mode v2 — default deny until user accepts */}
+        <Script
+          id="ga-consent-default"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  analytics_storage: 'denied',
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied',
+  wait_for_update: 500
+});`
+          }}
+        />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-FJSLXW6598"
           strategy="lazyOnload"
@@ -163,16 +180,15 @@ export default function RootLayout({
           id="google-analytics"
           strategy="lazyOnload"
           dangerouslySetInnerHTML={{
-            __html: `window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-FJSLXW6598');`
+            __html: `gtag('js', new Date());
+gtag('config', 'G-FJSLXW6598', { anonymize_ip: true });`
           }}
         />
       </head>
       <body className="antialiased">
         <Toaster richColors position="top-center" expand={true} />
         {children}
+        <CookieBanner />
       </body>
     </html>
   );
