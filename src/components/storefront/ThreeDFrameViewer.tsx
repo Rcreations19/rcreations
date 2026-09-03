@@ -517,7 +517,7 @@ interface ThreeDFrameViewerProps {
   widthCm: number;
   heightCm: number;
   thicknessCm?: number; // Optional to not break other imports if any
-  photoUrl: string | null;
+  photoUrl?: string | null;
   photoUrl2?: string | null;
   glassType?: GlassType | 'none';
   finish?: string;
@@ -525,7 +525,7 @@ interface ThreeDFrameViewerProps {
   isThumbnail?: boolean;
 }
 
-export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thicknessCm = 3, photoUrl, photoUrl2, glassType, finish, productType = 'frames', isThumbnail = false }: ThreeDFrameViewerProps) {
+export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thicknessCm = 3, photoUrl = null, photoUrl2, glassType, finish, productType = 'frames', isThumbnail = false }: ThreeDFrameViewerProps) {
   const materialParams = FRAME_MATERIALS[materialId] || FRAME_MATERIALS['f1'];
 
 
