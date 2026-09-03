@@ -29,9 +29,9 @@ export default function FrameThumbnail({ materialId, category, fallbackColor }: 
       {isInView ? (
         <ThreeDFrameViewer 
           materialId={materialId}
-          widthCm={20}
-          heightCm={20}
-          thicknessCm={3}
+          widthCm={12}
+          heightCm={12}
+          thicknessCm={2}
           isThumbnail={true}
         />
       ) : (

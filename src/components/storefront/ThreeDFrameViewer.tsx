@@ -599,7 +599,7 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
         )}
         
         {!isThumbnail && (
-          <Environment resolution={256} preset="apartment">
+          <Environment resolution={256} files="/textures/lebombo_1k.hdr">
             <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, 5]} scale={[10, 5, 1]} />
             <Lightformer intensity={2} rotation-y={-Math.PI / 2} position={[5, 1, 5]} scale={[10, 5, 1]} />
             <Lightformer intensity={2} rotation-x={Math.PI / 2} position={[0, 5, 5]} scale={[10, 10, 1]} />
