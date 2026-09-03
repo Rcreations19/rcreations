@@ -570,7 +570,11 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
               <Palette className="w-12 h-12 text-white/50 mix-blend-overlay" />
             </div>
           ) : (
-            <PhotoCanvasFallback widthCm={widthCm} heightCm={heightCm} finish={finish} />
+            <div className="w-full h-full rounded-3xl flex flex-col items-center justify-center bg-neutral-100 border border-neutral-200">
+              <Palette className="w-16 h-16 text-neutral-300 mb-3" />
+              <p className="text-sm text-neutral-400 font-medium">3D Preview</p>
+              <p className="text-xs text-neutral-300 mt-1">Select a frame style</p>
+            </div>
           )
         }
       >

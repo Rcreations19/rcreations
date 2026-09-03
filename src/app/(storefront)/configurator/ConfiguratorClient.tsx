@@ -9,7 +9,14 @@ import dynamic from 'next/dynamic';
 import PhotoCropper from '@/components/storefront/PhotoCropper';
 import { useCart } from '@/components/storefront/CartContext';
 
-const ThreeDFrameViewer = dynamic(() => import('@/components/storefront/ThreeDFrameViewer'), { ssr: false });
+const ThreeDFrameViewer = dynamic(() => import('@/components/storefront/ThreeDFrameViewer'), { 
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-neutral-50 rounded-3xl border border-neutral-200">
+      <div className="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+    </div>
+  )
+});
 
 const FRAME_OPTIONS = [
   { id: 'f1', name: 'Classic Teak Wood', category: 'wood', colorHex: '#5C4033', durability: 'Premium Real Wood' },
@@ -535,7 +542,7 @@ export default function ConfiguratorClient({ config }: { config: Record<string, 
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
               className="relative lg:sticky top-0 lg:top-32 bg-transparent overflow-hidden flex flex-col items-center"
             >
-              <div className="w-full h-[280px] sm:h-[400px] lg:h-[600px] mb-4 md:mb-8">
+              <div className="w-full h-[280px] sm:h-[400px] lg:h-[600px] mb-4 md:mb-8 bg-neutral-100 rounded-3xl overflow-hidden">
                 <ThreeDFrameViewer 
                   materialId={selectedMaterial.id} 
                   widthCm={widthCm} 
