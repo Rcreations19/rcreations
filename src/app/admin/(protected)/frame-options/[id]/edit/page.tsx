@@ -225,7 +225,7 @@ export default function EditFrameOptionPage({ params }: { params: Promise<{ id: 
               <div className="flex items-center gap-6">
                 {preview ? (
                   <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-border">
-                    <Image src={preview} alt="Preview" fill className="object-cover" />
+                    <Image src={preview} alt="Preview" fill className="object-cover" unoptimized />
                   </div>
                 ) : (
                   <div className="w-24 h-24 rounded-lg border-2 border-dashed border-border bg-surface flex flex-col items-center justify-center text-neutral-400">

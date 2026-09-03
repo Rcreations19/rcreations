@@ -1,35 +1,40 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowRight, Layers, Palette } from 'lucide-react';
-import { createPublicClient } from '@/lib/supabase/server';
-import { unstable_cache } from 'next/cache';
+import { ArrowRight, Layers } from 'lucide-react';
+import FrameThumbnail from './FrameThumbnail';
 
-const getActiveFrameOptions = unstable_cache(
-  async () => {
-    const supabase = createPublicClient();
-    const { data } = await supabase
-      .from('frame_options')
-      .select('*')
-      .eq('is_active', true)
-      .order('category', { ascending: true })
-      .order('name', { ascending: true });
-    return data || [];
+const SHOWCASE_FRAMES = [
+  {
+    id: 'f10',
+    category: 'acrylic',
+    name: 'Edge-Lit Acrylic LED Base',
+    description: '4mm optical-grade cast acrylic plate with 12V strip illumination for trophies and logos.',
+    color_hex: '#ffffff',
   },
-  ['frame-options-public'],
-  { revalidate: 3600, tags: ['frame_options'] }
-);
+  {
+    id: 'f2',
+    category: 'metal',
+    name: 'Sublimation Brass Metal Sheet',
+    description: '0.8mm scratch-resistant metallic sheet designed for high-precision thermal printing and laser etching.',
+    color_hex: '#D4AF37',
+  },
+  {
+    id: 'f21',
+    category: 'molding',
+    name: 'Gold Carved Accent Molding',
+    description: 'Traditional ornate border profile used for family portraits and religious artwork.',
+    color_hex: '#3E2723',
+  },
+  {
+    id: 'f1',
+    category: 'wood',
+    name: 'Polished Rosewood Memento Base',
+    description: 'Weighted wooden block base tailored for brass plaques and recognition mementos.',
+    color_hex: '#5C4033',
+  }
+];
 
 export async function FrameCatalogue() {
-  const activeOptions = await getActiveFrameOptions();
-
-  if (activeOptions.length === 0) {
-    return null;
-  }
-
-  // Group by category to show variety
-  const categories = Array.from(new Set(activeOptions.map((opt) => opt.category)));
-
   return (
     <section className="py-20 lg:py-28 bg-white relative overflow-hidden">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -53,69 +58,44 @@ export async function FrameCatalogue() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          {categories.map((category) => {
-            // Get the first couple of options for this category
-            const categoryOptions = activeOptions.filter(opt => opt.category === category);
-            // Select one with an image if possible to feature it
-            const featuredOption = categoryOptions.find(opt => opt.image_url) || categoryOptions[0];
-
-            return (
-              <Link 
-                href="/configurator" 
-                key={category}
-                className="group glass-panel rounded-3xl overflow-hidden border border-neutral-200 bg-surface shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-glow)] transition-all duration-300 flex flex-col"
-              >
-                <div className="relative aspect-square overflow-hidden bg-neutral-100 p-8 flex items-center justify-center">
-                  {featuredOption.image_url ? (
-                    <Image 
-                      src={featuredOption.image_url} 
-                      alt={featuredOption.name} 
-                      fill 
-                      sizes="(max-width: 768px) calc(100vw - 2rem), (max-width: 1280px) 50vw, 25vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-500" 
-                    />
-                  ) : (
-                    <div className="w-full h-full rounded-xl border-4 border-white shadow-lg flex items-center justify-center" style={{ backgroundColor: featuredOption.color_hex || '#e5e5e5' }}>
-                      <Palette className="w-12 h-12 text-white/50 mix-blend-overlay" />
-                    </div>
-                  )}
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-primary">
-                    {category}
-                  </div>
-                </div>
+          {SHOWCASE_FRAMES.map((frame) => (
+            <Link 
+              href="/configurator" 
+              key={frame.id}
+              className="group glass-panel rounded-3xl overflow-hidden border border-neutral-200 bg-surface shadow-[var(--shadow-soft)] hover:shadow-xl transition-all duration-300 flex flex-col"
+            >
+              {/* 3D Auto-Rotating Thumbnail */}
+              <div className="relative aspect-square overflow-hidden bg-neutral-100 flex items-center justify-center p-0">
+                <FrameThumbnail 
+                  materialId={frame.id} 
+                  category={frame.category} 
+                  fallbackColor={frame.color_hex} 
+                />
+              </div>
+              
+              <div className="p-6 flex-grow flex flex-col">
+                <h3 className="text-lg font-extrabold text-primary tracking-tight mb-2 group-hover:text-cyan-accent transition-colors">
+                  {frame.name}
+                </h3>
+                <p className="text-xs text-neutral-500 line-clamp-3 mb-4 flex-grow">
+                  {frame.description}
+                </p>
                 
-                <div className="p-6 flex-grow flex flex-col">
-                  <h3 className="text-lg font-extrabold text-primary tracking-tight mb-2 group-hover:text-cyan-accent transition-colors">
-                    {featuredOption.name}
-                  </h3>
-                  {featuredOption.description && (
-                    <p className="text-xs text-neutral-500 line-clamp-2 mb-4 flex-grow">
-                      {featuredOption.description}
-                    </p>
-                  )}
-                  
-                  <div className="mt-auto pt-4 border-t border-border">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-2">Available Colors</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {categoryOptions.slice(0, 5).map((opt) => (
-                        <div 
-                          key={opt.id}
-                          className="w-5 h-5 rounded-full border border-black/10 shadow-sm"
-                          style={{ backgroundColor: opt.color_hex || '#000' }}
-                          title={opt.color_name || opt.name}
-                        />
-                      ))}
-                      {categoryOptions.length > 5 && (
-                        <div className="w-5 h-5 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center text-[8px] font-bold text-neutral-500">
-                          +{categoryOptions.length - 5}
-                        </div>
-                      )}
+                <div className="mt-auto pt-4 border-t border-border flex items-center justify-between">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Available Colors</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    <div 
+                      className="w-5 h-5 rounded-full border border-black/10 shadow-sm"
+                      style={{ backgroundColor: frame.color_hex }}
+                    />
+                    <div className="w-5 h-5 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center text-[8px] font-bold text-neutral-500">
+                      +
                     </div>
                   </div>
                 </div>
-              </Link>
-            );
-          })}
+              </div>
+            </Link>
+          ))}
         </div>
 
       </div>

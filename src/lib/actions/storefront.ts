@@ -8,7 +8,7 @@ const _getPublicProducts = async () => {
   const { data, error } = await supabase
     .from('products')
     .select(`
-      *,
+      id, title, subtitle, slug, price, wholesale_price, moq, image_url, gallery_images, rating, review_count, is_bestseller,
       category:categories(name)
     `)
     .eq('is_active', true)

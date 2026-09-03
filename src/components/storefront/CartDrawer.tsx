@@ -242,12 +242,12 @@ export function CartDrawer() {
             {/* Shipping Progress */}
             {settings.free_shipping_threshold > 0 && (
               <div className="space-y-2 pb-2">
-                <div className="flex justify-between items-end">
-                  <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-wider">Free Shipping</span>
-                  <span className="text-[10px] font-mono text-accent font-bold">
-                    {subtotal >= settings.free_shipping_threshold ? 'Unlocked!' : `₹${(settings.free_shipping_threshold - subtotal).toLocaleString()} away`}
-                  </span>
-                </div>
+                  <div className="flex justify-between items-center text-sm font-semibold text-primary mb-2">
+                    <span>{subtotal >= settings.free_shipping_threshold ? '🎉 You qualify for Free Shipping!' : 'Almost there!'}</span>
+                    <span className="opacity-60 font-medium">
+                      {subtotal >= settings.free_shipping_threshold ? 'Free Shipping Earned' : `₹${(settings.free_shipping_threshold - subtotal).toLocaleString()} away`}
+                    </span>
+                  </div>
                 <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-accent transition-all duration-500 rounded-full"

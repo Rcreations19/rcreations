@@ -51,10 +51,11 @@ function ProductCard({ product, addPreset, fadeUp }: { product: Product, addPres
       >
         {/* Primary Image */}
         <Image 
-          src={product.image_url} 
+          src={product.image_url.startsWith('http') || product.image_url.startsWith('/') || product.image_url.startsWith('data:') ? product.image_url : `/products/${product.image_url}`} 
           alt={product.title} 
           fill 
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" 
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          quality={90}
           className={`object-cover transform transition-all duration-700 ease-out group-hover/image:scale-110 ${
             product.gallery_images && product.gallery_images.length > 1 ? 'group-hover/image:opacity-0' : ''
           }`} 
@@ -63,10 +64,11 @@ function ProductCard({ product, addPreset, fadeUp }: { product: Product, addPres
         {/* Secondary Image (Hover State) */}
         {hasHovered && product.gallery_images && product.gallery_images.length > 1 && (
           <Image
-            src={product.gallery_images[1]}
+            src={product.gallery_images[1].startsWith('http') || product.gallery_images[1].startsWith('/') || product.gallery_images[1].startsWith('data:') ? product.gallery_images[1] : `/products/${product.gallery_images[1]}`}
             alt={`${product.title} Alternate View`}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            quality={65}
             className="object-cover opacity-0 transition-all duration-700 ease-out absolute inset-0 group-hover/image:opacity-100 group-hover/image:scale-110"
           />
         )}

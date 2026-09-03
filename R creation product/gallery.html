@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: sans-serif; }
+  .grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .card { border: 1px solid #ccc; padding: 5px; text-align: center; width: 220px; }
+  img { max-width: 200px; max-height: 200px; display: block; margin: 0 auto; }
+</style>
+</head>
+<body>
+<div class="grid" id="grid"></div>
+<script>
+  const filenames = [
+    "DSC_7271.JPG", "DSC_7272.JPG", "DSC_7273.JPG", "DSC_7274.JPG", "DSC_7275.JPG", "DSC_7276.JPG", "DSC_7277.JPG", "DSC_7278.JPG", "DSC_7279.JPG", "DSC_7280.JPG",
+    "DSC_7281.JPG", "DSC_7282.JPG", "DSC_7283.JPG", "DSC_7284.JPG", "DSC_7285.JPG", "DSC_7286.JPG", "DSC_7287.JPG", "DSC_7288.JPG", "DSC_7289.JPG", "DSC_7290.JPG",
+    "DSC_7291.JPG", "DSC_7292.JPG", "DSC_7293.JPG", "DSC_7294.JPG", "DSC_7295.JPG", "DSC_7296.JPG", "DSC_7297.JPG", "DSC_7298.JPG", "DSC_7299.JPG", "DSC_7300.JPG",
+    "DSC_7301.JPG", "DSC_7302.JPG", "DSC_7303.JPG", "DSC_7304.JPG", "DSC_7305.JPG", "DSC_7306.JPG", "DSC_7307.JPG", "DSC_7308.JPG", "DSC_7309.JPG", "DSC_7310.JPG",
+    "DSC_7311.JPG", "DSC_7312.JPG", "DSC_7313.JPG", "DSC_7314.JPG", "DSC_7315.JPG", "DSC_7316.JPG", "DSC_7317.JPG", "DSC_7318.JPG", "DSC_7319.JPG", "DSC_7320.JPG",
+    "DSC_7321.JPG", "DSC_7322.JPG", "DSC_7323.JPG", "DSC_7324.JPG", "DSC_7325.JPG", "DSC_7326.JPG", "DSC_7327.JPG", "DSC_7328.JPG", "DSC_7329.JPG", "DSC_7330.JPG",
+    "DSC_7331.JPG", "DSC_7332.JPG", "DSC_7333.JPG", "DSC_7334.JPG", "DSC_7335.JPG", "DSC_7336.JPG", "DSC_7337.JPG", "DSC_7338.JPG", "DSC_7339.JPG", "DSC_7340.JPG",
+    "DSC_7341.JPG", "DSC_7342.JPG", "DSC_7343.JPG", "DSC_7344.JPG", "DSC_7345.JPG", "DSC_7346.JPG", "DSC_7347.JPG", "DSC_7348.JPG", "DSC_7349.JPG", "DSC_7350.JPG",
+    "DSC_7351.JPG", "DSC_7352.JPG", "DSC_7353.JPG", "DSC_7354.JPG", "DSC_7355.JPG", "DSC_7356.JPG", "DSC_7357.JPG", "DSC_7358.JPG", "DSC_7359.JPG", "DSC_7360.JPG",
+    "DSC_7361.JPG", "DSC_7362.JPG", "DSC_7363.JPG", "DSC_7364.JPG", "DSC_7365.JPG", "DSC_7366.JPG", "DSC_7367.JPG", "DSC_7368.JPG", "DSC_7369.JPG", "DSC_7370.JPG",
+    "DSC_7371.JPG", "DSC_7372.JPG", "DSC_7373.JPG", "DSC_7374.JPG", "DSC_7375.JPG", "DSC_7376.JPG"
+  ];
+  const grid = document.getElementById('grid');
+  filenames.forEach(f => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<img src="${f}" loading="lazy"><p>${f}</p>`;
+    grid.appendChild(card);
+  });
+</script>
+</body>
+</html>

@@ -4,11 +4,35 @@ import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, Lightformer, useTexture, Center } from '@react-three/drei';
 import * as THREE from 'three';
-import { Maximize, Minimize } from 'lucide-react';
+import { Maximize, Minimize, Palette } from 'lucide-react';
 import type { GlassType } from '@/lib/supabase/types';
+
+class WebGLErrorBoundary extends React.Component<{ fallback: React.ReactNode, children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { fallback: React.ReactNode, children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error | unknown) {
+    console.error("WebGL/Canvas rendering error caught by boundary:", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
 
 export interface FrameMaterialConfig extends THREE.MeshPhysicalMaterialParameters {
   textureUrl?: string;
+  innerMaterial?: FrameMaterialConfig;
+  innerRatio?: number;
 }
 
 // The 10 specific Indian market frame materials plus 10 textured ones
@@ -33,6 +57,17 @@ export const FRAME_MATERIALS: Record<string, FrameMaterialConfig & { bumpScale?:
   'f18': { color: '#654321', roughness: 0.7, metalness: 0.1, textureUrl: '/textures/frame_pattern_wood.png' }, // Classic Rosewood & Inner Gold
   'f19': { color: '#8C7853', roughness: 0.6, metalness: 0.6, textureUrl: '/textures/frame_pattern_beaded.png' }, // Gilded Antique Bronze
   'f20': { color: '#36454F', roughness: 0.8, metalness: 0.3, textureUrl: '/textures/frame_pattern_gold.png' }, // Embossed Charcoal & Gold
+  'f21': { 
+    color: '#3E2723', // Outer Brown
+    roughness: 0.8, 
+    metalness: 0.1,
+    innerMaterial: {
+      color: '#D4AF37', // Inner Gold
+      roughness: 0.3,
+      metalness: 0.8
+    },
+    innerRatio: 0.2
+  }, // Outer 80% Brown, Inner 20% Gold
 };
 
 interface FrameGeometryProps {
@@ -94,31 +129,68 @@ function FramePiece({ position, args, materialParams, repeatX, repeatY, rotation
   );
 }
 
-function FrameMesh({ widthCm, heightCm, thickness, depth, materialParams, materialId }: FrameGeometryProps & { materialId: string }) {
-  // Normalize sizes so 1 unit = 10cm for better 3D scaling
+function FrameLayer({ widthCm, heightCm, thickness, depth, materialParams }: FrameGeometryProps) {
   const w = widthCm / 10;
   const h = heightCm / 10;
   const t = thickness / 10;
   const d = depth / 10;
 
-  // Pattern repeat scaling
   const repeatU_horiz = (w + t * 2) * 2;
   const repeatU_vert = h * 2;
   const repeatV = t * 2;
 
   return (
-    <group key={materialId}>
-      {/* Top */}
+    <group>
       <FramePiece position={[0, h / 2 + t / 2, d / 2]} args={[w + t * 2, t, d]} materialParams={materialParams} repeatX={repeatU_horiz} repeatY={repeatV} />
-      {/* Bottom */}
       <FramePiece position={[0, -(h / 2 + t / 2), d / 2]} args={[w + t * 2, t, d]} materialParams={materialParams} repeatX={repeatU_horiz} repeatY={repeatV} />
-      {/* Left */}
       <FramePiece position={[-(w / 2 + t / 2), 0, d / 2]} rotation={[0, 0, Math.PI / 2]} args={[h, t, d]} materialParams={materialParams} repeatX={repeatU_vert} repeatY={repeatV} />
-      {/* Right */}
       <FramePiece position={[w / 2 + t / 2, 0, d / 2]} rotation={[0, 0, Math.PI / 2]} args={[h, t, d]} materialParams={materialParams} repeatX={repeatU_vert} repeatY={repeatV} />
+    </group>
+  );
+}
+
+function FrameMesh({ widthCm, heightCm, thickness, depth, materialParams, materialId }: FrameGeometryProps & { materialId: string }) {
+  if (materialParams.innerRatio && materialParams.innerMaterial) {
+    const innerThickness = thickness * materialParams.innerRatio;
+    const outerThickness = thickness * (1 - materialParams.innerRatio);
+    
+    return (
+      <group key={materialId}>
+        <FrameLayer 
+          widthCm={widthCm} 
+          heightCm={heightCm} 
+          thickness={innerThickness} 
+          depth={depth} 
+          materialParams={materialParams.innerMaterial} 
+        />
+        <FrameLayer 
+          widthCm={widthCm + (innerThickness * 2)} 
+          heightCm={heightCm + (innerThickness * 2)} 
+          thickness={outerThickness} 
+          depth={depth} 
+          materialParams={{...materialParams, innerRatio: undefined, innerMaterial: undefined}} 
+        />
+        {/* Backing Board */}
+        <mesh position={[0, 0, 0]} castShadow receiveShadow>
+          <boxGeometry args={[widthCm / 10, heightCm / 10, 0.05]} />
+          <meshStandardMaterial color="#1a1a1a" roughness={1} />
+        </mesh>
+      </group>
+    );
+  }
+
+  return (
+    <group key={materialId}>
+      <FrameLayer 
+          widthCm={widthCm} 
+          heightCm={heightCm} 
+          thickness={thickness} 
+          depth={depth} 
+          materialParams={materialParams} 
+      />
       {/* Backing Board */}
       <mesh position={[0, 0, 0]} castShadow receiveShadow>
-        <boxGeometry args={[w, h, 0.05]} />
+        <boxGeometry args={[widthCm / 10, heightCm / 10, 0.05]} />
         <meshStandardMaterial color="#1a1a1a" roughness={1} />
       </mesh>
     </group>
@@ -251,14 +323,16 @@ function PhotoCanvasStandard({ photoUrl, widthCm, heightCm, finish }: { photoUrl
   const w = widthCm / 10;
   const h = heightCm / 10;
   
-  const texture = useTexture(photoUrl) as THREE.Texture;
+  const baseTexture = useTexture(photoUrl) as THREE.Texture;
   
-  useEffect(() => {
-    if (texture) {
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.anisotropy = 16;
-    }
-  }, [texture]);
+  const texture = useMemo(() => {
+    if (!baseTexture) return baseTexture;
+    const t = baseTexture.clone();
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 16;
+    t.needsUpdate = true;
+    return t;
+  }, [baseTexture]);
 
   const glitterBumpMap = useMemo(() => {
     if (finish === 'Glitter') return createGlitterTexture();
@@ -307,19 +381,24 @@ function PhotoCanvasLenticular({ photoUrl, photoUrl2, widthCm, heightCm }: { pho
   const h = heightCm / 10;
   
   const textures = useTexture([photoUrl, photoUrl2]) as THREE.Texture[];
-  const texture = textures[0];
-  const texture2 = textures[1];
   
-  useEffect(() => {
-    if (texture) {
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.anisotropy = 16;
-    }
-    if (texture2) {
-      texture2.colorSpace = THREE.SRGBColorSpace;
-      texture2.anisotropy = 16;
-    }
-  }, [texture, texture2]);
+  const texture = useMemo(() => {
+    if (!textures[0]) return textures[0];
+    const t = textures[0].clone();
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 16;
+    t.needsUpdate = true;
+    return t;
+  }, [textures[0]]);
+
+  const texture2 = useMemo(() => {
+    if (!textures[1]) return textures[1];
+    const t = textures[1].clone();
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 16;
+    t.needsUpdate = true;
+    return t;
+  }, [textures[1]]);
 
   const lenticularNormalMap = useMemo(() => createLenticularNormalMap(), []);
 
@@ -440,12 +519,13 @@ interface ThreeDFrameViewerProps {
   thicknessCm?: number; // Optional to not break other imports if any
   photoUrl: string | null;
   photoUrl2?: string | null;
-  glassType: GlassType;
+  glassType?: GlassType | 'none';
   finish?: string;
   productType?: 'frames' | 'backlit';
+  isThumbnail?: boolean;
 }
 
-export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thicknessCm = 3, photoUrl, photoUrl2, glassType, finish, productType = 'frames' }: ThreeDFrameViewerProps) {
+export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thicknessCm = 3, photoUrl, photoUrl2, glassType, finish, productType = 'frames', isThumbnail = false }: ThreeDFrameViewerProps) {
   const materialParams = FRAME_MATERIALS[materialId] || FRAME_MATERIALS['f1'];
 
 
@@ -472,43 +552,59 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
     <div ref={containerRef} className={`w-full h-full ${isFullscreen ? 'bg-surface-muted min-h-[500px]' : 'bg-transparent'} rounded-3xl overflow-hidden relative cursor-grab active:cursor-grabbing group`}>
       
       {/* Fullscreen Toggle */}
-      <button 
-        onClick={toggleFullscreen}
-        className="absolute top-4 right-4 z-10 bg-white/80 p-2 rounded-full shadow-sm hover:bg-white transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-        title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+      {!isThumbnail && (
+        <button 
+          onClick={toggleFullscreen}
+          className="absolute top-4 right-4 z-10 bg-white/80 p-2 rounded-full shadow-sm hover:bg-white transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+          title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+        >
+          {isFullscreen ? <Minimize className="w-5 h-5 text-gray-700" /> : <Maximize className="w-5 h-5 text-gray-700" />}
+        </button>
+      )}
+
+      {/* Canvas wrapped in ErrorBoundary to prevent WebGL crashes on low-end devices from taking down the app */}
+      <WebGLErrorBoundary 
+        fallback={
+          isThumbnail ? (
+            <div className="w-full h-full rounded-xl flex items-center justify-center border-4 border-white shadow-lg" style={{ backgroundColor: (typeof materialParams.color === 'number' ? '#' + materialParams.color.toString(16).padStart(6, '0') : (materialParams.color as string)) || '#e5e5e5' }}>
+              <Palette className="w-12 h-12 text-white/50 mix-blend-overlay" />
+            </div>
+          ) : (
+            <PhotoCanvasFallback widthCm={widthCm} heightCm={heightCm} finish={finish} />
+          )
+        }
       >
-        {isFullscreen ? <Minimize className="w-5 h-5 text-gray-700" /> : <Maximize className="w-5 h-5 text-gray-700" />}
-      </button>
-
-      <Canvas frameloop={!photoUrl ? "always" : "demand"} shadows camera={{ position: photoUrl ? [0, 0, 10] : [-5, 2, 10], fov: 40 }}>
-        <CameraAdjuster widthCm={widthCm} heightCm={heightCm} thicknessCm={thicknessCm} />
-        {/* Soft Physical Lighting - Maintain contrast and cast soft shadows */}
-        <ambientLight intensity={0.4} />
-        {/* Main light from front to illuminate diffuse maps and cast soft shadow */}
-        <directionalLight castShadow position={[0, 10, 20]} intensity={1.5} shadow-mapSize={[1024, 1024]} shadow-bias={-0.001} />
-        {/* Fill lights */}
-        <directionalLight position={[5, 10, 15]} intensity={0.5} />
-        <directionalLight position={[-5, -5, -10]} intensity={0.2} />
+        <Canvas 
+          frameloop={isThumbnail ? "always" : (!photoUrl ? "always" : "demand")} 
+          shadows={!isThumbnail} 
+          camera={{ position: photoUrl ? [0, 0, 10] : [-5, 2, 10], fov: 40 }}
+          gl={isThumbnail ? { antialias: false, powerPreference: "low-power" } : undefined}
+        >
+        <color attach="background" args={['#f5f5f5']} />
         
-        {/* Environment for reflections - Crucial for metallic frames */}
-        <Environment resolution={256} background={false}>
-          <group rotation={[0, 0, 0]}>
-            {/* Front reflections (Behind camera) - Prevents front of frame from being black */}
-            <Lightformer intensity={1.5} rotation-x={0} position={[0, 0, 10]} scale={[20, 20, 1]} />
-            <Lightformer intensity={1} rotation-x={-Math.PI / 4} position={[0, 10, 10]} scale={[20, 5, 1]} />
-            
-            {/* Top / Back reflections */}
-            <Lightformer intensity={1.5} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
-            
-            {/* Side reflections */}
-            <Lightformer intensity={0.5} rotation-y={Math.PI / 2} position={[-10, 0, 0]} scale={[20, 5, 1]} />
-            <Lightformer intensity={0.5} rotation-y={-Math.PI / 2} position={[10, 0, 0]} scale={[20, 5, 1]} />
-          </group>
-        </Environment>
+        <ambientLight intensity={isThumbnail ? 2.5 : 1.5} />
+        <directionalLight 
+          position={[5, 5, 5]} 
+          intensity={isThumbnail ? 3.0 : 2} 
+          castShadow={!isThumbnail} 
+          shadow-mapSize={[1024, 1024]} 
+          shadow-bias={-0.001} 
+        />
+        {!isThumbnail && (
+          <directionalLight position={[-5, 5, -5]} intensity={1} />
+        )}
+        
+        {!isThumbnail && (
+          <Environment resolution={256} preset="apartment">
+            <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, 5]} scale={[10, 5, 1]} />
+            <Lightformer intensity={2} rotation-y={-Math.PI / 2} position={[5, 1, 5]} scale={[10, 5, 1]} />
+            <Lightformer intensity={2} rotation-x={Math.PI / 2} position={[0, 5, 5]} scale={[10, 10, 1]} />
+            <Lightformer form="ring" intensity={3} rotation-x={Math.PI / 2} position={[0, 5, -5]} scale={[10, 10, 1]} />
+          </Environment>
+        )}
 
-        {/* The Frame Assembly */}
         <Center>
-          <group rotation={[0, 0, 0]}>
+          <group>
             {productType === 'backlit' && (
               <mesh position={[0, 0, -0.1]}>
                 <planeGeometry args={[widthCm / 10 + 0.5, heightCm / 10 + 0.5]} />
@@ -520,27 +616,36 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
               materialId={materialId}
               widthCm={widthCm} 
               heightCm={heightCm} 
-              thickness={thicknessCm}
-              depth={2} // 2cm depth
+              thickness={thicknessCm} 
+              depth={productType === 'backlit' ? 4 : 2.5} 
               materialParams={materialParams} 
             />
-            <PhotoCanvas photoUrl={photoUrl || ''} photoUrl2={photoUrl2} widthCm={widthCm} heightCm={heightCm} finish={finish} />
-            {finish !== 'Glitter' && (
-              <GlassPane widthCm={widthCm} heightCm={heightCm} glassType={glassType} />
+
+            {!isThumbnail && photoUrl && (
+              <PhotoCanvas photoUrl={photoUrl} photoUrl2={photoUrl2} widthCm={widthCm} heightCm={heightCm} finish={finish} />
+            )}
+            
+            {!isThumbnail && glassType && glassType !== 'none' && (
+              <GlassPane widthCm={widthCm} heightCm={heightCm} glassType={glassType as GlassType} />
             )}
           </group>
         </Center>
 
-        {/* Orbit Controls */}
         <OrbitControls 
-          enablePan={true}
-          enableZoom={true}
-          minDistance={2}
-          maxDistance={30}
-          autoRotate={!photoUrl}
-          autoRotateSpeed={1.5}
+          makeDefault
+          enablePan={!isThumbnail} 
+          enableZoom={!isThumbnail} 
+          enableRotate={!isThumbnail}
+          autoRotate={isThumbnail || !photoUrl}
+          autoRotateSpeed={isThumbnail ? 2.0 : 1.5}
+          minDistance={isThumbnail ? 3 : 5}
+          maxDistance={isThumbnail ? 3 : 30}
         />
-      </Canvas>
+        {!isThumbnail && (
+          <CameraAdjuster widthCm={widthCm} heightCm={heightCm} thicknessCm={thicknessCm} />
+        )}
+        </Canvas>
+      </WebGLErrorBoundary>
     </div>
   );
 }

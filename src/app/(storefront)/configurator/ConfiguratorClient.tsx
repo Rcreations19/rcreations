@@ -17,6 +17,7 @@ const FRAME_OPTIONS = [
   { id: 'f3', name: 'Minimalist Matte Black', category: 'molding', colorHex: '#1a1a1a', durability: 'Sleek Synthetic' },
   { id: 'f4', name: 'Dark Rosewood / Mahogany', category: 'wood', colorHex: '#3B1E16', durability: 'Premium Polished' },
   { id: 'f10', name: 'Glossy White Acrylic', category: 'acrylic', colorHex: '#ffffff', durability: 'High Reflection' },
+  { id: 'f21', name: 'Dual-Tone Brown & Gold', category: 'molding', colorHex: '#3E2723', durability: 'Premium Dual-Tone' },
 ];
 
 const STEPS = [

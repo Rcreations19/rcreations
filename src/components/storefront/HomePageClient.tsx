@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Check, Building2, User, Target, Eye, Sparkles, ArrowRight, Calendar } from 'lucide-react';
+import { Check, Building2, User, Target, Eye, ArrowRight, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Hero10, type Hero10Props } from '@/components/ui/hero-10';
 import dynamic from 'next/dynamic';
@@ -124,11 +124,11 @@ export default function HomePageClient({ children, latestBlogs = [], topSellers,
               </p>
               <ul className="space-y-4 mt-auto relative z-10">
                 <li className="flex items-center gap-3 text-sm font-medium text-primary/70">
-                  <div className="p-1 rounded-full bg-gold-accent/10"><Sparkles className="w-4 h-4 text-gold-accent" /></div>
+                  <div className="p-1 rounded-full bg-gold-accent/10"><Check className="w-4 h-4 text-gold-accent" /></div>
                   50+ families and studios already trust us
                 </li>
                 <li className="flex items-center gap-3 text-sm font-medium text-primary/70">
-                  <div className="p-1 rounded-full bg-gold-accent/10"><Sparkles className="w-4 h-4 text-gold-accent" /></div>
+                  <div className="p-1 rounded-full bg-gold-accent/10"><Check className="w-4 h-4 text-gold-accent" /></div>
                   Expanding to every corner of Tamil Nadu
                 </li>
               </ul>
@@ -148,7 +148,7 @@ export default function HomePageClient({ children, latestBlogs = [], topSellers,
             {/* Retail Block (Prioritized) */}
             <motion.div
               initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-              className="glass-panel-dark p-6 md:p-10 lg:p-14 rounded-3xl lg:rounded-[2rem] border-2 border-gold-accent/40 shadow-[var(--shadow-gold-glow)] relative overflow-hidden flex flex-col"
+              className="glass-panel-dark p-6 md:p-10 lg:p-14 rounded-3xl lg:rounded-[2rem] border border-white/10 shadow-[var(--shadow-glass)] relative overflow-hidden flex flex-col"
             >
               <div className="noise-overlay" aria-hidden />
               <div className="absolute top-0 right-0 w-64 h-64 bg-gold-accent/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
@@ -162,7 +162,7 @@ export default function HomePageClient({ children, latestBlogs = [], topSellers,
                 <li className="flex items-center gap-4"><div className="p-1 rounded-full bg-gold-accent/20"><Check className="w-4 h-4 text-gold-accent" /></div> No minimum order</li>
                 <li className="flex items-center gap-4"><div className="p-1 rounded-full bg-gold-accent/20"><Check className="w-4 h-4 text-gold-accent" /></div> Fast 3-day production</li>
               </ul>
-              <Link href="/products" className="mt-auto inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-gold-accent text-primary text-sm font-bold tracking-wide rounded-xl hover:bg-gold-hover active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(250,195,76,0.35)] relative z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <Link href="/products" className="mt-auto inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-gold-accent text-primary text-sm font-bold tracking-wide rounded-xl hover:bg-gold-hover active:scale-[0.98] transition-all shadow-md relative z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 Shop Now
               </Link>
             </motion.div>
@@ -227,7 +227,7 @@ export default function HomePageClient({ children, latestBlogs = [], topSellers,
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                 >
-                  <Link href={`/blogs/${blog.slug}`} className="group block glass-panel rounded-3xl overflow-hidden border border-neutral-200 bg-white shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-glow)] transition-all duration-300 h-full">
+                  <Link href={`/blogs/${blog.slug}`} className="group block glass-panel rounded-3xl overflow-hidden border border-neutral-200 bg-white shadow-[var(--shadow-soft)] hover:shadow-xl transition-all duration-300 h-full">
                     {blog.cover_image_url ? (
                       <div className="relative aspect-[16/10] overflow-hidden">
                         <Image

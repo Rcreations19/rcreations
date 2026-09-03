@@ -111,7 +111,7 @@ export function GoogleReviewsMarquee({ reviews }: { reviews: Review[] }) {
               initial="enter"
               animate="center"
               exit="exit"
-              className="absolute inset-0 flex h-full w-full flex-col justify-between overflow-hidden rounded-3xl border-2 border-accent/55 bg-white p-7 shadow-[0_24px_60px_-20px_rgba(1,6,59,0.25),0_0_30px_rgba(42,171,176,0.25)] sm:p-9"
+              className="absolute inset-0 flex h-full w-full flex-col justify-between overflow-hidden rounded-3xl border border-neutral-200 bg-white p-7 shadow-2xl sm:p-9"
             >
               {/* glow ring */}
               <div
@@ -139,8 +139,8 @@ export function GoogleReviewsMarquee({ reviews }: { reviews: Review[] }) {
             <span
               className={`block h-2 rounded-full transition-all duration-500 ${
                 i === active
-                  ? 'w-8 bg-accent shadow-[0_0_10px_rgba(42,171,176,0.7)]'
-                  : 'w-2 bg-neutral-300 group-hover:bg-neutral-400'
+                  ? 'w-8 bg-primary shadow-sm'
+                  : 'w-2 bg-neutral-300 hover:bg-neutral-400'
               }`}
             />
           </button>

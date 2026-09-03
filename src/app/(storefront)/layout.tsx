@@ -3,7 +3,6 @@ import { AuthProvider } from '@/components/storefront/AuthContext';
 import Navbar from '@/components/storefront/Navbar';
 import Footer from '@/components/storefront/Footer';
 import { CartDrawer } from '@/components/storefront/CartDrawer';
-import FallingAnimation from '@/components/shared/FallingAnimation';
 import MobileBottomNav from '@/components/storefront/MobileBottomNav';
 import FloatingWhatsApp from '@/components/storefront/FloatingWhatsApp';
 
@@ -16,7 +15,6 @@ export default function StorefrontLayout({
     <AuthProvider>
       <CartProvider>
         <div className="min-h-screen relative font-sans text-neutral-900 selection:bg-neutral-200 bg-[#FAFAFA]">
-          <FallingAnimation className="opacity-50 z-40" />
           {/* Skip to content — keyboard accessibility */}
           <a
             href="#main-content"

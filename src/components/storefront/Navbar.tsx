@@ -335,9 +335,9 @@ export default function Navbar() {
                   Sign In
                 </Link>
               )}
-              <Link
+              <Link 
                 href="/contact"
-                className="w-full py-4 bg-accent hover:bg-[#2eb1b5] text-primary flex items-center justify-center gap-2 font-bold uppercase tracking-widest rounded-xl shadow-[0_0_20px_rgba(56,200,204,0.3)] transition-all"
+                className="w-full py-4 bg-accent hover:bg-[#2eb1b5] text-primary flex items-center justify-center gap-2 font-bold uppercase tracking-widest rounded-xl shadow-md transition-all"
               >
                 Contact Sales
               </Link>

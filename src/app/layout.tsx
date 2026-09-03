@@ -146,8 +146,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${montserrat.variable} ${outfit.variable} ${cormorant.variable} ${dancingScript.variable} font-sans`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema).replace(/</g, '\\u003c') }}

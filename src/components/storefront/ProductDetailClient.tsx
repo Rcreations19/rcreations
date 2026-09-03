@@ -134,9 +134,10 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
     setTimeout(() => setAdded(false), 2000);
   };
 
-  const allImages = product.gallery_images?.length > 0 
+  const prefixUrl = (url: string) => url?.startsWith('http') || url?.startsWith('/') || url?.startsWith('data:') ? url : `/products/${url}`;
+  const allImages = (product.gallery_images?.length > 0 
     ? product.gallery_images 
-    : (product.image_url ? [product.image_url] : []);
+    : (product.image_url ? [product.image_url] : [])).map(prefixUrl);
   const [currentImage, setCurrentImage] = useState(allImages[0]);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
@@ -171,7 +172,15 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
               >
                 {allImages.map((img: string, idx: number) => (
                   <div key={idx} className="w-full flex-shrink-0 snap-center relative aspect-[4/5]">
-                    <Image src={img} alt={`${product.title} ${idx + 1}`} fill className="object-cover" sizes="(max-width: 640px) 100vw, 50vw" priority={idx === 0} />
+                    <Image
+                      src={img}
+                      alt={`${product.title} ${idx + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                      quality={idx === 0 ? 90 : 65}
+                      priority={idx === 0}
+                    />
                   </div>
                 ))}
               </div>
@@ -196,7 +205,8 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                   alt={product.title}
                   fill
                   className="object-contain"
-                  sizes="(max-width: 640px) 100vw, 50vw"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  quality={95}
                   priority
                 />
               ) : (
@@ -465,9 +475,9 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                 className="group bg-white rounded-xl border border-neutral-100 overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all flex-shrink-0 w-[160px] snap-start sm:w-[220px] lg:w-auto lg:flex-shrink flex flex-col"
               >
                 <div className="aspect-[4/5] bg-neutral-100 overflow-hidden relative group/image block">
-                  <Image src={related.image_url} alt={related.title} fill sizes="(max-width: 640px) 160px, (max-width: 1024px) 220px, 25vw" className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover/image:scale-105 ${related.gallery_images && related.gallery_images.length > 1 ? 'group-hover/image:opacity-0' : ''}`} />
+                  <Image src={related.image_url.startsWith('http') || related.image_url.startsWith('/') || related.image_url.startsWith('data:') ? related.image_url : `/products/${related.image_url}`} alt={related.title} fill sizes="(max-width: 640px) 160px, (max-width: 1024px) 220px, 25vw" className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover/image:scale-105 ${related.gallery_images && related.gallery_images.length > 1 ? 'group-hover/image:opacity-0' : ''}`} />
                   {related.gallery_images && related.gallery_images.length > 1 && (
-                    <Image src={related.gallery_images[1]} alt={related.title} fill sizes="(max-width: 640px) 160px, (max-width: 1024px) 220px, 25vw" className="w-full h-full object-cover absolute inset-0 opacity-0 transition-all duration-700 ease-out group-hover/image:opacity-100 group-hover/image:scale-105" />
+                    <Image src={related.gallery_images[1].startsWith('http') || related.gallery_images[1].startsWith('/') || related.gallery_images[1].startsWith('data:') ? related.gallery_images[1] : `/products/${related.gallery_images[1]}`} alt={related.title} fill sizes="(max-width: 640px) 160px, (max-width: 1024px) 220px, 25vw" className="w-full h-full object-cover absolute inset-0 opacity-0 transition-all duration-700 ease-out group-hover/image:opacity-100 group-hover/image:scale-105" />
                   )}
                   {related.is_bestseller && (
                     <div className="absolute top-0 left-0 z-10">

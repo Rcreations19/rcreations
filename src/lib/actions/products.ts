@@ -66,7 +66,7 @@ const productSchema = z.object({
   wholesale_price: z.coerce.number().min(0, "Wholesale price must be positive"),
   moq: z.coerce.number().int().min(1, "MOQ must be at least 1"),
   image_url: z.string().nullable().optional().transform(val => val || ""),
-  gallery_images: z.array(z.string().url().max(1000)).optional().default([]),
+  gallery_images: z.array(z.string().max(1000)).optional().default([]),
   description: z.string().nullable().optional().transform(val => val || ""),
   dimensions: z.string().nullable().optional().transform(val => val || ""),
   material: z.string().nullable().optional().transform(val => val || ""),

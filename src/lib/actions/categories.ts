@@ -9,7 +9,7 @@ const categorySchema = z.object({
   name: z.string().min(1, 'Name is required').max(200),
   slug: z.string().min(1, 'Slug is required').max(100).regex(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
   description: z.string().max(2000).optional().default(''),
-  imageUrl: z.string().url().max(1000).optional().default(''),
+  imageUrl: z.string().max(1000).optional().default(''),
   displayOrder: z.coerce.number().int().min(0).default(0),
   isActive: z.boolean().default(false),
 });

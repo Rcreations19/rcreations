@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Star, Trophy, ArrowRight, Sparkles } from 'lucide-react';
+import { Star, Trophy, ArrowRight } from 'lucide-react';
 import { getBestsellerProducts } from '@/lib/actions/storefront';
 
 import { BestsellerCard } from '@/components/storefront/BestsellerCard';

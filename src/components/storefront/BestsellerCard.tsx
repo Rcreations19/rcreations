@@ -48,10 +48,11 @@ export function BestsellerCard({ product, index }: { product: BestsellerProductD
       >
         {/* Primary Image */}
         <Image
-          src={product.image_url}
+          src={product.image_url.startsWith('http') || product.image_url.startsWith('/') || product.image_url.startsWith('data:') ? product.image_url : `/products/${product.image_url}`}
           alt={product.title}
           fill
           sizes="(max-width: 640px) 240px, (max-width: 1024px) 33vw, 25vw"
+          quality={90}
           className={`object-cover transition-all duration-700 ease-out group-hover:scale-105 ${
             hasGallery ? 'group-hover/image:opacity-0' : ''
           }`}
@@ -61,10 +62,11 @@ export function BestsellerCard({ product, index }: { product: BestsellerProductD
         {/* Secondary Image — only mounted after first hover (zero preload cost) */}
         {hasHovered && hasGallery && (
           <Image
-            src={product.gallery_images[1]}
+            src={product.gallery_images[1].startsWith('http') || product.gallery_images[1].startsWith('/') || product.gallery_images[1].startsWith('data:') ? product.gallery_images[1] : `/products/${product.gallery_images[1]}`}
             alt={`${product.title} Alternate View`}
             fill
             sizes="(max-width: 640px) 240px, (max-width: 1024px) 33vw, 25vw"
+            quality={65}
             className="object-cover opacity-0 transition-all duration-700 ease-out absolute inset-0 group-hover/image:opacity-100 group-hover:scale-105"
           />
         )}

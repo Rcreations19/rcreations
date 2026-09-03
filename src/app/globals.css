@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
@@ -48,16 +47,14 @@
   --font-admin: var(--font-outfit), system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-script-extra: 'Dancing Script', cursive;
+  --font-dancing: var(--font-dancing-script), cursive;
 
   /* Focus ring (cyan, matches accent) */
   --color-ring: #64E9E4;
 
-  /* Tinted shadows — carry the navy/teal hue instead of pure black */
-  --shadow-glass: 0 8px 32px 0 rgba(1, 6, 59, 0.15);
-  --shadow-soft: 0 4px 20px 0 rgba(1, 6, 59, 0.08);
-  --shadow-glow: 0 0 20px rgba(100, 233, 228, 0.3);
-  --shadow-teal-glow: 0 0 24px rgba(100, 233, 228, 0.22);
-  --shadow-gold-glow: 0 0 24px rgba(250, 195, 76, 0.25);
+  /* Tinted shadows — clean neutral gradients for premium feel */
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+  --shadow-soft: 0 4px 20px 0 rgba(0, 0, 0, 0.04);
 }
 
 @layer base {
@@ -65,9 +62,7 @@
     scroll-behavior: smooth;
     font-family: var(--font-body);
     color: var(--color-primary);
-    background-color: #FDFBF7; /* Warm, rich off-white */
-    background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23C89E5B' fill-opacity='0.12' fill-rule='evenodd'%3E%3Cpath d='M50 0C22.4 0 0 22.4 0 50s22.4 50 50 50 50-22.4 50-50S77.6 0 50 0zm0 90C27.9 90 10 72.1 10 50S27.9 10 50 10s40 17.9 40 40-17.9 40-40 40z'/%3E%3Cpath d='M50 20c-16.6 0-30 13.4-30 30s13.4 30 30 30 30-13.4 30-30-13.4-30-30-30zm0 50c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20z'/%3E%3Cpath d='M50 40c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10zm0 15c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z'/%3E%3Cpath d='M50 25c-1.4 0-2.5-1.1-2.5-2.5v-10c0-1.4 1.1-2.5 2.5-2.5s2.5 1.1 2.5 2.5v10c0 1.4-1.1 2.5-2.5 2.5zM50 87.5c-1.4 0-2.5-1.1-2.5-2.5v-10c0-1.4 1.1-2.5 2.5-2.5s2.5 1.1 2.5 2.5v10c0 1.4-1.1 2.5-2.5 2.5zM87.5 50c0 1.4-1.1 2.5-2.5 2.5h-10c-1.4 0-2.5-1.1-2.5-2.5s1.1-2.5 2.5-2.5h10c1.4 0 2.5 1.1 2.5 2.5zM25 50c0 1.4-1.1 2.5-2.5 2.5h-10c-1.4 0-2.5-1.1-2.5-2.5s1.1-2.5 2.5-2.5h10c1.4 0 2.5 1.1 2.5 2.5zM76.5 23.5c-1 1-2.6 1-3.5 0l-7.1-7.1c-1-1-1-2.6 0-3.5s2.6-1 3.5 0l7.1 7.1c1 1 1 2.6 0 3.5zM34.1 65.9c-1 1-2.6 1-3.5 0l-7.1-7.1c-1-1-1-2.6 0-3.5 1-1 2.6-1 3.5 0l7.1 7.1c1 1 1 2.6 0 3.5zM76.5 76.5c-1-1-1-2.6 0-3.5l7.1-7.1c1-1 2.6-1 3.5 0s1 2.6 0 3.5l-7.1 7.1c-1 1-2.6 1-3.5 0zM34.1 34.1c-1-1-1-2.6 0-3.5l7.1-7.1c1-1 2.6-1 3.5 0 1 1 1 2.6 0 3.5l-7.1 7.1c-1 1-2.6 1-3.5 0z'/%3E%3C/g%3E%3C/svg%3E");
-    background-attachment: fixed;
+    background-color: #FDFBF7;
     /* Subpixel antialiasing for crisper text */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

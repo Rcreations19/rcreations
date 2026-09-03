@@ -61,12 +61,14 @@ export function MultiImageUploader({ images, onChange, maxImages = 10 }: MultiIm
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {images.map((url, idx) => (
-          <div key={url} className="relative group aspect-square bg-neutral-100 rounded-lg border border-neutral-200 overflow-hidden">
-            <Image src={url} alt={`Product view ${idx + 1}`} fill className="object-cover" />
-            <button
-              type="button"
-              onClick={() => removeImage(idx)}
+        {images.map((url, idx) => {
+          const imgSrc = url.startsWith('http') || url.startsWith('/') ? url : `/products/${url}`;
+          return (
+            <div key={url} className="relative group aspect-square bg-neutral-100 rounded-lg border border-neutral-200 overflow-hidden">
+              <Image src={imgSrc} alt={`Product view ${idx + 1}`} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" unoptimized />
+              <button
+                type="button"
+                onClick={() => removeImage(idx)}
               className="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
               title="Remove image"
             >
@@ -78,7 +80,8 @@ export function MultiImageUploader({ images, onChange, maxImages = 10 }: MultiIm
               </div>
             )}
           </div>
-        ))}
+          );
+        })}
 
         {images.length < maxImages && (
           <button
