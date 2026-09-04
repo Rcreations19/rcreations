@@ -1,7 +1,7 @@
 'use server';
 
 import { createPublicClient, getAdminClient } from '../supabase/server';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, unstable_cache } from 'next/cache';
 import { validateImageFile, generateUploadPath } from '../supabase/upload-utils';
 import { rateLimit } from '../rate-limit';
 import { ActionResponse, getSafeErrorMessage } from '../utils/action-response';
@@ -20,12 +20,12 @@ export async function getPublicBlogs() {
   return data as any[];
 }
 
-export async function getHomepageBlogs() {
+const _getHomepageBlogs = async () => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('blogs')
     // @ts-ignore: show_on_homepage is a new column not yet in types
-    .select('id, title, slug, summary, content, cover_image_url, is_published, author, created_at, updated_at, show_on_homepage')
+    .select('id, title, slug, summary, cover_image_url, is_published, author, created_at, show_on_homepage')
     .eq('is_published', true)
     // @ts-ignore
     .eq('show_on_homepage', true)
@@ -35,6 +35,8 @@ export async function getHomepageBlogs() {
   if (error) throw new Error('Failed to fetch homepage blogs.');
   return data as any[];
 }
+
+export const getHomepageBlogs = unstable_cache(_getHomepageBlogs, ['homepage-blogs'], { revalidate: 3600, tags: ['blogs'] });
 
 export async function getPublicBlogBySlug(slug: string) {
   const supabase = createPublicClient();
