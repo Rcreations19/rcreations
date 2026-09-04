@@ -153,6 +153,8 @@ export type Database = {
           author: string
           created_at: string
           updated_at: string
+          keywords: string | null
+          show_on_homepage: boolean
         }
         Insert: {
           id?: string
@@ -165,6 +167,8 @@ export type Database = {
           author: string
           created_at?: string
           updated_at?: string
+          keywords?: string | null
+          show_on_homepage?: boolean
         }
         Update: {
           id?: string
@@ -177,6 +181,8 @@ export type Database = {
           author?: string
           created_at?: string
           updated_at?: string
+          keywords?: string | null
+          show_on_homepage?: boolean
         }
         Relationships: []
       }

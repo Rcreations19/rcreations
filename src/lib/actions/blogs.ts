@@ -123,8 +123,6 @@ export async function createBlog(formData: FormData): Promise<ActionResponse> {
         content,
         author,
         is_published,
-        // @ts-ignore: show_on_homepage is a new column not yet in types
-      // @ts-ignore
         show_on_homepage,
         keywords,
         ...(cover_image_url && { cover_image_url })
@@ -202,8 +200,7 @@ export async function updateBlog(id: string, formData: FormData): Promise<Action
       author,
       is_published,
       keywords,
-      // @ts-ignore
-        show_on_homepage,
+      show_on_homepage,
       cover_image_url
     })
     .eq('id', id)
