@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   },
 };
 
+export const revalidate = 3600; // 1 hour caching to prevent Cloudflare Worker CPU limits (Error 1102)
+
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
