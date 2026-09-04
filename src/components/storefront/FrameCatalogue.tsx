@@ -6,30 +6,30 @@ import FrameThumbnail from './FrameThumbnail';
 const SHOWCASE_FRAMES = [
   {
     id: 'f10',
-    category: 'acrylic',
-    name: 'Edge-Lit Acrylic LED Base',
-    description: '4mm optical-grade cast acrylic plate with 12V strip illumination for trophies and logos.',
+    category: 'acrylic', // White
+    name: 'Glossy White Premium Frame',
+    description: 'Minimalist white profile, perfect for modern gallery walls and contemporary photography.',
     color_hex: '#ffffff',
   },
   {
     id: 'f2',
-    category: 'metal',
-    name: 'Sublimation Brass Metal Sheet',
-    description: '0.8mm scratch-resistant metallic sheet designed for high-precision thermal printing and laser etching.',
+    category: 'fibre',
+    name: 'Ornate Antique Gold Fibre',
+    description: 'High-density synthetic fibre with a vintage gold finish, offering the premium look of traditional carved wood.',
     color_hex: '#D4AF37',
   },
   {
     id: 'f21',
-    category: 'molding',
-    name: 'Gold Carved Accent Molding',
-    description: 'Traditional ornate border profile used for family portraits and religious artwork.',
+    category: 'fibre',
+    name: 'Gold Accent Brown Fibre',
+    description: 'Durable synthetic fibre frame featuring a rich brown outer profile with an elegant inner gold accent.',
     color_hex: '#3E2723',
   },
   {
     id: 'f1',
-    category: 'wood',
-    name: 'Polished Rosewood Memento Base',
-    description: 'Weighted wooden block base tailored for brass plaques and recognition mementos.',
+    category: 'fibre',
+    name: 'Classic Teak Wood Texture',
+    description: 'Premium fibre molding wrapped in a highly realistic polished teak wood texture for a timeless aesthetic.',
     color_hex: '#5C4033',
   }
 ];
@@ -48,7 +48,7 @@ export async function FrameCatalogue() {
               Explore Frame Varieties
             </h2>
             <p className="text-sm md:text-base text-neutral-600">
-              From classic wooden moldings to modern industrial metals and acrylics. Discover our factory-direct materials, available for custom sizing.
+              From classic wood-textured synthetic fibre to modern ornate gold finishes. Discover our factory-direct high-density fibre materials, available for custom sizing.
             </p>
           </div>
           <Link href="/configurator" className="inline-flex items-center justify-center px-6 py-3 bg-primary text-white text-sm font-bold tracking-wide rounded-xl hover:bg-primary/90 transition-all shadow-md shrink-0 group">
