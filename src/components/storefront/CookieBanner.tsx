@@ -10,6 +10,7 @@ type ConsentState = 'accepted' | 'rejected' | 'custom' | null;
 
 interface Preferences {
   analytics: boolean;
+  marketing: boolean;
 }
 
 declare global {
@@ -18,13 +19,13 @@ declare global {
   }
 }
 
-function applyGtagConsent(analytics: boolean) {
+function applyGtagConsent(analytics: boolean, marketing: boolean = false) {
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('consent', 'update', {
       analytics_storage: analytics ? 'granted' : 'denied',
-      ad_storage: 'denied',
-      ad_user_data: 'denied',
-      ad_personalization: 'denied',
+      ad_storage: marketing ? 'granted' : 'denied',
+      ad_user_data: marketing ? 'granted' : 'denied',
+      ad_personalization: marketing ? 'granted' : 'denied',
     });
   }
 }
@@ -33,7 +34,7 @@ export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
-  const [prefs, setPrefs] = useState<Preferences>({ analytics: true });
+  const [prefs, setPrefs] = useState<Preferences>({ analytics: true, marketing: false });
 
   useEffect(() => {
     const mountTimer = setTimeout(() => setMounted(true), 0);
@@ -45,8 +46,8 @@ export default function CookieBanner() {
       visibilityTimer = setTimeout(() => setVisible(true), 1500);
     } else {
       try {
-        const parsed = JSON.parse(stored) as { analytics: boolean };
-        applyGtagConsent(parsed.analytics);
+        const parsed = JSON.parse(stored) as Preferences;
+        applyGtagConsent(parsed.analytics, parsed.marketing);
       } catch {
         /* ignore */
       }
@@ -58,12 +59,12 @@ export default function CookieBanner() {
     };
   }, []);
 
-  function saveConsent(analytics: boolean, state: ConsentState) {
+  function saveConsent(analytics: boolean, marketing: boolean, state: ConsentState) {
     localStorage.setItem(
       CONSENT_KEY,
-      JSON.stringify({ state, analytics, functional: true, timestamp: Date.now() })
+      JSON.stringify({ state, analytics, marketing, functional: true, timestamp: Date.now() })
     );
-    applyGtagConsent(analytics);
+    applyGtagConsent(analytics, marketing);
     setVisible(false);
   }
 
@@ -127,6 +128,27 @@ export default function CookieBanner() {
                 </button>
               </div>
 
+              <div className="flex items-center justify-between gap-3 bg-black/5 p-3 rounded-2xl mt-3">
+                <div>
+                  <h3 className="text-[13px] font-semibold text-primary">Marketing & Ads</h3>
+                  <p className="text-[11px] text-neutral-500 mt-0.5 leading-snug">Used to deliver personalized advertisements.</p>
+                </div>
+                
+                {/* Apple-style toggle */}
+                <button
+                  role="switch"
+                  aria-checked={prefs.marketing}
+                  onClick={() => setPrefs((p) => ({ ...p, marketing: !p.marketing }))}
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${prefs.marketing ? 'bg-primary' : 'bg-neutral-300'}`}
+                  aria-label="Toggle marketing cookies"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-300 ease-in-out ${prefs.marketing ? 'translate-x-5' : 'translate-x-0'}`}
+                  />
+                </button>
+              </div>
+
             </div>
           </div>
 
@@ -134,7 +156,7 @@ export default function CookieBanner() {
           <div className="flex flex-col gap-2">
             {showPrefs ? (
               <button
-                onClick={() => saveConsent(prefs.analytics, 'custom')}
+                onClick={() => saveConsent(prefs.analytics, prefs.marketing, 'custom')}
                 className="w-full bg-primary hover:bg-primary-hover text-white text-[13px] font-medium px-4 py-3 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 Save Preferences
@@ -142,13 +164,13 @@ export default function CookieBanner() {
             ) : (
               <div className="flex gap-2">
                 <button
-                  onClick={() => saveConsent(false, 'rejected')}
+                  onClick={() => saveConsent(false, false, 'rejected')}
                   className="flex-1 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-[13px] font-medium px-4 py-3 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-neutral-200 focus:ring-offset-2"
                 >
                   Decline
                 </button>
                 <button
-                  onClick={() => saveConsent(true, 'accepted')}
+                  onClick={() => saveConsent(true, true, 'accepted')}
                   className="flex-1 bg-primary hover:bg-primary-hover text-white text-[13px] font-medium px-4 py-3 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 >
                   Allow All
