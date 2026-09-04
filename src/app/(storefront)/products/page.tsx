@@ -7,7 +7,7 @@ import { getPublicProducts, getPublicCategories } from '@/lib/actions/storefront
 export const revalidate = 3600; // 1 hour ISR
 
 export const metadata: Metadata = {
-  title: 'Personalized Gifts & Photo Frames Online',
+  title: 'Wholesale Photo Frames & Corporate Gifts | Factory Direct',
   description:
     'Factory-direct manufacturer of custom photo frames, crystal trophies, and personalized gifts in India. Shop wholesale and retail from Gudiyattam, Vellore.',
   alternates: {
