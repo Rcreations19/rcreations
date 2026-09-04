@@ -2,7 +2,7 @@
 
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls, Environment, Lightformer, useTexture, Center } from '@react-three/drei';
+import { OrbitControls, Environment, Lightformer, useTexture, Center, PerformanceMonitor } from '@react-three/drei';
 import * as THREE from 'three';
 import { Maximize, Minimize, Palette } from 'lucide-react';
 import type { GlassType } from '@/lib/supabase/types';
@@ -197,7 +197,10 @@ function FrameMesh({ widthCm, heightCm, thickness, depth, materialParams, materi
   );
 }
 
+let cachedGlitterTexture: THREE.CanvasTexture | null = null;
+
 function createGlitterTexture() {
+  if (cachedGlitterTexture) return cachedGlitterTexture;
   if (typeof document === 'undefined') return null;
   const size = 512;
   const canvas = document.createElement('canvas');
@@ -236,10 +239,14 @@ function createGlitterTexture() {
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
   texture.repeat.set(16, 16);
+  cachedGlitterTexture = texture;
   return texture;
 }
 
+let cachedLenticularMap: THREE.CanvasTexture | null = null;
+
 function createLenticularNormalMap() {
+  if (cachedLenticularMap) return cachedLenticularMap;
   if (typeof document === 'undefined') return null;
   const width = 256;
   const height = 16;
@@ -277,6 +284,7 @@ function createLenticularNormalMap() {
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
   texture.repeat.set(30, 1);
+  cachedLenticularMap = texture;
   return texture;
 }
 
@@ -531,6 +539,12 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [qualityTier, setQualityTier] = useState<1 | 2 | 3>(1);
+
+  // Derive parameters from quality tier
+  const dpr = qualityTier === 1 ? Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1.5, 1.5) : (qualityTier === 2 ? 1.0 : 0.75);
+  const enableShadows = qualityTier < 3 && !isThumbnail;
+  const shadowMapSize = qualityTier === 1 ? 1024 : 512;
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -579,19 +593,25 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
         }
       >
         <Canvas 
+          dpr={dpr}
           frameloop={isThumbnail ? "always" : (!photoUrl ? "always" : "demand")} 
-          shadows={!isThumbnail} 
+          shadows={enableShadows} 
           camera={{ position: photoUrl ? [0, 0, 10] : [-5, 2, 10], fov: 40 }}
-          gl={isThumbnail ? { antialias: false, powerPreference: "low-power" } : undefined}
+          gl={isThumbnail || qualityTier === 3 ? { antialias: false, powerPreference: "low-power" } : undefined}
         >
+        <PerformanceMonitor 
+          onDecline={() => setQualityTier((prev) => (Math.min(prev + 1, 3) as 1 | 2 | 3))}
+          flipflops={3}
+          onFallback={() => setQualityTier(3)}
+        />
         <color attach="background" args={['#f5f5f5']} />
         
         <ambientLight intensity={isThumbnail ? 2.5 : 1.5} />
         <directionalLight 
           position={[5, 5, 5]} 
           intensity={isThumbnail ? 3.0 : 2} 
-          castShadow={!isThumbnail} 
-          shadow-mapSize={[1024, 1024]} 
+          castShadow={enableShadows} 
+          shadow-mapSize={[shadowMapSize, shadowMapSize]} 
           shadow-bias={-0.001} 
         />
         {!isThumbnail && (
