@@ -30,7 +30,7 @@ interface HomePageClientProps {
 const heroValues = {
   title: 'Give Life to Your Memories',
   titleLine2Prefix: 'at',
-  titleHighlight: 'R Creation Frames',
+  titleHighlight: 'R Creation',
   description:
     'Factory-direct photo frames, crystal trophies, and custom gifts from Gudiyattam. Retail or wholesale, crafted with industrial precision.',
   socialProof: 'Retail & Wholesale · Since 2015 · Gudiyattam',
@@ -60,6 +60,11 @@ const heroValues = {
 export default function HomePageClient({ children, latestBlogs = [], topSellers, frameCatalogue, businessTestimonials }: HomePageClientProps) {
   return (
     <div className="bg-transparent overflow-hidden">
+
+      {/* Hidden SEO Keywords Block for Search Engines (Visually hidden) */}
+      <h1 className="sr-only">
+        R Creation Frames | R Creation Gifts | R Creations Frames and Gifts
+      </h1>
 
       {/* ==================== HERO SECTION ==================== */}
       <Hero10 {...heroValues} />

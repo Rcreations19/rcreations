@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     default: 'R Creation Frames | Custom Photo Frames & Gifts in Vellore',
   },
   description: 'Wholesale photo frames & crystal trophies in Vellore & Gudiyattam. Factory-direct pricing for studios and events. Manufacturer of synthetic frames, wooden mementos, and personalized gifts. MOQ 10 units.',
-  keywords: ['R Creation Frames', 'R Creation', 'photo frames', 'Gudiyattam', 'Vellore', 'wholesale frames', 'crystal trophies', 'wooden mementos', 'custom gifts', 'Tamil Nadu'],
+  keywords: ['R Creation', 'R Creation Frames', 'R Creation Gifts', 'R Creations Frames and Gifts', 'photo frames', 'Gudiyattam', 'Vellore', 'wholesale frames', 'crystal trophies', 'wooden mementos', 'custom gifts', 'Tamil Nadu'],
   authors: [{ name: 'R Creation' }],
   icons: {
     icon: [
