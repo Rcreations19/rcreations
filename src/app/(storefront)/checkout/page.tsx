@@ -136,6 +136,36 @@ export default function CheckoutPage() {
     }
   }, [user]);
 
+  // Sync abandoned cart contact info
+  useEffect(() => {
+    const syncContactInfo = async () => {
+      if (!form.email && !form.phone) return;
+      if (items.length === 0) return;
+      
+      try {
+        let sessionId = localStorage.getItem('rcreation-session');
+        if (!sessionId) {
+          sessionId = crypto.randomUUID();
+          localStorage.setItem('rcreation-session', sessionId);
+        }
+        
+        await fetch('/api/cart/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            sessionId, 
+            email: form.email, 
+            phone: form.phone,
+            items 
+          })
+        });
+      } catch { /* silently fail */ }
+    };
+
+    const timer = setTimeout(syncContactInfo, 2000);
+    return () => clearTimeout(timer);
+  }, [form.email, form.phone, items]);
+
   const getItemPrice = (item: { moq?: number; quantity: number; wholesale_price?: number; price: number }) => {
     return (item.moq && item.quantity >= item.moq && item.wholesale_price) ? item.wholesale_price : item.price;
   };
@@ -192,6 +222,19 @@ export default function CheckoutPage() {
       
       setOrderId(result.data?.orderId ?? null);
       setSuccess(true);
+      
+      // Mark abandoned cart as converted
+      try {
+        const sessionId = localStorage.getItem('rcreation-session');
+        if (sessionId) {
+          await fetch('/api/cart/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId, status: 'converted', items: [] })
+          });
+        }
+      } catch { /* ignore */ }
+      
       clearCart();
     } catch {
       toast.error('An unexpected error occurred. Please try again.');

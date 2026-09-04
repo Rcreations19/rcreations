@@ -71,6 +71,7 @@ export default function Footer() {
               <ul className="space-y-4 pt-4 pb-2">
                 <li><Link href="/wholesale" className="text-sm text-neutral-400 hover:text-white transition-colors">B2B Wholesale</Link></li>
                 <li><Link href="/locations/vellore" className="text-sm text-neutral-400 hover:text-white transition-colors">Areas Served</Link></li>
+                <li><Link href="/track" className="text-sm text-neutral-400 hover:text-white transition-colors">Track Order</Link></li>
                 <li><Link href="/configurator" className="text-sm text-neutral-400 hover:text-white transition-colors">Frame Builder</Link></li>
                 <li><Link href="/specs" className="text-sm text-neutral-400 hover:text-white transition-colors">Tech Specs</Link></li>
                 <li><Link href="/blogs" className="text-sm text-neutral-400 hover:text-white transition-colors">Blog</Link></li>
@@ -83,6 +84,7 @@ export default function Footer() {
               <ul className="space-y-4">
                 <li><Link href="/wholesale" className="text-sm text-neutral-400 hover:text-white transition-colors">B2B Wholesale</Link></li>
                 <li><Link href="/locations/vellore" className="text-sm text-neutral-400 hover:text-white transition-colors">Areas Served</Link></li>
+                <li><Link href="/track" className="text-sm text-neutral-400 hover:text-white transition-colors">Track Order</Link></li>
                 <li><Link href="/configurator" className="text-sm text-neutral-400 hover:text-white transition-colors">Frame Builder</Link></li>
                 <li><Link href="/specs" className="text-sm text-neutral-400 hover:text-white transition-colors">Tech Specs</Link></li>
                 <li><Link href="/blogs" className="text-sm text-neutral-400 hover:text-white transition-colors">Blog</Link></li>

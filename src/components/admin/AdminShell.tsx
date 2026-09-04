@@ -29,6 +29,7 @@ const MODELS = [
   { group: 'Overview' },
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
+  { name: 'Abandoned Carts', href: '/admin/abandoned-carts', icon: ShoppingCart },
   { name: 'Inquiries', href: '/admin/inquiries', icon: MessageSquare },
   { name: 'Reviews', href: '/admin/reviews', icon: Star },
   { group: 'Catalog' },

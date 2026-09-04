@@ -16,6 +16,7 @@ const navLinks = [
   { name: 'Catalog', href: '/products' },
   { name: 'Wholesale B2B', href: '/wholesale' },
   { name: 'Custom Build', href: '/configurator' },
+  { name: 'Track Order', href: '/track' },
   { name: 'Blogs', href: '/blogs' },
   { name: 'Contact', href: '/contact' },
 ];

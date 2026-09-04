@@ -71,7 +71,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (hydrated) saveCart(items);
+    if (hydrated) {
+      saveCart(items);
+      
+      // Abandoned cart syncing
+      const syncCart = async () => {
+        try {
+          let sessionId = localStorage.getItem('rcreation-session');
+          if (!sessionId) {
+            sessionId = crypto.randomUUID();
+            localStorage.setItem('rcreation-session', sessionId);
+          }
+          
+          if (items.length > 0) {
+            await fetch('/api/cart/sync', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sessionId, items })
+            });
+          }
+        } catch { /* silently fail background sync */ }
+      };
+      
+      const timer = setTimeout(syncCart, 1500); // debounce sync
+      return () => clearTimeout(timer);
+    }
   }, [items, hydrated]);
 
   const openCart = useCallback(() => setIsOpen(true), []);
