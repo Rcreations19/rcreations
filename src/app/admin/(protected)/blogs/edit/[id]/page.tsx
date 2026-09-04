@@ -185,6 +185,16 @@ export default function EditBlogPage() {
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-[#111] mb-1">Keywords (SEO)</label>
+            <input 
+              name="keywords" 
+              defaultValue={blog.keywords || ''}
+              placeholder="e.g. photo frames, corporate gifting, vellore (comma-separated)"
+              className="w-full px-3 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#0070f3]"
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-[#111] mb-1">Cover Image</label>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-border border-dashed rounded-md relative hover:bg-[#fafafa] transition-colors cursor-pointer">
               <input

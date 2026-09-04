@@ -89,6 +89,7 @@ export async function createBlog(formData: FormData): Promise<ActionResponse> {
     const author = formData.get('author') as string;
     const is_published = formData.get('is_published') === 'true';
     const show_on_homepage = formData.get('show_on_homepage') === 'true';
+    const keywords = formData.get('keywords') as string;
     const coverImageFile = formData.get('coverImage') as File | null;
     
     let cover_image_url = null;
@@ -125,6 +126,7 @@ export async function createBlog(formData: FormData): Promise<ActionResponse> {
         // @ts-ignore: show_on_homepage is a new column not yet in types
       // @ts-ignore
         show_on_homepage,
+        keywords,
         ...(cover_image_url && { cover_image_url })
       }])
       .select()
@@ -159,6 +161,7 @@ export async function updateBlog(id: string, formData: FormData): Promise<Action
   const author = formData.get('author') as string;
   const is_published = formData.get('is_published') === 'true';
   const show_on_homepage = formData.get('show_on_homepage') === 'true';
+  const keywords = formData.get('keywords') as string;
   const coverImageFile = formData.get('coverImage') as File | null;
   const existingImageUrl = formData.get('existingImageUrl') as string | null;
   
@@ -198,6 +201,7 @@ export async function updateBlog(id: string, formData: FormData): Promise<Action
       content,
       author,
       is_published,
+      keywords,
       // @ts-ignore
         show_on_homepage,
       cover_image_url

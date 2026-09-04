@@ -15,6 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return {
       title: blog.title,
       description: blog.summary,
+      keywords: blog.keywords ? blog.keywords.split(',').map((k: string) => k.trim()) : undefined,
       alternates: {
         canonical: `/blogs/${slug}`,
       },
@@ -66,6 +67,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ sl
     "description": blog.summary,
     "image": blog.cover_image_url || undefined,
     "datePublished": blog.created_at,
+    "keywords": blog.keywords || undefined,
     "author": {
       "@type": "Organization",
       "name": blog.author || "R Creation"
