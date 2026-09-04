@@ -102,7 +102,7 @@ const _getPublicCategories = async () => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('categories')
-    .select('id, name, slug')
+    .select('id, name, slug, updated_at')
     .order('name');
 
   if (error) throw new Error(error.message);

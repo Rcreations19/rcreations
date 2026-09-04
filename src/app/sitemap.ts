@@ -2,6 +2,8 @@ import type { MetadataRoute } from 'next';
 import { getPublicProducts, getPublicCategories } from '@/lib/actions/storefront';
 import { getPublicBlogs } from '@/lib/actions/blogs';
 
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [products, blogs, categories] = await Promise.all([
     getPublicProducts().catch(() => []),
@@ -25,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const categoryRoutes = (categories || []).map((category: any) => ({
     url: `https://www.rcreationframes.com/collections/${category.slug}`,
-    lastModified: new Date(),
+    lastModified: category.updated_at ? new Date(category.updated_at) : undefined,
     changeFrequency: 'weekly' as const,
     priority: 0.9,
   }));
@@ -33,85 +35,56 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     {
       url: 'https://www.rcreationframes.com',
-      lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
     },
     {
       url: 'https://www.rcreationframes.com/products',
-      lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
       url: 'https://www.rcreationframes.com/about',
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: 'https://www.rcreationframes.com/wholesale',
-      lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
       url: 'https://www.rcreationframes.com/configurator',
-      lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.7,
     },
     {
-      url: 'https://www.rcreationframes.com/collections/frames',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://www.rcreationframes.com/collections/trophies',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://www.rcreationframes.com/collections/gifts',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
       url: 'https://www.rcreationframes.com/locations/vellore',
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: 'https://www.rcreationframes.com/blogs',
-      lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.7,
     },
     {
       url: 'https://www.rcreationframes.com/contact',
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: 'https://www.rcreationframes.com/specs',
-      lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.4,
     },
     {
       url: 'https://www.rcreationframes.com/terms',
-      lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.2,
     },
     {
       url: 'https://www.rcreationframes.com/privacy',
-      lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.2,
     },
