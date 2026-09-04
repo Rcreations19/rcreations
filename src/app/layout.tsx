@@ -13,10 +13,10 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.rcreationframes.com'),
   title: {
     template: '%s | R Creation',
-    default: 'R Creation — Photo Frames & Custom Gifts in Vellore | Gudiyattam',
+    default: 'R Creation Frames | Custom Photo Frames & Gifts in Vellore',
   },
   description: 'Wholesale photo frames & crystal trophies in Vellore & Gudiyattam. Factory-direct pricing for studios and events. Manufacturer of synthetic frames, wooden mementos, and personalized gifts. MOQ 10 units.',
-  keywords: ['R Creation', 'photo frames', 'Gudiyattam', 'Vellore', 'wholesale frames', 'crystal trophies', 'wooden mementos', 'custom gifts', 'Tamil Nadu'],
+  keywords: ['R Creation Frames', 'R Creation', 'photo frames', 'Gudiyattam', 'Vellore', 'wholesale frames', 'crystal trophies', 'wooden mementos', 'custom gifts', 'Tamil Nadu'],
   authors: [{ name: 'R Creation' }],
   icons: {
     icon: [
@@ -172,11 +172,11 @@ gtag('consent', 'default', {
         />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-FJSLXW6598"
-          strategy="lazyOnload"
+          strategy="afterInteractive"
         />
         <Script
           id="google-analytics"
-          strategy="lazyOnload"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `gtag('js', new Date());
 gtag('config', 'G-FJSLXW6598', { anonymize_ip: true });`

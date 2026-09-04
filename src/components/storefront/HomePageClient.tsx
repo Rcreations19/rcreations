@@ -30,7 +30,7 @@ interface HomePageClientProps {
 const heroValues = {
   title: 'Give Life to Your Memories',
   titleLine2Prefix: 'at',
-  titleHighlight: 'R Creation',
+  titleHighlight: 'R Creation Frames',
   description:
     'Factory-direct photo frames, crystal trophies, and custom gifts from Gudiyattam. Retail or wholesale, crafted with industrial precision.',
   socialProof: 'Retail & Wholesale · Since 2015 · Gudiyattam',
@@ -274,7 +274,7 @@ export default function HomePageClient({ children, latestBlogs = [], topSellers,
       <section className="py-12 md:py-24 bg-surface">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-xl md:text-2xl font-bold text-primary mb-4 tracking-tight">Proudly Serving Vellore District</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-primary mb-4 tracking-tight">Proudly Serving Vellore District with R Creation Frames</h2>
             <p className="text-primary/70 leading-relaxed text-sm md:text-base">
               R Creation is the premier manufacturer of wholesale synthetic photo frames, optic crystal trophies, and wooden mementos. We offer factory-direct pricing and fast delivery to studios, schools, and corporate events across <strong>Gudiyattam, Vellore, Ranipet, Ambur, and Vaniyambadi</strong>. Skip the middlemen and buy directly from the source.
             </p>
