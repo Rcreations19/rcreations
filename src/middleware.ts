@@ -129,18 +129,19 @@ export async function middleware(request: NextRequest) {
 // ── Security headers helper ───────────────────────────────────────
 function applySecurityHeaders(res: NextResponse, pathname: string, isProtected: boolean) {
   const isDev = process.env.NODE_ENV !== 'production';
-  const cspHeader = [
-    "default-src 'self'",
-    `script-src 'self' 'unsafe-inline' https://places.googleapis.com https://maps.googleapis.com${isDev ? " 'unsafe-eval'" : ""}`,
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.google.com",
-    "connect-src 'self' https://*.supabase.co https://places.googleapis.com https://maps.googleapis.com https://api.postalpincode.in",
-    "frame-src 'self' https://maps.google.com https://www.google.com https://*.google.com",
-    "frame-ancestors 'none'",
-    "form-action 'self'",
-    "base-uri 'self'",
-  ].join('; ');
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname : '*.supabase.co';
+    const cspHeader = [
+      "default-src 'self'",
+      `script-src 'self' 'unsafe-inline' https://places.googleapis.com https://maps.googleapis.com${isDev ? " 'unsafe-eval'" : ""}`,
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      `img-src 'self' data: blob: https://images.unsplash.com https://${supabaseUrl} https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.google.com`,
+      `connect-src 'self' https://${supabaseUrl} https://places.googleapis.com https://maps.googleapis.com https://api.postalpincode.in`,
+      "frame-src 'self' https://maps.google.com https://www.google.com https://*.google.com",
+      "frame-ancestors 'none'",
+      "form-action 'self'",
+      "base-uri 'self'",
+    ].join('; ');
 
   res.headers.set('Content-Security-Policy', cspHeader);
   res.headers.set('X-DNS-Prefetch-Control', 'on');
