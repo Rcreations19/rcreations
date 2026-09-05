@@ -38,7 +38,7 @@ const otpSchema = z.object({
 });
 
 export async function loginAdmin(formData: FormData) {
-  const rl = await rateLimit(5, 60000); // 5 attempts per min
+  const rl = await rateLimit(5, 15 * 60 * 1000); // 5 attempts per 15 min
   if (!rl.success) return { error: rl.error };
 
   const parsed = loginSchema.safeParse({ email: formData.get('email'), password: formData.get('password') });
@@ -117,7 +117,7 @@ export async function loginAdmin(formData: FormData) {
 }
 
 export async function verifyAdminOtp(formData: FormData) {
-  const rl = await rateLimit(10, 60000); 
+  const rl = await rateLimit(10, 15 * 60 * 1000); // 10 attempts per 15 min
   if (!rl.success) return { error: rl.error };
 
   const parsed = otpSchema.safeParse({

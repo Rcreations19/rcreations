@@ -48,7 +48,7 @@ const verifyOtpSchema = z.object({
 
 export async function registerCustomer(formData: FormData): Promise<ActionResponse<{ step: string }>> {
   try {
-    const rl = await rateLimit(5, 60000); 
+    const rl = await rateLimit(3, 15 * 60 * 1000); // 3 attempts per 15 min
     if (!rl.success) throw new Error(rl.error || 'Rate limit exceeded');
 
     const parsed = registerSchema.parse({
@@ -219,7 +219,7 @@ export async function verifyCustomerRegistrationOtp(formData: FormData): Promise
 
 export async function loginCustomer(formData: FormData): Promise<ActionResponse> {
   try {
-    const rl = await rateLimit(5, 60000);
+    const rl = await rateLimit(5, 15 * 60 * 1000); // 5 attempts per 15 min
     if (!rl.success) throw new Error(rl.error || 'Rate limit exceeded');
 
     const parsed = loginSchema.safeParse({
@@ -283,7 +283,7 @@ const forgotPasswordSchema = z.object({
 
 export async function requestCustomerPasswordReset(formData: FormData): Promise<ActionResponse> {
   try {
-    const rl = await rateLimit(3, 60000);
+    const rl = await rateLimit(3, 15 * 60 * 1000); // 3 attempts per 15 min
     if (!rl.success) throw new Error(rl.error || 'Rate limit exceeded');
 
     const parsed = forgotPasswordSchema.parse({
