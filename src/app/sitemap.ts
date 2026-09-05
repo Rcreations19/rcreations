@@ -11,21 +11,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getPublicCategories().catch(() => []),
   ]);
 
-  const productRoutes = products.map((product: any) => ({
+  const productRoutes = products.map((product: { slug: string, updated_at?: string, created_at?: string }) => ({
     url: `https://www.rcreationframes.com/products/${product.slug}`,
     lastModified: new Date(product.updated_at || product.created_at || Date.now()),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }));
 
-  const blogRoutes = (blogs || []).map((blog: any) => ({
+  const blogRoutes = (blogs || []).map((blog: { slug: string, updated_at?: string, created_at?: string }) => ({
     url: `https://www.rcreationframes.com/blogs/${blog.slug}`,
     lastModified: new Date(blog.updated_at || blog.created_at),
     changeFrequency: 'monthly' as const,
     priority: 0.6,
   }));
 
-  const categoryRoutes = (categories || []).map((category: any) => ({
+  const categoryRoutes = (categories || []).map((category: { slug: string, updated_at?: string }) => ({
     url: `https://www.rcreationframes.com/collections/${category.slug}`,
     lastModified: category.updated_at ? new Date(category.updated_at) : undefined,
     changeFrequency: 'weekly' as const,
