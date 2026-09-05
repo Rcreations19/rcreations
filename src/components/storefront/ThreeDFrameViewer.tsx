@@ -6,6 +6,7 @@ import { OrbitControls, Environment, Lightformer, useTexture, Center, Performanc
 import * as THREE from 'three';
 import { Maximize, Minimize, Palette } from 'lucide-react';
 import type { GlassType } from '@/lib/supabase/types';
+import { useDeviceCapabilities } from '@/hooks/useDeviceCapabilities';
 
 class WebGLErrorBoundary extends React.Component<{ fallback: React.ReactNode, children: React.ReactNode }, { hasError: boolean }> {
   constructor(props: { fallback: React.ReactNode, children: React.ReactNode }) {
@@ -539,7 +540,13 @@ export default function ThreeDFrameViewer({ materialId, widthCm, heightCm, thick
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [qualityTier, setQualityTier] = useState<1 | 2 | 3>(1);
+  const deviceTier = useDeviceCapabilities();
+  const initialQuality = deviceTier === 'LOW' ? 3 : (deviceTier === 'MEDIUM' ? 2 : 1);
+  const [qualityTier, setQualityTier] = useState<1 | 2 | 3>(initialQuality);
+
+  useEffect(() => {
+    setQualityTier((prev) => Math.max(prev, initialQuality) as 1 | 2 | 3);
+  }, [initialQuality]);
 
   // Derive parameters from quality tier
   const dpr = qualityTier === 1 ? Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1.5, 1.5) : (qualityTier === 2 ? 1.0 : 0.75);

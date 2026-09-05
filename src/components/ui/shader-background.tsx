@@ -2,9 +2,12 @@
 
 import React, { useEffect, useRef } from 'react';
 
+import { useDeviceCapabilities } from '@/hooks/useDeviceCapabilities';
+
 const ShaderBackground = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const tier = useDeviceCapabilities();
 
   const vsSource = `
     attribute vec4 aVertexPosition;
@@ -132,6 +135,8 @@ const ShaderBackground = () => {
     if (!gl) return;
 
     const isMobile = window.innerWidth < 768;
+    const isLowTier = tier === 'LOW';
+    const isMediumTier = tier === 'MEDIUM';
 
     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
     if (!shaderProgram) return;
@@ -160,7 +165,8 @@ const ShaderBackground = () => {
 
     const resizeCanvas = () => {
       const rect = container.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 2);
+      const baseDpr = isLowTier ? 0.75 : (isMediumTier ? 1 : 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1 : baseDpr);
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
       canvas.style.width = `${rect.width}px`;
@@ -175,9 +181,9 @@ const ShaderBackground = () => {
     const startTime = Date.now();
     let rafId: number;
     let lastFrame = 0;
-    const frameInterval = isMobile ? 33.33 : 16.67;
+    const frameInterval = isLowTier ? 33.33 : (isMobile || isMediumTier ? 24 : 16.67);
 
-    const quality = isMobile ? 1.0 : 0.6;
+    const quality = isLowTier ? 1.5 : (isMobile || isMediumTier ? 1.0 : 0.6);
     const opacity = 1.0;
 
     const render = (timestamp: number) => {
