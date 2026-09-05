@@ -20,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const blogRoutes = (blogs || []).map((blog: { slug: string, updated_at?: string, created_at?: string }) => ({
     url: `https://www.rcreationframes.com/blogs/${blog.slug}`,
-    lastModified: new Date(blog.updated_at || blog.created_at),
+    lastModified: new Date(blog.updated_at || blog.created_at || Date.now()),
     changeFrequency: 'monthly' as const,
     priority: 0.6,
   }));
