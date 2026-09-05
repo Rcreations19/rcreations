@@ -3,7 +3,9 @@ import { getServiceRoleClient } from './supabase/server';
 
 export async function rateLimit(limit: number = 5, windowMs: number = 60000) {
   const headersList = await headers();
-  const ip = headersList.get('x-forwarded-for') || '127.0.0.1';
+  // On Cloudflare, cf-connecting-ip is secure and cannot be spoofed by the client.
+  // We fall back to x-forwarded-for for local development.
+  const ip = headersList.get('cf-connecting-ip') || headersList.get('x-forwarded-for') || '127.0.0.1';
 
   try {
     const supabase = await getServiceRoleClient();
